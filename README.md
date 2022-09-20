@@ -23,7 +23,7 @@ The application used to create this artwork is Adobe Illustrator.
 
 ## Acknowledgements
 
-The original designs were created by [Irina Fumarel](https://github.com/irinafumarel)
+The original designs were created by the very talented [Irina Fumarel](https://github.com/irinafumarel) 💜.
 
 ## License
 
