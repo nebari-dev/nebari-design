@@ -17,6 +17,15 @@ You can find the assets in the following locations:
 - [Nebari stacked logo mark](./logo-mark/stacked/)
 - [Nebari logo mark with colored backgrounds](./logo-mark/colored-background/)
 
+## Nebari brand colors
+
+The Nebari brand uses the following primary colors:
+
+- Yellow: #EAB54E
+- Green: #20AAA1
+- Black: #0F1015
+- Purple: #BA18DA
+
 ## Software used
 
 The application used to create this artwork is Adobe Illustrator.
