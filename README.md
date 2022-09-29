@@ -28,8 +28,8 @@ The Nebari brand uses the following primary colors:
 
 And, the following fonts:
 
-- Atkinson Hyperlegible
-- Poppins
+- [Atkinson Hyperlegible](https://fonts.google.com/specimen/Atkinson+Hyperlegible)
+- [Poppins](https://fonts.google.com/specimen/Poppins)
 
 ## Software used
 
