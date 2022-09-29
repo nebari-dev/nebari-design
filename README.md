@@ -17,14 +17,19 @@ You can find the assets in the following locations:
 - [Nebari stacked logo mark](./logo-mark/stacked/)
 - [Nebari logo mark with colored backgrounds](./logo-mark/colored-background/)
 
-## Nebari brand colors
+## Nebari brand
 
 The Nebari brand uses the following primary colors:
 
 - Yellow: #EAB54E
 - Green: #20AAA1
-- Black: #0F1015
 - Purple: #BA18DA
+- Black: #0F1015
+
+And, the following fonts:
+
+- Atkinson Hyperlegible
+- Poppins
 
 ## Software used
 
