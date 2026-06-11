@@ -17,6 +17,45 @@ You can find the assets in the following locations:
 - [Nebari stacked logo mark](./logo-mark/stacked/)
 - [Nebari logo mark with colored backgrounds](./logo-mark/colored-background/)
 
+## Component registry
+
+This repository is also a [shadcn](https://ui.shadcn.com/) component registry. Components
+are styled with the Nebari brand and can be installed into any shadcn-based project.
+
+### Install
+
+```sh
+npx shadcn add @nebari/<name>
+```
+
+For example, to install the shared `cn()` utility and the Nebari theme tokens:
+
+```sh
+npx shadcn add @nebari/utils
+npx shadcn add @nebari/theme
+```
+
+### Registry layout
+
+| Path                          | Purpose                                                              |
+| ----------------------------- | ------------------------------------------------------------------- |
+| `registry.json`               | Registry manifest — the source of truth for installable items.      |
+| `registry/nebari/ui/`         | UI components (`registry:ui`).                                       |
+| `registry/nebari/lib/`        | Shared library code, including the `cn()` helper (`registry:lib`).   |
+| `registry/nebari/globals.css` | Tailwind v4 `@theme` token mapping.                                  |
+| `public/r/`                   | Built, installable JSON artifacts produced by `build:registry`.     |
+
+### Development
+
+This project uses [Bun](https://bun.sh/), [TypeScript](https://www.typescriptlang.org/),
+and [Tailwind CSS v4](https://tailwindcss.com/). The `@/*` path alias resolves to
+`registry/nebari`.
+
+```sh
+bun install          # install dependencies
+bun run build:registry   # build the registry into public/r
+```
+
 ## Nebari brand
 
 The Nebari brand uses the following primary colors:
