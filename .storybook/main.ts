@@ -1,17 +1,17 @@
-import { resolve } from "node:path";
-import type { StorybookConfig } from "@storybook/react-vite";
-import tailwindcss from "@tailwindcss/vite";
+import { resolve } from 'node:path';
+import type { StorybookConfig } from '@storybook/react-vite';
+import tailwindcss from '@tailwindcss/vite';
 
 const config: StorybookConfig = {
-  framework: "@storybook/react-vite",
-  stories: ["../stories/**/*.stories.@(ts|tsx)"],
+  framework: '@storybook/react-vite',
+  stories: ['../stories/**/*.stories.@(ts|tsx)'],
   async viteFinal(viteConfig) {
     viteConfig.plugins = [...(viteConfig.plugins ?? []), tailwindcss()];
     viteConfig.resolve = {
       ...viteConfig.resolve,
       alias: {
         ...viteConfig.resolve?.alias,
-        "@": resolve(import.meta.dirname, "../registry/nebari"),
+        '@': resolve(import.meta.dirname, '../registry/nebari'),
       },
     };
     // Vite 8's Rolldown dep optimizer otherwise serves React's CJS entry raw,
@@ -22,15 +22,15 @@ const config: StorybookConfig = {
       ...viteConfig.optimizeDeps,
       include: [
         ...(viteConfig.optimizeDeps?.include ?? []),
-        "react",
-        "react-dom",
-        "react-dom/client",
+        'react',
+        'react-dom',
+        'react-dom/client',
       ],
       needsInterop: [
         ...(viteConfig.optimizeDeps?.needsInterop ?? []),
-        "react",
-        "react-dom",
-        "react-dom/client",
+        'react',
+        'react-dom',
+        'react-dom/client',
       ],
     };
     return viteConfig;

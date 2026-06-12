@@ -1,5 +1,5 @@
-import type { Preview } from "@storybook/react-vite";
-import "../registry/nebari/globals.css";
+import type { Preview } from '@storybook/react-vite';
+import '../registry/nebari/globals.css';
 
 const preview: Preview = {
   parameters: {
