@@ -23,6 +23,8 @@
 
   --primary: oklch(0.5809 0.2683 319.62);
   --primary-foreground: oklch(0.985 0 0);
+  /* Figma token color/background/primary-hover (#682888) — hover/pressed fill. */
+  --primary-hover: oklch(0.4793 0.209 318.89);
 
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -68,6 +70,7 @@
 
   --primary: oklch(0.6809 0.2483 319.62);
   --primary-foreground: oklch(0.1743 0.0105 276.35);
+  --primary-hover: oklch(0.6009 0.2483 319.62);
 
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
@@ -113,6 +116,7 @@
 
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
 
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
