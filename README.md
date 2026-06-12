@@ -56,6 +56,24 @@ bun install          # install dependencies
 bun run build:registry   # build the registry into public/r
 ```
 
+### Testing
+
+Components are tested with [Vitest](https://vitest.dev/),
+[Testing Library](https://testing-library.com/docs/react-testing-library/intro/),
+and `jsdom`. Vitest reuses the same `@vitejs/plugin-react`, Tailwind, and `@` →
+`registry/nebari` alias setup as the registry and Storybook, so tests resolve
+imports exactly like the app does.
+
+```sh
+bun run test            # run the suite once
+bun run test:watch      # watch mode
+bun run test:coverage   # run with a coverage report
+```
+
+Test files live in the top-level `tests/` directory (mirroring `stories/`),
+named `*.test.ts` / `*.test.tsx`. Coverage of `registry/nebari` is enforced at a
+minimum of 80%.
+
 ## Nebari brand
 
 The Nebari brand uses the following primary colors:

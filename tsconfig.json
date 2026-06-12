@@ -19,8 +19,10 @@
   "include": [
     "registry",
     "stories",
+    "tests",
     ".storybook",
     "vite.config.ts",
+    "vitest.config.ts",
     "vite-env.d.ts"
   ]
 }

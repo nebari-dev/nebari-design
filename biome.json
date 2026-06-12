@@ -6,6 +6,7 @@
       "**",
       "!dist",
       "!public",
+      "!coverage",
       "!node_modules",
       "!bun.lock",
       "!**/*.tsbuildinfo",
