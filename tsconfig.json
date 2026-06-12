@@ -12,10 +12,9 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./registry/nebari/*"]
     }
   },
-  "include": ["registry", "vite.config.ts"]
+  "include": ["registry", "stories", ".storybook", "vite.config.ts", "vite-env.d.ts"]
 }
