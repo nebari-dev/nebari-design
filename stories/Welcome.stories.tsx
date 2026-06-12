@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { cn } from "@/lib/utils";
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { cn } from '@/lib/utils';
 
 /**
  * Placeholder story proving the Storybook pipeline: the `@` alias resolves to
@@ -10,7 +10,7 @@ function Welcome({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 rounded-lg border bg-card p-8 text-card-foreground",
+        'flex flex-col gap-4 rounded-lg border bg-card p-8 text-card-foreground',
         className,
       )}
     >
@@ -34,9 +34,9 @@ function Welcome({ className }: { className?: string }) {
 }
 
 const meta = {
-  title: "Welcome",
+  title: 'Welcome',
   component: Welcome,
-  parameters: { layout: "centered" },
+  parameters: { layout: 'centered' },
 } satisfies Meta<typeof Welcome>;
 
 export default meta;
