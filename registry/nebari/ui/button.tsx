@@ -109,7 +109,7 @@ function Button({
     render,
     ref,
     props: {
-      className: cn(buttonVariants({ variant, size, className })),
+      className: cn(buttonVariants({ variant, size }), className),
       'data-slot': 'button',
       'data-variant': variant ?? 'default',
       'data-size': size ?? 'default',
