@@ -55,6 +55,17 @@ component to the registry — the component file pattern (`cva` variants,
 Any contributor using Claude Code gets it automatically; invoke it with
 `/nebari-component` or just ask to "add a `<X>` component to the registry".
 
+### Design-to-code with Figma
+
+Because the Nebari brand and components originate in design, we recommend
+installing the [Figma MCP server](https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Dev-Mode-MCP-Server)
+when working on registry components with an AI coding assistant. It lets the
+assistant read a Figma frame's layout, styles, and design tokens directly,
+so generated components stay faithful to the source design and aligned with
+the Nebari brand colors and fonts. Pair it with the `/nebari-component` skill
+above: pull the design context from Figma, then scaffold the component using
+the house recipe.
+
 ### Development
 
 This project uses [Bun](https://bun.sh/), [TypeScript](https://www.typescriptlang.org/),
