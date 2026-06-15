@@ -31,7 +31,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Build site (Storybook at /, registry JSON at /r)
-        run: bun run site:build
+        run: bun run build:site
 
       - uses: actions/configure-pages@v5
 
