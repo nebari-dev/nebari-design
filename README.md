@@ -2,25 +2,15 @@
 
 <img alt="Nebari horizontal logo mark - white text" src="./logo-mark/horizontal/Nebari-Logo-Horizontal-Lockup-White-text.svg#gh-dark-mode-only" height="150" />
 
-# Nebari design assets
+# Nebari design
 
-🎨 This repository contains the design assets for the Nebari project
-
-The assets are available in two formats (PNG & SVG) and in three layouts --
-[horizontal (also known as landscape format)](./logo-mark/), [stacked (which is closer to square)](./logo-mark/),
-and [symbol (which does not include the name and is square)](./symbol/), and at least 3 versions (color, white text, & colored background).
-
-You can find the assets in the following locations:
-
-- [Nebari Symbol](./symbol/)
-- [Nebari horizontal logo mark](./logo-mark/horizontal/)
-- [Nebari stacked logo mark](./logo-mark/stacked/)
-- [Nebari logo mark with colored backgrounds](./logo-mark/colored-background/)
+🎨 This repository is a [shadcn](https://ui.shadcn.com/) component registry styled
+with the Nebari brand, and the home of the Nebari project's design assets.
 
 ## Component registry
 
-This repository is also a [shadcn](https://ui.shadcn.com/) component registry. Components
-are styled with the Nebari brand and can be installed into any shadcn-based project.
+Components are styled with the Nebari brand and can be installed into any
+shadcn-based project.
 
 ### Install
 
@@ -94,6 +84,21 @@ bun run test:coverage   # run with a coverage report
 Test files live in the top-level `tests/` directory (mirroring `stories/`),
 named `*.test.ts` / `*.test.tsx`. Coverage of `registry/nebari` is enforced at a
 minimum of 80%.
+
+## Design assets
+
+This repository also contains the design assets for the Nebari project.
+
+The assets are available in two formats (PNG & SVG) and in three layouts --
+[horizontal (also known as landscape format)](./logo-mark/), [stacked (which is closer to square)](./logo-mark/),
+and [symbol (which does not include the name and is square)](./symbol/), and at least 3 versions (color, white text, & colored background).
+
+You can find the assets in the following locations:
+
+- [Nebari Symbol](./symbol/)
+- [Nebari horizontal logo mark](./logo-mark/horizontal/)
+- [Nebari stacked logo mark](./logo-mark/stacked/)
+- [Nebari logo mark with colored backgrounds](./logo-mark/colored-background/)
 
 ## Nebari brand
 
