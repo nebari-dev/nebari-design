@@ -1,24 +1,28 @@
 import { useRender } from '@base-ui-components/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { Children, isValidElement, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { Spinner } from '@/ui/spinner';
 
 const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium underline-offset-4 outline-none transition-all hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium underline-offset-4 outline-none transition-all hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background data-[disabled]:pointer-events-none data-[disabled]:text-muted-foreground data-[disabled]:no-underline data-[disabled]:shadow-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
+      // Disabled and loading collapse to a muted look (Figma): the component
+      // sets `data-disabled` whenever `disabled || loading`, so both states
+      // share these `data-[disabled]:*` overrides and loading also shows a Spinner.
       variant: {
         default:
-          'bg-primary text-primary-foreground shadow-xs hover:bg-primary-hover active:bg-primary-hover',
+          'bg-primary text-primary-foreground shadow-xs hover:bg-primary-hover active:bg-primary-hover data-[disabled]:bg-muted',
         destructive:
-          'bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90 active:bg-destructive/90',
+          'border border-transparent bg-destructive/10 text-destructive hover:border-destructive active:border-destructive data-[disabled]:border-transparent data-[disabled]:bg-muted',
         outline:
-          'border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground active:bg-accent active:text-accent-foreground',
+          'border border-input bg-background shadow-xs hover:border-muted-foreground hover:bg-accent hover:text-accent-foreground active:border-muted-foreground active:bg-accent active:text-accent-foreground data-[disabled]:border-border data-[disabled]:bg-transparent',
         secondary:
-          'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80 active:bg-secondary/80',
+          'border border-transparent bg-secondary text-secondary-foreground shadow-xs hover:border-input active:border-input data-[disabled]:border-transparent data-[disabled]:bg-muted',
         ghost:
           'hover:bg-accent hover:text-accent-foreground active:bg-accent active:text-accent-foreground',
-        link: 'text-primary',
+        link: 'text-foreground',
       },
       size: {
         xs: "h-6 gap-1 rounded-md px-2 text-xs [&_svg:not([class*='size-'])]:size-3.5",
@@ -42,9 +46,16 @@ type ButtonProps = useRender.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
     /**
      * Renders a {@link Spinner}, sets `aria-busy`, and disables the button
-     * while an async action is in flight.
+     * while an async action is in flight. The Spinner replaces the leading
+     * icon (or the whole content, for icon-only sizes).
      */
     loading?: boolean;
+    /**
+     * Optional label shown beside the Spinner while `loading`, replacing the
+     * button's normal content (e.g. `loadingText="Saving…"`). Ignored for
+     * icon-only sizes.
+     */
+    loadingText?: ReactNode;
   };
 
 /**
@@ -58,6 +69,7 @@ function Button({
   variant,
   size,
   loading = false,
+  loadingText,
   disabled,
   children,
   ref,
@@ -65,6 +77,33 @@ function Button({
   ...props
 }: ButtonProps) {
   const isDisabled = disabled || loading;
+  const isIconSize = size?.startsWith('icon') ?? false;
+
+  // While loading the Spinner takes the place of the leading icon. Icon-only
+  // buttons show just the Spinner; otherwise it sits before the remaining
+  // content, and `loadingText` (when given) replaces that content entirely.
+  let content: ReactNode = children;
+  if (loading) {
+    if (isIconSize) {
+      content = <Spinner />;
+    } else if (loadingText !== undefined) {
+      content = (
+        <>
+          <Spinner />
+          {loadingText}
+        </>
+      );
+    } else {
+      const items = Children.toArray(children);
+      const hasLeadingIcon = items.length > 0 && isValidElement(items[0]);
+      content = (
+        <>
+          <Spinner />
+          {hasLeadingIcon ? items.slice(1) : items}
+        </>
+      );
+    }
+  }
 
   return useRender({
     render,
@@ -74,15 +113,11 @@ function Button({
       'data-slot': 'button',
       'data-variant': variant ?? 'default',
       'data-size': size ?? 'default',
+      'data-disabled': isDisabled || undefined,
       disabled: isDisabled,
       'aria-busy': loading || undefined,
       'aria-disabled': isDisabled || undefined,
-      children: (
-        <>
-          {loading ? <Spinner /> : null}
-          {children}
-        </>
-      ),
+      children: content,
       ...props,
     },
   });

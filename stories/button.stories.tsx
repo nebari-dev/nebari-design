@@ -33,6 +33,7 @@ const meta = {
       ],
     },
     loading: { control: 'boolean' },
+    loadingText: { control: 'text' },
     disabled: { control: 'boolean' },
   },
 } satisfies Meta<typeof Button>;
@@ -126,7 +127,30 @@ export const WithIcon: Story = {
 };
 
 export const Loading: Story = {
-  args: { loading: true, children: 'Saving' },
+  render: (args) => (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button {...args} loading loadingText="Saving…">
+        Save
+      </Button>
+      <Button {...args} loading loadingText="Creating…">
+        <Plus />
+        New project
+      </Button>
+      <Button {...args} loading loadingText="Saving…">
+        <Plus />
+        Save
+      </Button>
+      <Button
+        {...args}
+        aria-label="Add"
+        loading
+        size="icon"
+        loadingText="Adding…"
+      >
+        <Plus />
+      </Button>
+    </div>
+  ),
 };
 
 export const Disabled: Story = {

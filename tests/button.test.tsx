@@ -23,7 +23,27 @@ describe('Button', () => {
     const button = screen.getByRole('button', { name: 'Delete' });
     expect(button).toHaveAttribute('data-variant', 'destructive');
     expect(button).toHaveAttribute('data-size', 'lg');
-    expect(button).toHaveClass('bg-destructive', 'h-9');
+    // Destructive is the soft Figma style: tinted fill + red text, not solid red.
+    expect(button).toHaveClass('bg-destructive/10', 'text-destructive', 'h-9');
+  });
+
+  it('uses the foreground text color for the link variant (not primary)', () => {
+    render(<Button variant="link">Docs</Button>);
+
+    const button = screen.getByRole('button', { name: 'Docs' });
+    expect(button).toHaveClass('text-foreground');
+    expect(button).not.toHaveClass('text-primary');
+  });
+
+  it('collapses to a muted look and sets data-disabled when disabled', () => {
+    render(<Button disabled>Off</Button>);
+
+    const button = screen.getByRole('button', { name: 'Off' });
+    expect(button).toHaveAttribute('data-disabled', 'true');
+    expect(button).toHaveClass(
+      'data-[disabled]:bg-muted',
+      'data-[disabled]:text-muted-foreground',
+    );
   });
 
   it('composes as a different element via the render prop', () => {
@@ -45,6 +65,57 @@ describe('Button', () => {
     expect(button).toBeDisabled();
     expect(button).toHaveAttribute('aria-busy', 'true');
     expect(screen.getByRole('status')).toBeInTheDocument();
+  });
+
+  it('replaces the icon with the spinner on an icon-only button when loading', () => {
+    render(
+      <Button aria-label="Refresh" loading size="icon">
+        <span data-testid="icon-child">+</span>
+      </Button>,
+    );
+
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.queryByTestId('icon-child')).not.toBeInTheDocument();
+  });
+
+  it('replaces the leading icon with the spinner but keeps the label when loading', () => {
+    render(
+      <Button loading>
+        <span data-testid="leading-icon">+</span>
+        Saving
+      </Button>,
+    );
+
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.queryByTestId('leading-icon')).not.toBeInTheDocument();
+    expect(screen.getByText('Saving')).toBeInTheDocument();
+  });
+
+  it('keeps a trailing icon when loading (only the leading icon is replaced)', () => {
+    render(
+      <Button loading>
+        Continue
+        <span data-testid="trailing-icon">→</span>
+      </Button>,
+    );
+
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.getByText('Continue')).toBeInTheDocument();
+    expect(screen.getByTestId('trailing-icon')).toBeInTheDocument();
+  });
+
+  it('swaps the content for loadingText while loading', () => {
+    render(
+      <Button loading loadingText="Saving…">
+        <span data-testid="leading-icon">+</span>
+        Save
+      </Button>,
+    );
+
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.getByText('Saving…')).toBeInTheDocument();
+    expect(screen.queryByText('Save')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('leading-icon')).not.toBeInTheDocument();
   });
 
   it('does not render a spinner when not loading', () => {
