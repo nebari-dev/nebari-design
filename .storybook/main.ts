@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 const config: StorybookConfig = {
   framework: '@storybook/react-vite',
   stories: ['../stories/**/*.stories.@(ts|tsx)'],
+  addons: ['@storybook/addon-docs'],
   async viteFinal(viteConfig) {
     viteConfig.plugins = [...(viteConfig.plugins ?? []), tailwindcss()];
     viteConfig.resolve = {
