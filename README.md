@@ -45,6 +45,16 @@ npx shadcn add @nebari/theme
 | `registry/nebari/globals.css` | Tailwind v4 `@theme` token mapping.                                  |
 | `public/r/`                   | Built, installable JSON artifacts produced by `build:registry`.     |
 
+### Authoring components
+
+This repo ships a [Claude Code skill](https://docs.claude.com/en/docs/claude-code/skills)
+at `.claude/skills/nebari-component/` that encodes the house recipe for adding a
+component to the registry — the component file pattern (`cva` variants,
+`data-slot` attributes, `cn()` merging, Base UI `render`-prop composition), the
+`registry.json` entry shape, story and test templates, and the verification gate.
+Any contributor using Claude Code gets it automatically; invoke it with
+`/nebari-component` or just ask to "add a `<X>` component to the registry".
+
 ### Development
 
 This project uses [Bun](https://bun.sh/), [TypeScript](https://www.typescriptlang.org/),
