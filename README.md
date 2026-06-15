@@ -1,6 +1,6 @@
-<img alt="Nebari horizontal logo mark - black text" src="./logo-mark/horizontal/Nebari-Logo-Horizontal-Lockup.svg#gh-light-mode-only" height="150" />
+<!-- <img alt="Nebari horizontal logo mark - black text" src="./logo-mark/horizontal/Nebari-Logo-Horizontal-Lockup.svg#gh-light-mode-only" height="150" />
 
-<img alt="Nebari horizontal logo mark - white text" src="./logo-mark/horizontal/Nebari-Logo-Horizontal-Lockup-White-text.svg#gh-dark-mode-only" height="150" />
+<img alt="Nebari horizontal logo mark - white text" src="./logo-mark/horizontal/Nebari-Logo-Horizontal-Lockup-White-text.svg#gh-dark-mode-only" height="150" /> -->
 
 # Nebari design
 
