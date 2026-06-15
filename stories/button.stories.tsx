@@ -5,10 +5,20 @@ import { Button } from '@/ui/button';
 const meta = {
   title: 'Components/Button',
   component: Button,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        component:
+          'Button implemented from the Nebari Figma spec. Variants and sizes are driven by `class-variance-authority`; polymorphism is provided by Base UI’s `render` prop, so a `Button` can become a link (or any element) while keeping its styling.',
+      },
+    },
+  },
   args: { children: 'Button' },
   argTypes: {
     variant: {
+      description:
+        'Visual style of the button. `link` uses the foreground text color and no fill.',
       control: 'select',
       options: [
         'default',
@@ -18,8 +28,11 @@ const meta = {
         'ghost',
         'link',
       ],
+      table: { defaultValue: { summary: 'default' } },
     },
     size: {
+      description:
+        'Height and padding preset. The `icon-*` sizes are square and meant for a single icon child.',
       control: 'select',
       options: [
         'xs',
@@ -31,10 +44,30 @@ const meta = {
         'icon',
         'icon-lg',
       ],
+      table: { defaultValue: { summary: 'default' } },
     },
-    loading: { control: 'boolean' },
-    loadingText: { control: 'text' },
-    disabled: { control: 'boolean' },
+    loading: {
+      description:
+        'Renders a `Spinner`, sets `aria-busy`, and disables the button while an async action is in flight. The spinner replaces the leading icon (or the whole content, for icon-only sizes).',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    loadingText: {
+      description:
+        'Optional label shown beside the spinner while `loading`, replacing the button’s normal content (e.g. `"Saving…"`). Ignored for icon-only sizes.',
+      control: 'text',
+    },
+    disabled: {
+      description:
+        'Disables the button and collapses it to the muted look shared with the loading state.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    children: {
+      description:
+        'Button content — text, and optionally a leading/trailing icon.',
+      control: 'text',
+    },
   },
 } satisfies Meta<typeof Button>;
 
@@ -42,9 +75,27 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  name: 'Default',
+  parameters: {
+    docs: {
+      description: {
+        story: 'The default button — `default` variant at the `default` size.',
+      },
+    },
+  },
+};
 
 export const Variants: Story = {
+  name: 'Variants',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'All six visual styles. `default` is the solid primary fill; `destructive` is a soft tinted style (not solid red); `ghost` and `link` are unfilled.',
+      },
+    },
+  },
   render: (args) => (
     <div className="flex flex-wrap items-center gap-3">
       <Button {...args} variant="default">
@@ -70,6 +121,15 @@ export const Variants: Story = {
 };
 
 export const Sizes: Story = {
+  name: 'Sizes',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The four text sizes, from `xs` to `lg`. Padding, height, font size, and icon size all scale together.',
+      },
+    },
+  },
   render: (args) => (
     <div className="flex flex-wrap items-center gap-3">
       <Button {...args} size="xs">
@@ -89,6 +149,15 @@ export const Sizes: Story = {
 };
 
 export const IconSizes: Story = {
+  name: 'Icon sizes',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Square icon-only buttons. Pass a single icon child and an `aria-label` so the button stays accessible.',
+      },
+    },
+  },
   render: (args) => (
     <div className="flex flex-wrap items-center gap-3">
       <Button {...args} aria-label="Add" size="icon-xs">
@@ -108,6 +177,15 @@ export const IconSizes: Story = {
 };
 
 export const WithIcon: Story = {
+  name: 'With icon',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Icons can lead or trail the label. The gap between icon and text is handled by the button.',
+      },
+    },
+  },
   render: (args) => (
     <div className="flex flex-wrap items-center gap-3">
       <Button {...args}>
@@ -127,6 +205,15 @@ export const WithIcon: Story = {
 };
 
 export const Loading: Story = {
+  name: 'Loading',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'While `loading`, a spinner replaces the leading icon and `loadingText` replaces the label. Icon-only buttons collapse to just the spinner.',
+      },
+    },
+  },
   render: (args) => (
     <div className="flex flex-wrap items-center gap-3">
       <Button {...args} loading loadingText="Saving…">
@@ -154,11 +241,28 @@ export const Loading: Story = {
 };
 
 export const Disabled: Story = {
+  name: 'Disabled',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The disabled state collapses to a muted look and blocks pointer events. Loading shares this same muted treatment.',
+      },
+    },
+  },
   args: { disabled: true },
 };
 
 export const AsLink: Story = {
   name: 'Render as link',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Via Base UI’s `render` prop the button becomes an `<a>` while keeping all of its styling and slot attributes.',
+      },
+    },
+  },
   render: (args) => (
     // biome-ignore lint/a11y/useAnchorContent: Button injects children into the rendered anchor.
     <Button {...args} render={<a href="https://nebari.dev" />}>
