@@ -35,8 +35,11 @@
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
 
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
+  /* Figma feedback tokens as an explicit background/foreground pair (no opacity
+   * tint): color/background/destructive #ffe9e5 (soft fill) and
+   * color/foreground/destructive #d2161c (strong red text + border). */
+  --destructive: oklch(0.951 0.025 30.1);
+  --destructive-foreground: oklch(0.55 0.215 27.4);
 
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
@@ -81,8 +84,10 @@
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
 
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
+  /* Dark-mode feedback pair. Figma does not yet define dark feedback tokens, so
+   * these are derived (soft dark-red fill + bright red text) pending design review. */
+  --destructive: oklch(0.28 0.07 27.4);
+  --destructive-foreground: oklch(0.704 0.191 22.216);
 
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);

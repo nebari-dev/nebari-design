@@ -80,7 +80,7 @@ export const CustomColor: Story = {
   render: (args) => (
     <div className="flex items-center gap-4">
       <Spinner {...args} className="text-primary" size="lg" />
-      <Spinner {...args} className="text-destructive" size="lg" />
+      <Spinner {...args} className="text-destructive-foreground" size="lg" />
       <Spinner {...args} className="text-muted-foreground" size="lg" />
     </div>
   ),
