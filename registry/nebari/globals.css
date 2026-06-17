@@ -84,10 +84,11 @@
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
 
-  /* Dark-mode feedback pair. Figma does not yet define dark feedback tokens, so
-   * these are derived (soft dark-red fill + bright red text) pending design review. */
-  --destructive: oklch(0.28 0.07 27.4);
-  --destructive-foreground: oklch(0.704 0.191 22.216);
+  /* Figma Dark collection feedback pair: color/background/destructive red/900
+   * #6a0206 (deep red fill) and color/foreground/destructive red/300 #f29e93
+   * (light red text + border). */
+  --destructive: oklch(0.331 0.1332 27.42);
+  --destructive-foreground: oklch(0.7802 0.1024 27.78);
 
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
