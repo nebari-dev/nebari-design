@@ -48,6 +48,20 @@
       ]
     },
     {
+      "name": "badge",
+      "type": "registry:ui",
+      "title": "Badge",
+      "description": "Small status/label chip with variants, composable via Base UI's render prop.",
+      "dependencies": ["@base-ui-components/react", "class-variance-authority"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/badge.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "theme",
       "type": "registry:theme",
       "title": "Nebari theme",
@@ -76,6 +90,7 @@
           "destructive-foreground": "oklch(0.55 0.215 27.4)",
           "border": "oklch(0.922 0 0)",
           "input": "oklch(0.922 0 0)",
+          "border-strong": "oklch(0.781 0.006 288.8)",
           "ring": "oklch(0.5809 0.2683 319.62)",
           "chart-1": "oklch(0.5809 0.2683 319.62)",
           "chart-2": "oklch(0.6679 0.1102 187.93)",
@@ -111,6 +126,7 @@
           "destructive-foreground": "oklch(0.7802 0.1024 27.78)",
           "border": "oklch(1 0 0 / 10%)",
           "input": "oklch(1 0 0 / 15%)",
+          "border-strong": "oklch(1 0 0 / 20%)",
           "ring": "oklch(0.6809 0.2483 319.62)",
           "chart-1": "oklch(0.6809 0.2483 319.62)",
           "chart-2": "oklch(0.6679 0.1102 187.93)",
