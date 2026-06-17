@@ -40,6 +40,13 @@ const preview: Preview = {
     },
   ],
   parameters: {
+    // Sidebar order: the Introduction landing page first, then the Style
+    // Guide, then Components; anything else falls to the end alphabetically.
+    options: {
+      storySort: {
+        order: ['Introduction', 'Style Guide', 'Components'],
+      },
+    },
     // Run axe in the Vitest addon's browser tests and fail the run on any
     // violation (the interactive a11y panel still reports them in the UI).
     a11y: { test: 'error' },

@@ -1,0 +1,77 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Introduction" />
+
+# Welcome
+
+**Nebari Design** is a [shadcn](https://ui.shadcn.com/) component registry
+styled with the [Nebari](https://nebari.dev) brand. Every component is a small,
+copy-in source file you install into your own project with the `shadcn` CLI —
+you own the code, and it arrives pre-styled with the Nebari brand colors, fonts,
+and design tokens.
+
+This Storybook is the public face of the registry: browse the **Style Guide**
+to see the brand tokens, then explore the **Components** to see each one in
+every variant, with live controls and copyable source.
+
+## Installing a component
+
+Components are published to the registry under the `@nebari/<name>` namespace.
+Add one to any shadcn-based project with the `shadcn` CLI:
+
+```sh
+npx shadcn add @nebari/<name>
+```
+
+For example, to install the shared `cn()` utility and the Nebari theme tokens
+(the foundation most components build on):
+
+```sh
+npx shadcn add @nebari/utils
+npx shadcn add @nebari/theme
+```
+
+Then add a component, such as the `button`:
+
+```sh
+npx shadcn add @nebari/button
+```
+
+The CLI copies the source into your project (e.g. `components/ui/button.tsx`)
+and resolves its registry dependencies — `button` pulls in `utils` automatically.
+
+> **New to shadcn?** It is not an installable component library but a registry
+> of source you copy into your codebase, so you can read and adapt every line.
+> See the [shadcn docs](https://ui.shadcn.com/docs) to set up a project.
+
+## Style Guide
+
+The brand tokens every component is built on — colors, type, and iconography.
+
+- **Style Guide / Colors** — the Nebari palette and the semantic token mapping.
+- **Style Guide / Typography** — the Atkinson Hyperlegible and Poppins type scale.
+- **Style Guide / Icons** — the [lucide-react](https://lucide.dev) icon set.
+
+_The Style Guide pages are being authored; check the sidebar for what has landed._
+
+## Components
+
+Each component page documents its variants, sizes, and states, with live
+controls and a copyable source snippet via **Show code**.
+
+- **Components / Button**
+- **Components / Badge**
+- **Components / Spinner**
+
+More components are added over time — the sidebar is always the source of truth
+for what is available in the registry today.
+
+## Contributing
+
+The registry manifest lives in `registry.json`, and component source lives under
+`registry/nebari/`. This repo ships a Claude Code skill at
+`.claude/skills/nebari-component/` that encodes the house recipe for adding a
+component — invoke it with `/nebari-component` or just ask to "add a `<X>`
+component to the registry". See the
+[README](https://github.com/nebari-dev/nebari-design#readme) for the full
+contributor guide.
