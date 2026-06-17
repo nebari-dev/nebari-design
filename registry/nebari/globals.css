@@ -48,10 +48,10 @@
   --warning-foreground: oklch(0.4691 0.096 91.9);
 
   --success: oklch(0.9535 0.0247 156.73);
-  --success-foreground: oklch(0.5244 0.1401 148.04);
+  --success-foreground: oklch(0.509 0.1401 148.04);
 
   --info: oklch(0.9462 0.0252 249.95);
-  --info-foreground: oklch(0.5402 0.1525 253.53);
+  --info-foreground: oklch(0.515 0.1525 253.53);
 
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
