@@ -40,6 +40,9 @@ const preview: Preview = {
     },
   ],
   parameters: {
+    // Run axe in the Vitest addon's browser tests and fail the run on any
+    // violation (the interactive a11y panel still reports them in the UI).
+    a11y: { test: 'error' },
     controls: {
       matchers: {
         color: /(background|color)$/i,

@@ -35,7 +35,10 @@ jobs:
       - name: Type check
         run: bunx tsc --noEmit
 
-      - name: Test (with coverage)
+      - name: Install Playwright (Chromium) for Storybook browser tests
+        run: bunx playwright install --with-deps chromium
+
+      - name: Test (unit + Storybook a11y, with coverage)
         run: bun run test:coverage
 
       - name: Build registry
