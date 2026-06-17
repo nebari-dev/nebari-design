@@ -55,6 +55,9 @@
 
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
+  /* Figma token color/border/default (#b7b7bb) — a stronger, more visible
+   * border than the default (used by the Badge outline variant). */
+  --border-strong: oklch(0.781 0.006 288.8);
   --ring: oklch(0.5809 0.2683 319.62);
 
   --chart-1: oklch(0.5809 0.2683 319.62);
@@ -114,6 +117,7 @@
 
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
+  --border-strong: oklch(1 0 0 / 20%);
   --ring: oklch(0.6809 0.2483 319.62);
 
   --chart-1: oklch(0.6809 0.2483 319.62);
@@ -169,6 +173,7 @@
 
   --color-border: var(--border);
   --color-input: var(--input);
+  --color-border-strong: var(--border-strong);
   --color-ring: var(--ring);
 
   --color-chart-1: var(--chart-1);
