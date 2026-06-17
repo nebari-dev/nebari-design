@@ -23,8 +23,13 @@ describe('Button', () => {
     const button = screen.getByRole('button', { name: 'Delete' });
     expect(button).toHaveAttribute('data-variant', 'destructive');
     expect(button).toHaveAttribute('data-size', 'lg');
-    // Destructive is the soft Figma style: tinted fill + red text, not solid red.
-    expect(button).toHaveClass('bg-destructive/10', 'text-destructive', 'h-9');
+    // Destructive uses the explicit Figma feedback pair: soft red fill
+    // (background/destructive) + strong red text (foreground/destructive), not an opacity tint.
+    expect(button).toHaveClass(
+      'bg-destructive',
+      'text-destructive-foreground',
+      'h-9',
+    );
   });
 
   it('uses the foreground text color for the link variant (not primary)', () => {
