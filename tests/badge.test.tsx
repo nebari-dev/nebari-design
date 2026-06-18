@@ -62,4 +62,15 @@ describe('Badge', () => {
     expect(classes).toContain('border-border-strong');
     expect(classes).toContain('rounded-full');
   });
+
+  it('scopes interaction cues to link/button badges', () => {
+    const classes = badgeVariants({ variant: 'default' });
+    // Hover/active cues only apply when the badge renders as a link or button.
+    expect(classes).toContain('[a&]:hover:underline');
+    expect(classes).toContain('[a&]:hover:bg-primary-hover');
+    expect(classes).toContain('[button&]:hover:bg-primary-hover');
+    // A static badge gets no unscoped hover/active interaction styling.
+    expect(classes).not.toMatch(/(?<!\]:)hover:/);
+    expect(classes).not.toMatch(/(?<!\]:)active:/);
+  });
 });

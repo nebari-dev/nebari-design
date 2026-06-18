@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { ExternalLink } from 'lucide-react';
+import { Bell, Check, Circle, TrendingUp } from 'lucide-react';
 import { Badge } from '@/ui/badge';
 
 const meta = {
@@ -76,21 +76,59 @@ export const Variants: Story = {
   ),
 };
 
-export const WithIcon: Story = {
-  name: 'With icon',
+export const WithLeadingIcon: Story = {
+  name: 'With leading icon',
   parameters: {
     docs: {
       description: {
         story:
-          'An icon can lead or trail the label; the gap is handled by the badge.',
+          'A leading icon is a common status pattern (`● Active`). The icon is a plain child — the badge handles the gap — and the badge stays a static label, with no link/button interaction cues.',
       },
     },
   },
   render: (args) => (
-    <Badge {...args} variant="secondary">
-      Link
-      <ExternalLink />
-    </Badge>
+    <div className="flex flex-wrap items-center gap-3">
+      <Badge {...args} variant="outline">
+        <Circle className="fill-current" />
+        Active
+      </Badge>
+      <Badge {...args} variant="secondary">
+        <Circle className="fill-current" />
+        Pending
+      </Badge>
+      <Badge {...args} variant="destructive">
+        <Circle className="fill-current" />
+        Error
+      </Badge>
+    </div>
+  ),
+};
+
+export const WithTrailingIcon: Story = {
+  name: 'With trailing icon',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A trailing icon should be decorative — it stays a static label, with no link/button interaction cues. Avoid icons that imply navigation (e.g. an external-link arrow); use the `render` prop to make an interactive, link badge instead.',
+      },
+    },
+  },
+  render: (args) => (
+    <div className="flex flex-wrap items-center gap-3">
+      <Badge {...args} variant="outline">
+        Verified
+        <Check />
+      </Badge>
+      <Badge {...args} variant="default">
+        Trending
+        <TrendingUp />
+      </Badge>
+      <Badge {...args} variant="destructive">
+        Alert
+        <Bell />
+      </Badge>
+    </div>
   ),
 };
 
