@@ -59,29 +59,47 @@ Installed files land under the app's configured aliases (`@/ui`, `@/lib`), so
 imports look like `import { Button } from '@/components/ui/button'` — match the
 host app's existing alias resolution.
 
-## Component catalog
+## Discovering what's available
 
-Every component is styled with semantic theme tokens (so it follows light/dark
-automatically) and sets stable `data-slot` / `data-variant` / `data-size`
-attributes you can target in CSS or tests. `*Variants` (the `cva` class
-function) is exported alongside each component for reuse.
+The registry is the source of truth for the catalog — don't rely on a
+hard-coded list here, which would drift as components are added. To see what
+exists and learn a component's exact API:
 
-| Item      | Install                          | Exports                                                       |
-| --------- | -------------------------------- | ------------------------------------------------------------- |
-| `utils`   | `shadcn add @nebari/utils`       | `cn()` — clsx + tailwind-merge helper                         |
-| `theme`   | `shadcn add @nebari/theme`       | Brand color tokens + radius for light & dark                  |
-| `spinner` | `shadcn add @nebari/spinner`     | `Spinner`, `spinnerVariants`                                  |
-| `button`  | `shadcn add @nebari/button`      | `Button`, `buttonVariants`                                    |
-| `badge`   | `shadcn add @nebari/badge`       | `Badge`, `badgeVariants`                                      |
-| `alert`   | `shadcn add @nebari/alert`       | `Alert`, `AlertTitle`, `AlertDescription`, `AlertAction`, `alertVariants` |
+- **List every item** — fetch the registry index, which names and describes each
+  installable item (components, the `utils` helper, the `theme`, this skill):
 
-### Button
+  ```sh
+  curl -s https://nebari-dev.github.io/nebari-design/r/registry.json
+  ```
 
-- **variants:** `default`, `destructive`, `outline`, `secondary`, `ghost`, `link`
-- **sizes:** `xs`, `sm`, `default`, `lg`, and icon-only `icon-xs`, `icon-sm`, `icon`, `icon-lg`
-- **extra props:** `loading` (shows a `Spinner`, sets `aria-busy`, disables the
-  button), `loadingText` (label shown beside the spinner while loading), plus all
-  native `<button>` props and `render` (see [Composition](#composition-base-ui-render-prop)).
+- **Inspect one before installing** — `shadcn view` prints an item's
+  description, dependencies, and its full source:
+
+  ```sh
+  npx shadcn view @nebari/button
+  ```
+
+- **After installing, read the source** — components are copied into your repo
+  as source you own. The exact `variant`/`size` names and props live in the
+  component's `cva` block and its props type; open the installed `.tsx` (e.g.
+  `@/components/ui/button.tsx`) — that file, not any doc, is authoritative.
+
+## How Nebari components are built
+
+Every component follows the same shape, so once you've seen one you can use any:
+
+- Styled with **semantic theme tokens** (`bg-primary`, `text-muted-foreground`,
+  …), so it follows light/dark automatically — never restyle with raw hex or
+  `dark:` variants.
+- Sets stable `data-slot` / `data-variant` / `data-size` attributes you can
+  target in CSS or tests.
+- Exports its `cva` class function (`buttonVariants`, `badgeVariants`, …)
+  alongside the component for reuse.
+- `variant` / `size` (where present) select the look; read the source for the
+  exact set a given component offers.
+
+`Button` is a representative example — variants, sizes, a `loading` state, and
+`render`-prop composition:
 
 ```tsx
 import { Button } from '@/components/ui/button';
@@ -92,51 +110,9 @@ import { Button } from '@/components/ui/button';
 <Button size="icon" aria-label="Settings"><Settings /></Button>
 ```
 
-### Badge
-
-- **variants:** `default`, `secondary`, `destructive`, `outline`, `ghost`
-- A small status/label chip. Supports `render` for link/button composition.
-
-```tsx
-import { Badge } from '@/components/ui/badge';
-
-<Badge>New</Badge>
-<Badge variant="secondary">Draft</Badge>
-```
-
-### Alert
-
-- **variants:** `default`, `info`, `success`, `warning`, `destructive`
-- Compose with `Alert` + `AlertTitle` + `AlertDescription`, and optionally
-  `AlertAction` (pinned top-right, e.g. a dismiss button). Drop a `lucide-react`
-  icon as the **first child** of `Alert` to get the leading-icon layout.
-- The root is an ARIA live region: `role="alert"` (assertive) for
-  `warning`/`destructive`, `role="status"` (polite) otherwise. Override with `role`.
-
-```tsx
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { CircleCheck } from 'lucide-react';
-
-<Alert variant="success">
-  <CircleCheck />
-  <AlertTitle>Saved</AlertTitle>
-  <AlertDescription>Your changes are live.</AlertDescription>
-</Alert>
-```
-
-### Spinner
-
-- **sizes:** `xs`, `sm`, `default`, `lg`, `xl`
-- **props:** `label` (accessible name, defaults to `"Loading"`), plus lucide icon props.
-- `role="status"`. `Button`'s `loading` state uses it internally; size `default`
-  inherits the parent's icon sizing.
-
-```tsx
-import { Spinner } from '@/components/ui/spinner';
-
-<Spinner />
-<Spinner size="lg" label="Fetching results" />
-```
+Composed components (e.g. `Alert` with `AlertTitle` / `AlertDescription` /
+`AlertAction`) export their parts as named exports from the same module — the
+installed source and `shadcn view` show how the pieces fit together.
 
 ## Composition (Base UI `render` prop)
 
