@@ -14,6 +14,19 @@ shadcn-based project.
 
 ### Install
 
+Register the `@nebari` namespace once in your project's `components.json` so the
+`shadcn` CLI knows where to resolve `@nebari/<name>` items:
+
+```json
+{
+  "registries": {
+    "@nebari": "https://nebari-dev.github.io/nebari-design/r/{name}.json"
+  }
+}
+```
+
+Then add any item:
+
 ```sh
 npx shadcn add @nebari/<name>
 ```
@@ -47,6 +60,22 @@ import '@fontsource/ibm-plex-mono/500.css';
 Skip this and the tokens gracefully fall back to the system `sans-serif` /
 `monospace` stacks.
 
+### Claude Code skill for consumers
+
+If you build your app with [Claude Code](https://docs.claude.com/en/docs/claude-code/skills),
+install the Nebari UI skill into your project so the assistant knows how to set
+up the registry, which components exist, and how to use and theme them:
+
+```sh
+npx shadcn add @nebari/claude-skill
+```
+
+This drops a skill at `.claude/skills/nebari-ui/SKILL.md` in your repo (distinct
+from the contributor authoring skill below, which lives in _this_ repo). Once
+installed it auto-triggers on requests like "add the nebari button" or "build a
+form with nebari components", and stays current through the same `shadcn add`
+flow as the components themselves.
+
 ### Registry layout
 
 | Path                          | Purpose                                                              |
@@ -55,6 +84,7 @@ Skip this and the tokens gracefully fall back to the system `sans-serif` /
 | `registry/nebari/ui/`         | UI components (`registry:ui`).                                       |
 | `registry/nebari/lib/`        | Shared library code, including the `cn()` helper (`registry:lib`).   |
 | `registry/nebari/globals.css` | Tailwind v4 `@theme` token mapping.                                  |
+| `registry/nebari/skills/`     | Consumer-facing Claude Code skills (`registry:file`).               |
 | `public/r/`                   | Built, installable JSON artifacts produced by `build:registry`.     |
 
 ### Authoring components
