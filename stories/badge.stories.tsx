@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Circle, ExternalLink } from 'lucide-react';
+import { Bell, Check, Circle, TrendingUp } from 'lucide-react';
 import { Badge } from '@/ui/badge';
 
 const meta = {
@@ -110,15 +110,25 @@ export const WithTrailingIcon: Story = {
     docs: {
       description: {
         story:
-          'An icon can also trail the label; the gap is handled by the badge.',
+          'A trailing icon should be decorative — it stays a static label, with no link/button interaction cues. Avoid icons that imply navigation (e.g. an external-link arrow); use the `render` prop to make an interactive, link badge instead.',
       },
     },
   },
   render: (args) => (
-    <Badge {...args} variant="secondary">
-      Beta
-      <ExternalLink />
-    </Badge>
+    <div className="flex flex-wrap items-center gap-3">
+      <Badge {...args} variant="outline">
+        Verified
+        <Check />
+      </Badge>
+      <Badge {...args} variant="default">
+        Trending
+        <TrendingUp />
+      </Badge>
+      <Badge {...args} variant="destructive">
+        Alert
+        <Bell />
+      </Badge>
+    </div>
   ),
 };
 
