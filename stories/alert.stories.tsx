@@ -12,7 +12,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Alert surfaces an inline, non-blocking status message, implemented from the Nebari Figma `Alert` variant set. Compose it with `AlertTitle` and `AlertDescription`, and drop a `lucide-react` icon as the first child for the leading-icon layout. The root is a `role="alert"` live region.',
+          'Alert surfaces an inline, non-blocking status message, implemented from the Nebari Figma `Alert` variant set. Compose it with `AlertTitle` and `AlertDescription`, and drop a `lucide-react` icon as the first child for the leading-icon layout. The root is a live region whose role tracks severity — `role="alert"` (assertive) for `warning`/`destructive` and `role="status"` (polite) otherwise — overridable via the `role` prop.',
       },
     },
   },
