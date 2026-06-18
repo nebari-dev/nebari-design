@@ -10,10 +10,10 @@ import {
 } from '@/ui/alert';
 
 describe('Alert', () => {
-  it('renders a role="alert" region with default slot/variant attributes', () => {
+  it('renders a polite status region with default slot/variant attributes', () => {
     render(<Alert>Heads up</Alert>);
 
-    const alert = screen.getByRole('alert');
+    const alert = screen.getByRole('status');
     expect(alert).toHaveAttribute('data-slot', 'alert');
     expect(alert).toHaveAttribute('data-variant', 'default');
     expect(alert).toHaveClass('bg-card', 'text-foreground');
@@ -21,16 +21,34 @@ describe('Alert', () => {
   });
 
   it.each([
-    ['info', 'bg-info', 'text-info-foreground'],
-    ['success', 'bg-success', 'text-success-foreground'],
-    ['warning', 'bg-warning', 'text-warning-foreground'],
-    ['destructive', 'bg-destructive', 'text-destructive-foreground'],
-  ] as const)('reflects the %s variant as a data attribute and classes', (variant, bg, fg) => {
+    ['info', 'status', 'bg-info', 'text-info-foreground'],
+    ['success', 'status', 'bg-success', 'text-success-foreground'],
+    ['warning', 'alert', 'bg-warning', 'text-warning-foreground'],
+    ['destructive', 'alert', 'bg-destructive', 'text-destructive-foreground'],
+  ] as const)('reflects the %s variant as a data attribute and classes', (variant, role, bg, fg) => {
     render(<Alert variant={variant}>Message</Alert>);
 
-    const alert = screen.getByRole('alert');
+    const alert = screen.getByRole(role);
     expect(alert).toHaveAttribute('data-variant', variant);
     expect(alert).toHaveClass(bg, fg);
+  });
+
+  it('uses an assertive alert role for warning/destructive and a polite status role otherwise', () => {
+    const { rerender } = render(<Alert variant="info">Polite</Alert>);
+    expect(screen.getByRole('status')).toBeInTheDocument();
+
+    rerender(<Alert variant="warning">Assertive</Alert>);
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+  });
+
+  it('honors an explicit role override', () => {
+    render(
+      <Alert variant="info" role="alert">
+        Forced assertive
+      </Alert>,
+    );
+
+    expect(screen.getByRole('alert')).toBeInTheDocument();
   });
 
   it('renders the title and description sub-parts with their slots', () => {
@@ -53,7 +71,7 @@ describe('Alert', () => {
   it('mutes the description only in the default variant', () => {
     render(<Alert>Body</Alert>);
 
-    expect(screen.getByRole('alert')).toHaveClass(
+    expect(screen.getByRole('status')).toHaveClass(
       '*:data-[slot=alert-description]:text-muted-foreground',
     );
   });
@@ -61,7 +79,7 @@ describe('Alert', () => {
   it('merges a caller className over the variant defaults', () => {
     render(<Alert className="mt-4">Spaced</Alert>);
 
-    expect(screen.getByRole('alert')).toHaveClass('mt-4', 'bg-card');
+    expect(screen.getByRole('status')).toHaveClass('mt-4', 'bg-card');
   });
 
   it('renders an action slot and reserves trailing space for it', () => {
@@ -78,7 +96,7 @@ describe('Alert', () => {
     expect(action).toBeInTheDocument();
     expect(action).toHaveClass('absolute', 'top-2', 'right-2');
     // The root reserves trailing padding only when an action is present.
-    expect(screen.getByRole('alert')).toHaveClass(
+    expect(screen.getByRole('status')).toHaveClass(
       'has-data-[slot=alert-action]:pr-18',
     );
   });

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CircleAlert, CircleCheck, Info, TriangleAlert, X } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Alert, AlertAction, AlertDescription, AlertTitle } from '@/ui/alert';
 import { Button } from '@/ui/button';
 
@@ -129,7 +129,7 @@ export const WithoutIcon: Story = {
     docs: {
       description: {
         story:
-          'With no leading icon the content sits flush left — the icon column collapses to zero width.',
+          'With no leading icon the content sits flush left — the icon column collapses to zero width. Reserve the icon-less layout for the neutral default variant. When an alert conveys severity (`info`, `success`, `warning`, `destructive`), always pair it with an icon so meaning is carried by shape and not color alone (WCAG 1.4.1).',
       },
     },
   },
@@ -161,7 +161,9 @@ export const WithAction: Story = {
         You will be signed out in 30 minutes due to inactivity.
       </AlertDescription>
       <AlertAction>
-        <Button size="xs">Save</Button>
+        <Button size="xs" variant="outline">
+          Save
+        </Button>
       </AlertAction>
     </Alert>
   ),
@@ -173,16 +175,27 @@ export const Dismissible: Story = {
     docs: {
       description: {
         story:
-          'Put a close icon button in the `AlertAction` slot and own the visibility in the caller. The Alert has no built-in dismiss state — `onClick` drives it.',
+          'Put a close icon button in the `AlertAction` slot and own the visibility in the caller. The Alert has no built-in dismiss state — `onClick` drives it. Because dismissing unmounts the alert, move focus to a sensible anchor so keyboard and screen-reader users are not stranded: dismissing returns focus to the `Show alert` button, and reopening returns it to the dismiss button.',
       },
     },
   },
   render: () => {
     const [open, setOpen] = useState(true);
+    const showButtonRef = useRef<HTMLButtonElement>(null);
+    const dismissButtonRef = useRef<HTMLButtonElement>(null);
 
     if (!open) {
       return (
-        <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+        <Button
+          ref={showButtonRef}
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            setOpen(true);
+            // Hand focus to the dismiss button once the alert remounts.
+            requestAnimationFrame(() => dismissButtonRef.current?.focus());
+          }}
+        >
           Show alert
         </Button>
       );
@@ -197,10 +210,16 @@ export const Dismissible: Story = {
         </AlertDescription>
         <AlertAction>
           <Button
+            ref={dismissButtonRef}
             aria-label="Dismiss"
             size="icon-xs"
             variant="ghost"
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false);
+              // The alert unmounts on dismiss; park focus on the trigger that
+              // brings it back instead of dropping it to <body>.
+              requestAnimationFrame(() => showButtonRef.current?.focus());
+            }}
           >
             <X />
           </Button>

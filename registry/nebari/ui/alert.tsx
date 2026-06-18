@@ -36,17 +36,34 @@ const alertVariants = cva(
 type AlertProps = React.ComponentProps<'div'> &
   VariantProps<typeof alertVariants>;
 
+// Map severity onto the ARIA live-region role. `alert` (assertive) interrupts
+// the screen reader immediately and is reserved for variants that demand
+// attention — `warning`/`destructive`. The calmer `info`/`success`/`default`
+// variants use `status` (polite) so they're announced without cutting off
+// whatever the user is doing. Callers can override with an explicit `role`.
+const alertRoleForVariant: Record<
+  NonNullable<AlertProps['variant']>,
+  'alert' | 'status'
+> = {
+  default: 'status',
+  info: 'status',
+  success: 'status',
+  warning: 'alert',
+  destructive: 'alert',
+};
+
 /**
  * Alert surfaces an inline, non-blocking status message, implemented from the
  * Nebari Figma `Alert` variant set. Compose it with {@link AlertTitle},
  * {@link AlertDescription}, and an optional {@link AlertAction}; drop a
  * `lucide-react` icon as the first child to get the leading-icon layout. The
- * root is a `role="alert"` live region.
+ * root is a live region — `role="alert"` (assertive) for `warning`/`destructive`
+ * and `role="status"` (polite) otherwise — overridable via the `role` prop.
  */
-function Alert({ className, variant, ...props }: AlertProps) {
+function Alert({ className, variant, role, ...props }: AlertProps) {
   return (
     <div
-      role="alert"
+      role={role ?? alertRoleForVariant[variant ?? 'default']}
       data-slot="alert"
       data-variant={variant ?? 'default'}
       className={cn(alertVariants({ variant }), className)}
