@@ -25,6 +25,28 @@ npx shadcn add @nebari/utils
 npx shadcn add @nebari/theme
 ```
 
+### Fonts
+
+The theme tokens in `registry/nebari/globals.css` set `--font-sans` to
+[**Geist**](https://vercel.com/font) and `--font-mono` to
+[**IBM Plex Mono**](https://www.ibm.com/plex/). The theme only _references_ these
+families — install the webfonts in your app so they actually load:
+
+```sh
+npm i @fontsource-variable/geist @fontsource/ibm-plex-mono
+```
+
+Then import them once at your app's entry point:
+
+```ts
+import '@fontsource-variable/geist';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+```
+
+Skip this and the tokens gracefully fall back to the system `sans-serif` /
+`monospace` stacks.
+
 ### Registry layout
 
 | Path                          | Purpose                                                              |

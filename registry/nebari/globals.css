@@ -137,6 +137,9 @@
 }
 
 @theme inline {
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
@@ -202,6 +205,6 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background font-sans text-foreground;
   }
 }
