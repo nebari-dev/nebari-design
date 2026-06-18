@@ -1,57 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useEffect, useMemo, useState } from 'react';
-
-/** Round to `d` decimals, dropping trailing zeros. */
-function round(n: number, d: number) {
-  return String(Math.round(n * 10 ** d) / 10 ** d);
-}
-
-/** Format OKLab lightness/chroma/hue as an `oklch(…)` string. */
-function formatOklch(L: number, C: number, H: number) {
-  // Achromatic colors have no meaningful hue; match the authored `oklch(x 0 0)`.
-  if (C < 0.0005) return `oklch(${round(L, 4)} 0 0)`;
-  return `oklch(${round(L, 4)} ${round(C, 4)} ${round(H, 2)})`;
-}
-
-function srgbToLinear(c: number) {
-  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-}
-
-/** Convert sRGB (each channel 0–1) to an `oklch(…)` string. */
-function rgbToOklch(r: number, g: number, b: number) {
-  const lr = srgbToLinear(r);
-  const lg = srgbToLinear(g);
-  const lb = srgbToLinear(b);
-  const l = 0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb;
-  const m = 0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb;
-  const s = 0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb;
-  const l_ = Math.cbrt(l);
-  const m_ = Math.cbrt(m);
-  const s_ = Math.cbrt(s);
-  const L = 0.2104542553 * l_ + 0.793617785 * m_ - 0.0040720468 * s_;
-  const a = 1.9779984951 * l_ - 2.428592205 * m_ + 0.4505937099 * s_;
-  const bb = 0.0259040371 * l_ + 0.7827717662 * m_ - 0.808675766 * s_;
-  const C = Math.sqrt(a * a + bb * bb);
-  let H = (Math.atan2(bb, a) * 180) / Math.PI;
-  if (H < 0) H += 360;
-  return formatOklch(L, C, H);
-}
-
-/** Convert a `#rrggbb` hex string to an `oklch(…)` string. */
-function hexToOklch(hex: string) {
-  const h = hex.replace('#', '');
-  return rgbToOklch(
-    Number.parseInt(h.slice(0, 2), 16) / 255,
-    Number.parseInt(h.slice(2, 4), 16) / 255,
-    Number.parseInt(h.slice(4, 6), 16) / 255,
-  );
-}
+import { useEffect, useState } from 'react';
 
 /**
- * Reads a semantic token's authored `oklch(…)` value off the document root and
- * keeps it in sync with the active theme. The swatch fill updates on its own (it
- * references `var(--token)` directly); a `MutationObserver` re-reads the value
- * whenever the theme toggle flips the `.dark` class on `<html>`.
+ * Reads a CSS custom property's authored value off the document root and keeps
+ * it in sync with the active theme. Used for both the semantic tokens (which
+ * resolve to a light or dark value) and the primitives (which are
+ * theme-independent but still read live so the story mirrors `globals.css`
+ * rather than restating its values). A `MutationObserver` re-reads whenever the
+ * theme toggle flips the `.dark` class on `<html>`.
  */
 function useTokenValue(token: string) {
   const [value, setValue] = useState('');
@@ -187,108 +143,232 @@ const SEMANTIC_GROUPS: { title: string; tokens: [string, string][] }[] = [
 ];
 
 /**
- * The Nebari brand palette as authored in Figma. Each anchor color is expanded
- * into a 10-step scale; the `globals.css` semantic tokens are derived from
- * these. Values are the brand reference, so they are listed as hex literals.
+ * The primitive ramps, mirrored 1:1 from the Figma variables library and
+ * authored in `registry/nebari/globals.css`. Each entry is the CSS variable
+ * prefix; the recorded source hex is shown alongside the live oklch value for
+ * auditability against the design file. The semantic tokens above are derived
+ * from these — components never reference primitives directly.
  */
-const BRAND_SCALES: { name: string; shades: [step: string, hex: string][] }[] =
-  [
-    {
-      name: 'Primary Magenta',
-      shades: [
-        ['50', '#F5EFFE'],
-        ['100', '#E8D7FB'],
-        ['200', '#D4B6F5'],
-        ['300', '#B787EB'],
-        ['400', '#A65BD9'],
-        ['500', '#9B3DCC'],
-        ['600', '#8232AA'],
-        ['700', '#682888'],
-        ['800', '#4A1C63'],
-        ['900', '#2F123F'],
-      ],
-    },
-    {
-      name: 'Accent Teal',
-      shades: [
-        ['50', '#E9F9F8'],
-        ['100', '#C9F0ED'],
-        ['200', '#9CDED9'],
-        ['300', '#6CC8C0'],
-        ['400', '#48B5AC'],
-        ['500', '#359C95'],
-        ['600', '#2C817C'],
-        ['700', '#246864'],
-        ['800', '#1A4D4A'],
-        ['900', '#103231'],
-      ],
-    },
-    {
-      name: 'Highlight Yellow',
-      shades: [
-        ['50', '#FFF9EC'],
-        ['100', '#FFF1CF'],
-        ['200', '#FFE3A1'],
-        ['300', '#FDD572'],
-        ['400', '#F1C24D'],
-        ['500', '#EAB54E'],
-        ['600', '#C89841'],
-        ['700', '#9C7633'],
-        ['800', '#705526'],
-        ['900', '#493819'],
-      ],
-    },
-    {
-      name: 'Neutral',
-      shades: [
-        ['50', '#F9FAFB'],
-        ['100', '#ECEEF1'],
-        ['200', '#D0D5DC'],
-        ['300', '#B5BEC8'],
-        ['400', '#9AA6B5'],
-        ['500', '#7B8A9D'],
-        ['600', '#617388'],
-        ['700', '#516071'],
-        ['800', '#3F4A58'],
-        ['900', '#2D353F'],
-      ],
-    },
-  ];
-
-const FOUNDATION: [name: string, hex: string][] = [
-  ['Black', '#14181E'],
-  ['White', '#FFFFFF'],
+const PRIMITIVE_RAMPS: {
+  name: string;
+  prefix: string;
+  steps: [step: string, hex: string][];
+}[] = [
+  {
+    name: 'Primary Magenta',
+    prefix: 'primary-magenta',
+    steps: [
+      ['50', '#fbf6fe'],
+      ['100', '#f6e9ff'],
+      ['200', '#e7c4ff'],
+      ['300', '#d69afd'],
+      ['400', '#c575f4'],
+      ['500', '#b053e2'],
+      ['600', '#9547c0'],
+      ['700', '#77399a'],
+      ['800', '#5d2f77'],
+      ['900', '#442655'],
+      ['950', '#341744'],
+    ],
+  },
+  {
+    name: 'Accent Teal',
+    prefix: 'accent-teal',
+    steps: [
+      ['50', '#edfcfa'],
+      ['100', '#d1f8f3'],
+      ['200', '#a1e3dc'],
+      ['300', '#6ecac1'],
+      ['400', '#45b2a9'],
+      ['500', '#319890'],
+      ['600', '#2c817a'],
+      ['700', '#236762'],
+      ['800', '#1f514d'],
+      ['900', '#1b3c39'],
+      ['950', '#0a2d2a'],
+    ],
+  },
+  {
+    name: 'Highlight Yellow',
+    prefix: 'highlight-yellow',
+    steps: [
+      ['50', '#fef8eb'],
+      ['100', '#fcedcc'],
+      ['200', '#eed190'],
+      ['300', '#dbb14e'],
+      ['400', '#c59709'],
+      ['500', '#a78001'],
+      ['600', '#8e6c03'],
+      ['700', '#725600'],
+      ['800', '#594510'],
+      ['900', '#413313'],
+      ['950', '#312403'],
+    ],
+  },
+  {
+    name: 'Neutral',
+    prefix: 'neutral',
+    steps: [
+      ['50', '#f8f8f9'],
+      ['100', '#eceff1'],
+      ['200', '#cfd5db'],
+      ['300', '#b0b8c2'],
+      ['400', '#93a0ae'],
+      ['500', '#78889a'],
+      ['600', '#617388'],
+      ['700', '#4e5c6d'],
+      ['800', '#3d4956'],
+      ['900', '#2e3640'],
+      ['950', '#1f2731'],
+    ],
+  },
+  {
+    name: 'Zinc',
+    prefix: 'zinc',
+    steps: [
+      ['50', '#f8f8f8'],
+      ['100', '#eeeeef'],
+      ['200', '#d4d4d7'],
+      ['300', '#b7b7bb'],
+      ['400', '#9d9da6'],
+      ['500', '#85858e'],
+      ['600', '#70707a'],
+      ['700', '#5a5a61'],
+      ['800', '#47474b'],
+      ['900', '#353538'],
+      ['950', '#262628'],
+    ],
+  },
+  {
+    name: 'Blue',
+    prefix: 'blue',
+    steps: [
+      ['50', '#f6f8fe'],
+      ['100', '#e7efff'],
+      ['200', '#c2d5fb'],
+      ['300', '#99b7f5'],
+      ['400', '#719bf7'],
+      ['500', '#4b7ef6'],
+      ['600', '#2e63ed'],
+      ['700', '#1848d2'],
+      ['800', '#1339a7'],
+      ['900', '#0f2c7b'],
+      ['950', '#102350'],
+    ],
+  },
+  {
+    name: 'Green',
+    prefix: 'green',
+    steps: [
+      ['50', '#f0fcf2'],
+      ['100', '#dbf7df'],
+      ['200', '#afe4b8'],
+      ['300', '#72d087'],
+      ['400', '#28bc5c'],
+      ['500', '#00a148'],
+      ['600', '#03893c'],
+      ['700', '#006e2e'],
+      ['800', '#055725'],
+      ['900', '#03411a'],
+      ['950', '#0a2f15'],
+    ],
+  },
+  {
+    name: 'Red',
+    prefix: 'red',
+    steps: [
+      ['50', '#fef6f5'],
+      ['100', '#ffe9e5'],
+      ['200', '#f9c6bf'],
+      ['300', '#f29e93'],
+      ['400', '#f46f63'],
+      ['500', '#e93f38'],
+      ['600', '#d2161c'],
+      ['700', '#ac030f'],
+      ['800', '#8a030b'],
+      ['900', '#6a0206'],
+      ['950', '#490e0c'],
+    ],
+  },
+  {
+    name: 'Yellow',
+    prefix: 'yellow',
+    steps: [
+      ['50', '#fdf8eb'],
+      ['100', '#ffeeba'],
+      ['200', '#f2d26e'],
+      ['300', '#dcb314'],
+      ['400', '#be9a09'],
+      ['500', '#a28301'],
+      ['600', '#896e03'],
+      ['700', '#6e5800'],
+      ['800', '#584600'],
+      ['900', '#423400'],
+      ['950', '#302501'],
+    ],
+  },
 ];
 
-/** A fixed-color swatch (brand palette / foundation): label and oklch value. */
-function HexSwatch({ label, hex }: { label: string; hex: string }) {
-  const oklch = useMemo(() => hexToOklch(hex), [hex]);
+const FOUNDATION: [token: string, label: string, hex: string][] = [
+  ['--black', 'Black', '#000000'],
+  ['--white', 'White', '#ffffff'],
+  ['--foundation-black', 'Foundation black', '#14181e'],
+  ['--foundation-white', 'Foundation white', '#ffffff'],
+];
+
+/**
+ * A primitive swatch: reads the live oklch from the CSS variable and prints both
+ * the step and the recorded source hex.
+ */
+function PrimitiveSwatch({
+  token,
+  label,
+  hex,
+}: {
+  token: string;
+  label: string;
+  hex: string;
+}) {
+  const oklch = useTokenValue(token);
   return (
     <div className="overflow-hidden rounded-lg border border-border bg-card">
-      <div className="h-16 w-full" style={{ backgroundColor: hex }} />
+      <div
+        className="h-16 w-full border-border border-b"
+        style={{ backgroundColor: `var(${token})` }}
+      />
       <div className="space-y-0.5 p-2">
         <div className="font-medium text-card-foreground text-xs">{label}</div>
+        <div className="font-mono text-card-foreground/70 text-[11px]">
+          {hex}
+        </div>
         <div className="break-all font-mono text-card-foreground/70 text-[11px]">
-          {oklch}
+          {oklch || '—'}
         </div>
       </div>
     </div>
   );
 }
 
-function ScaleRow({
+function RampRow({
   name,
-  shades,
+  prefix,
+  steps,
 }: {
   name: string;
-  shades: [string, string][];
+  prefix: string;
+  steps: [string, string][];
 }) {
   return (
     <section className="space-y-2">
       <h3 className="font-semibold text-foreground text-lg">{name}</h3>
-      <div className="grid grid-cols-5 gap-3 sm:grid-cols-10">
-        {shades.map(([step, hex]) => (
-          <HexSwatch key={step} label={step} hex={hex} />
+      <div className="grid grid-cols-4 gap-3 sm:grid-cols-6 lg:grid-cols-11">
+        {steps.map(([step, hex]) => (
+          <PrimitiveSwatch
+            key={step}
+            token={`--${prefix}-${step}`}
+            label={step}
+            hex={hex}
+          />
         ))}
       </div>
     </section>
@@ -305,11 +385,12 @@ const meta = {
     docs: {
       description: {
         component: [
-          'The Nebari color system. **Semantic tokens** are the variables every',
-          'component consumes — they are read live from `registry/nebari/globals.css`',
-          'and resolve to their light or dark value based on the **Theme** toolbar',
-          'toggle. The **brand palette** below is the underlying Figma scale the',
-          'tokens are derived from.',
+          'The Nebari color system, mirrored 1:1 from the Figma variables library.',
+          '**Semantic tokens** are the variables every component consumes — they are',
+          'read live from `registry/nebari/globals.css` and resolve to their light or',
+          'dark value based on the **Theme** toolbar toggle. The **primitives** below',
+          'are the raw ramps the semantic tokens reference; the recorded source hex is',
+          'shown alongside each for auditability against the design file.',
         ].join(' '),
       },
     },
@@ -343,26 +424,36 @@ export const SemanticTokens: Story = {
   ),
 };
 
-export const BrandPalette: Story = {
-  name: 'Brand palette',
+export const Primitives: Story = {
+  name: 'Primitives',
   parameters: {
     docs: {
       description: {
         story:
-          'The brand anchor colors expanded into 10-step scales, plus the foundation black and white. These are the source values the semantic tokens are tuned from.',
+          'The raw oklch ramps mirrored from the Figma variables library, with the source hex recorded beside each. These are theme-independent — the semantic tokens above reference them and switch per light/dark.',
       },
     },
   },
   render: () => (
     <div className="space-y-10 bg-background p-8 text-foreground">
-      {BRAND_SCALES.map((scale) => (
-        <ScaleRow key={scale.name} name={scale.name} shades={scale.shades} />
+      {PRIMITIVE_RAMPS.map((ramp) => (
+        <RampRow
+          key={ramp.prefix}
+          name={ramp.name}
+          prefix={ramp.prefix}
+          steps={ramp.steps}
+        />
       ))}
       <section className="space-y-2">
         <h3 className="font-semibold text-foreground text-lg">Foundation</h3>
-        <div className="grid grid-cols-2 gap-3 sm:max-w-md">
-          {FOUNDATION.map(([name, hex]) => (
-            <HexSwatch key={name} label={name} hex={hex} />
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:max-w-2xl">
+          {FOUNDATION.map(([token, label, hex]) => (
+            <PrimitiveSwatch
+              key={token}
+              token={token}
+              label={label}
+              hex={hex}
+            />
           ))}
         </div>
       </section>
