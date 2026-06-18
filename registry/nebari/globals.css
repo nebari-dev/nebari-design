@@ -41,9 +41,9 @@
   --destructive: oklch(0.951 0.025 30.1);
   --destructive-foreground: oklch(0.55 0.215 27.4);
 
-  /* Feedback pairs (from the Alert component) following the same
-   * background/foreground convention as destructive: a soft tinted fill and a
-   * strong text/border color. */
+  /* Figma feedback tokens, same background/foreground pair convention as
+   * destructive. Warning: color/background/warning #ffeeba + color/foreground/warning
+   * #6e5800. Success has no Figma frame yet, so it mirrors the pattern in green. */
   --warning: oklch(0.9502 0.0692 92.11);
   --warning-foreground: oklch(0.4691 0.096 91.9);
 

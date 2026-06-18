@@ -3,12 +3,16 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const badgeVariants = cva(
-  "inline-flex w-fit shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full border border-transparent px-1.5 py-0.5 font-medium text-xs leading-4 underline-offset-4 outline-none transition-colors hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3",
+  // Interaction cues (hover underline, hover/active fill) are scoped to when the
+  // badge is actually rendered as a link or button (`[a&]` / `[button&]`); a
+  // plain status/label chip stays static. `underline-offset-2` + the wider `px-2`
+  // padding keep the hover underline inside the chip's bounds.
+  "inline-flex w-fit shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full border border-transparent px-2 py-0.5 font-medium text-xs leading-4 underline-offset-2 outline-none transition-colors [a&]:hover:underline [button&]:hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3",
   {
     variants: {
       variant: {
         default:
-          'bg-primary text-primary-foreground hover:bg-primary-hover active:bg-primary-hover',
+          'bg-primary text-primary-foreground [a&]:hover:bg-primary-hover [a&]:active:bg-primary-hover [button&]:hover:bg-primary-hover [button&]:active:bg-primary-hover',
         secondary: 'bg-muted text-muted-foreground',
         destructive: 'bg-destructive text-destructive-foreground',
         outline: 'border-border-strong bg-background text-foreground',
