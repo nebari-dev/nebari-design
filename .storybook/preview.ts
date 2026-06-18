@@ -1,5 +1,9 @@
 import type { Preview } from '@storybook/react-vite';
 import { useEffect } from 'storybook/preview-api';
+// Brand webfonts referenced by the `--font-sans` / `--font-mono` tokens.
+import '@fontsource-variable/geist';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
 import '../registry/nebari/globals.css';
 
 const preview: Preview = {
