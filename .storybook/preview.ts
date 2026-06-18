@@ -44,7 +44,12 @@ const preview: Preview = {
     // Guide, then Components; anything else falls to the end alphabetically.
     options: {
       storySort: {
-        order: ['Introduction', 'Style Guide', 'Components'],
+        order: [
+          'Introduction',
+          'Style Guide',
+          ['Colors', 'Typography', 'Icons'],
+          'Components',
+        ],
       },
     },
     // Run axe in the Vitest addon's browser tests and fail the run on any
