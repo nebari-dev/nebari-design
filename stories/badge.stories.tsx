@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { ExternalLink } from 'lucide-react';
+import { Circle, ExternalLink } from 'lucide-react';
 import { Badge } from '@/ui/badge';
 
 const meta = {
@@ -76,19 +76,47 @@ export const Variants: Story = {
   ),
 };
 
-export const WithIcon: Story = {
-  name: 'With icon',
+export const WithLeadingIcon: Story = {
+  name: 'With leading icon',
   parameters: {
     docs: {
       description: {
         story:
-          'An icon can lead or trail the label; the gap is handled by the badge.',
+          'A leading icon is a common status pattern (`● Active`). The icon is a plain child — the badge handles the gap — and the badge stays a static label, with no link/button interaction cues.',
+      },
+    },
+  },
+  render: (args) => (
+    <div className="flex flex-wrap items-center gap-3">
+      <Badge {...args} variant="outline">
+        <Circle className="fill-current" />
+        Active
+      </Badge>
+      <Badge {...args} variant="secondary">
+        <Circle className="fill-current" />
+        Pending
+      </Badge>
+      <Badge {...args} variant="destructive">
+        <Circle className="fill-current" />
+        Error
+      </Badge>
+    </div>
+  ),
+};
+
+export const WithTrailingIcon: Story = {
+  name: 'With trailing icon',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'An icon can also trail the label; the gap is handled by the badge.',
       },
     },
   },
   render: (args) => (
     <Badge {...args} variant="secondary">
-      Link
+      Beta
       <ExternalLink />
     </Badge>
   ),
