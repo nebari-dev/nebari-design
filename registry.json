@@ -76,6 +76,19 @@
       ]
     },
     {
+      "name": "claude-skill",
+      "type": "registry:file",
+      "title": "Nebari UI Claude Code skill",
+      "description": "Claude Code skill that teaches an AI assistant how to install and use Nebari components in a consumer app — registry setup, the component catalog, the Base UI render-prop convention, and theming.",
+      "files": [
+        {
+          "path": "registry/nebari/skills/nebari-ui/SKILL.md",
+          "type": "registry:file",
+          "target": "~/.claude/skills/nebari-ui/SKILL.md"
+        }
+      ]
+    },
+    {
       "name": "theme",
       "type": "registry:theme",
       "title": "Nebari theme",
