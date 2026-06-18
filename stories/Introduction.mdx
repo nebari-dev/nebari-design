@@ -48,11 +48,19 @@ and resolves its registry dependencies — `button` pulls in `utils` automatical
 
 The brand tokens every component is built on — colors, type, and iconography.
 
-- **Style Guide / Colors** — the Nebari palette and the semantic token mapping.
-- **Style Guide / Typography** — the Atkinson Hyperlegible and Poppins type scale.
-- **Style Guide / Icons** — the [lucide-react](https://lucide.dev) icon set.
+- **Style Guide / Colors** — the semantic tokens and the brand color palette,
+  previewable in light and dark themes.
+- **Style Guide / Typography** — the role-based type scale, built on **Geist**
+  (`--font-sans`) and **IBM Plex Mono** (`--font-mono`).
+- **Style Guide / Icons** — the [lucide-react](https://lucide.dev) icon set, with
+  sizing and color guidance.
 
-_The Style Guide pages are being authored; check the sidebar for what has landed._
+> **Fonts:** the theme references Geist and IBM Plex Mono via the `--font-sans`
+> and `--font-mono` tokens but does not bundle them. To load the actual faces in
+> your app, install `@fontsource-variable/geist` and `@fontsource/ibm-plex-mono`
+> and import them at your entry point (see the
+> [README](https://github.com/nebari-dev/nebari-design#fonts)); otherwise the
+> tokens fall back to the system `sans-serif` / `monospace` stacks.
 
 ## Components
 
