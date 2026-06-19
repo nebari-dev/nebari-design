@@ -31,6 +31,18 @@ export default defineConfig({
           environment: 'jsdom',
           setupFiles: ['./tests/setup.ts'],
           include: ['tests/**/*.test.{ts,tsx}'],
+          exclude: ['tests/ssr.test.tsx'],
+        },
+      },
+      // SSR-safety check for every registry:ui component (Node, no jsdom).
+      {
+        plugins: [react(), tailwindcss()],
+        resolve: { alias },
+        test: {
+          name: 'ssr',
+          globals: true,
+          environment: 'node',
+          include: ['tests/ssr.test.tsx'],
         },
       },
       // Every story rendered in a real browser (Playwright/Chromium), with the
