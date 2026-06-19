@@ -58,9 +58,13 @@ describe('SSR safety — every registry:ui component', () => {
         `Module @/ui/${item.name} does not export "${componentName}"`,
       ).toBeDefined();
 
+      // biome-ignore lint/style/noNonNullAssertion: guarded by the toBeDefined assertion above
       const html = renderToString(createElement(Component!));
 
-      expect(html.trim(), `${componentName} produced empty HTML on the server`).not.toBe('');
+      expect(
+        html.trim(),
+        `${componentName} produced empty HTML on the server`,
+      ).not.toBe('');
 
       const hasLayoutEffectWarning = errorSpy.mock.calls.some((args) =>
         args.some(
