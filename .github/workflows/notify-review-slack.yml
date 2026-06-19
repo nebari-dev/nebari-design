@@ -8,56 +8,22 @@ jobs:
   notify-slack:
     runs-on: ubuntu-latest
     steps:
-      - name: Get PR details and linked issue priority
+      - name: Get PR details
         id: pr-details
         uses: actions/github-script@v7
         with:
           script: |
             const pr = context.payload.pull_request;
             const reviewers = context.payload.requested_reviewer;
-            
-            let priority = 'None';
-            let linkedIssue = 'None';
-            let linkedIssueUrl = '';
-            
-            // Check if PR is linked to an issue
-            if (pr.body) {
-              // Look for issue references in PR body (e.g., "Closes #123", "Fixes #456")
-              const issueMatch = pr.body.match(/#(\d+)/);
-              if (issueMatch) {
-                const issueNumber = issueMatch[1];
-                try {
-                  const issue = await github.rest.issues.get({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    issue_number: issueNumber
-                  });
-                  
-                  // Get priority from organization-level issue field
-                  if (issue.data.Priority) {
-                    priority = issue.data.Priority;
-                  }
-                  
-                  // Get linked issue name and URL
-                  linkedIssue = issue.data.title;
-                  linkedIssueUrl = issue.data.html_url;
-                } catch (error) {
-                  console.log('Could not fetch issue:', error);
-                }
-              }
-            }
-            
+
             core.setOutput('pr_title', pr.title);
             core.setOutput('pr_url', pr.html_url);
             core.setOutput('pr_number', pr.number);
             core.setOutput('repo', context.repo.repo);
-            core.setOutput('priority', priority);
             core.setOutput('author', pr.user.login);
             core.setOutput('author_url', pr.user.html_url);
-            core.setOutput('reviewer', reviewers.login || 'Unassigned');
-            core.setOutput('reviewer_url', reviewers.html_url || '');
-            core.setOutput('linked_issue', linkedIssue);
-            core.setOutput('linked_issue_url', linkedIssueUrl);
+            core.setOutput('reviewer', (reviewers && reviewers.login) || 'Unassigned');
+            core.setOutput('reviewer_url', (reviewers && reviewers.html_url) || '');
 
       - name: Send Slack notification
         uses: slackapi/slack-github-action@v1.24.0
@@ -83,35 +49,24 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Linked Issue:*\n<${{ steps.pr-details.outputs.linked_issue_url }}|${{ steps.pr-details.outputs.linked_issue }}>"
+                    "text": "*Repository:*
+${{ steps.pr-details.outputs.repo }}"
                   }
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Repository:*\n${{ steps.pr-details.outputs.repo }}"
+                    "text": "*Requested by:*
+<${{ steps.pr-details.outputs.author_url }}|${{ steps.pr-details.outputs.author }}>"
                   }
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Priority:*\n${{ steps.pr-details.outputs.priority }}"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Requested by:*\n<${{ steps.pr-details.outputs.author_url }}|${{ steps.pr-details.outputs.author }}>"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Reviewer(s):*\n<${{ steps.pr-details.outputs.reviewer_url }}|${{ steps.pr-details.outputs.reviewer }}>"
+                    "text": "*Reviewer(s):*
+<${{ steps.pr-details.outputs.reviewer_url }}|${{ steps.pr-details.outputs.reviewer }}>"
                   }
                 }
               ]
