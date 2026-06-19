@@ -12,7 +12,7 @@ jobs:
         id: pr-details
         uses: actions/github-script@v7
         with:
-          script: |
+          script: |\
             const pr = context.payload.pull_request;
             const reviewers = context.payload.requested_reviewer;
 
@@ -22,8 +22,8 @@ jobs:
             core.setOutput('repo', context.repo.repo);
             core.setOutput('author', pr.user.login);
             core.setOutput('author_url', pr.user.html_url);
-            core.setOutput('reviewer', (reviewers && reviewers.login) || 'Unassigned');
-            core.setOutput('reviewer_url', (reviewers && reviewers.html_url) || '');
+            core.setOutput('reviewers', (reviewers && reviewers.login) || 'Unassigned');
+            core.setOutput('reviewers_url', (reviewers && reviewers.html_url) || '');
 
       - name: Send Slack notification
         uses: slackapi/slack-github-action@v1.24.0
@@ -49,24 +49,21 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Repository:*
-${{ steps.pr-details.outputs.repo }}"
+                    "text": "*Repository:*\n${{ steps.pr-details.outputs.repo }}"
                   }
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Requested by:*
-<${{ steps.pr-details.outputs.author_url }}|${{ steps.pr-details.outputs.author }}>"
+                    "text": "*Requested by:*\n<${{ steps.pr-details.outputs.author_url }}|${{ steps.pr-details.outputs.author }}>"
                   }
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Reviewer(s):*
-<${{ steps.pr-details.outputs.reviewer_url }}|${{ steps.pr-details.outputs.reviewer }}>"
+                    "text": "*Reviewer(s):*\n<${{ steps.pr-details.outputs.reviewers_url }}|${{ steps.pr-details.outputs.reviewers }}>"
                   }
                 }
               ]
