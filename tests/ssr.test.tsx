@@ -66,12 +66,13 @@ describe('SSR safety — every registry:ui component', () => {
         `${componentName} produced empty HTML on the server`,
       ).not.toBe('');
 
-      const hasLayoutEffectWarning = errorSpy.mock.calls.some((args) =>
-        args.some(
-          (arg) =>
-            typeof arg === 'string' &&
-            arg.includes('useLayoutEffect does nothing on the server'),
-        ),
+      const hasLayoutEffectWarning = errorSpy.mock.calls.some(
+        (args: unknown[]) =>
+          args.some(
+            (arg: unknown) =>
+              typeof arg === 'string' &&
+              arg.includes('useLayoutEffect does nothing on the server'),
+          ),
       );
       expect(
         hasLayoutEffectWarning,
