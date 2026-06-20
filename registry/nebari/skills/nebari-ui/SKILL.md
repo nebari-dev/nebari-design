@@ -3,11 +3,14 @@ name: nebari-ui
 description: >-
   Add and use components from the Nebari design system (the @nebari shadcn
   registry) in this app. Use when asked to "add a nebari component", "use the
-  nebari button/badge/alert/spinner", "install the nebari theme", or "build
-  <something> with nebari components". Covers registry setup (the @nebari
-  namespace in components.json + the shadcn add command), the component catalog
-  (variants, sizes, props), the Base UI render-prop composition convention, and
-  theming (the @nebari/theme tokens, CSS variables, and light/dark).
+  nebari button/badge/alert/spinner", "install the nebari theme", "animate,
+  add a transition, make it feel polished, or add an entrance animation with
+  nebari", or "build <something> with nebari components". Covers registry setup
+  (the @nebari namespace in components.json + the shadcn add command), the
+  component catalog (variants, sizes, props), the Base UI render-prop
+  composition convention, theming (the @nebari/theme tokens, CSS variables, and
+  light/dark), and motion (duration/easing tokens, entrance animations, overlay
+  transitions, accessibility guardrails).
 ---
 
 # Using the Nebari design system
@@ -164,6 +167,151 @@ npx shadcn add @nebari/theme
   import '@fontsource/ibm-plex-mono/400.css';
   import '@fontsource/ibm-plex-mono/500.css';
   ```
+
+## Motion
+
+The `@nebari/theme` item ships motion tokens alongside the color and radius
+tokens. Use them to add consistent, accessible, on-brand animation at the
+**call site** — never by editing the installed `ui/*` component source (which
+`shadcn add` would overwrite on the next upgrade).
+
+### Available tokens
+
+| Token | Value | Use |
+|---|---|---|
+| `--duration-fast` | `100ms` | Micro-interactions (icon swap, badge count) |
+| `--duration-base` | `200ms` | Standard enter/exit (tooltip, dropdown) |
+| `--duration-slow` | `350ms` | Page-level overlays (dialog, sheet, drawer) |
+| `--ease-standard` | `cubic-bezier(0.4, 0, 0.2, 1)` | Most transitions |
+| `--ease-emphasized` | `cubic-bezier(0.2, 0, 0, 1)` | Overlays sliding into view |
+
+And four ready-made Tailwind `animate-*` utilities (backed by `@keyframes`
+that the theme installs):
+
+| Utility | Effect |
+|---|---|
+| `animate-fade-in` | `opacity: 0 → 1` |
+| `animate-fade-out` | `opacity: 1 → 0` |
+| `animate-slide-up-fade` | fade + `translateY(6px → 0)` |
+| `animate-slide-down-fade` | fade + `translateY(0 → 6px)` |
+
+### Hard rules
+
+1. **Always gate on `motion-safe:`** — Nebari targets WCAG 2.1 SC 2.3.3.
+   Every animation class must be prefixed: `motion-safe:animate-fade-in`.
+2. **Use tokens, never hardcode durations** — write `var(--duration-base)` in
+   custom CSS, or use the pre-built `animate-*` utilities. Never `0.2s`.
+3. **Animate `opacity` and `transform` only** — layout properties (`height`,
+   `width`, `padding`, `top`) force reflows; don't animate them.
+4. **CSS + Base UI first** — reach for JS animation libraries only when the
+   CSS primitives are insufficient (see the escape hatch below).
+
+### Recipes
+
+#### Entrance — fade / slide into view
+
+```tsx
+// Fade a card in on mount
+<Card className="motion-safe:animate-fade-in" />
+
+// Slide a list item up as it appears
+<li className="motion-safe:animate-slide-up-fade">…</li>
+```
+
+#### Press feedback — scale on active
+
+```tsx
+<Button className="motion-safe:active:scale-95 transition-transform">
+  Submit
+</Button>
+```
+
+#### Overlay enter/exit — Base UI `data-starting-style` / `data-ending-style`
+
+Base UI popups (Dialog, Select, Tooltip, …) apply `data-starting-style` and
+`data-ending-style` attributes during CSS transitions so you can define enter
+and exit animations purely in CSS. Use a plain `<style>` block or a CSS
+module — do **not** add inline styles to the component source:
+
+```css
+/* globals.css or a CSS module */
+[data-starting-style] {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+/* animate both opacity and transform so the color transition on the
+ * component itself still works — re-enumerate the properties here  */
+[data-starting-style],
+[data-ending-style] {
+  transition-property: opacity, transform;
+  transition-duration: var(--duration-base);
+  transition-timing-function: var(--ease-emphasized);
+}
+```
+
+#### Loading / skeleton shimmer
+
+Skeletons use a repeating animation; stay within the token vocabulary:
+
+```tsx
+<div
+  className={cn(
+    'rounded bg-muted',
+    'motion-safe:animate-[shimmer_1.5s_var(--ease-standard)_infinite]',
+  )}
+/>
+```
+
+Add the `@keyframes shimmer` rule to `globals.css` only if you adopt this
+pattern in your project — it is not shipped by the theme.
+
+### `cn()` / tailwind-merge gotcha
+
+When you add `transition-*` classes to a Nebari component via `className`,
+`tailwind-merge` (inside `cn()`) will deduplicate them against any transition
+classes already applied by the component's `cva` block. **Re-enumerate every
+transition property you need** so no property silently disappears:
+
+```tsx
+// ✅ Explicit — preserves component's existing color transition AND adds scale
+<Button
+  className={cn(
+    'motion-safe:transition-[color,background-color,transform]',
+    'motion-safe:duration-[--duration-base]',
+    'motion-safe:active:scale-95',
+  )}
+/>
+
+// ❌ Shorthand — 'transition' alone overwrites the component's transition-property
+<Button className="motion-safe:transition motion-safe:active:scale-95" />
+```
+
+### Call-site guardrail
+
+Never edit files under `ui/` to add animation. Those files are managed by
+`shadcn add` and will be overwritten on upgrade. All motion belongs in your
+app's `globals.css`, a CSS module, or a wrapper component that uses the Base
+UI `render` prop.
+
+### JS escape hatch — Motion via Base UI `render`
+
+For sequences that CSS alone can't express (exit animations that depend on JS
+state, staggered lists, spring physics), use the
+[Motion](https://motion.dev) library through Base UI's `render` prop. This
+keeps the original component's classes and `data-*` attributes intact:
+
+```tsx
+import { motion } from 'motion/react';
+import { Button } from '@/components/ui/button';
+
+<Button render={<motion.button animate={{ scale: [1, 0.96, 1] }} />}>
+  Save
+</Button>
+```
+
+Install Motion only when needed — it's not a default dependency of the
+registry.
 
 ## Conventions when building with Nebari components
 
