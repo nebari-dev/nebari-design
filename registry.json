@@ -39,7 +39,7 @@
         "class-variance-authority",
         "lucide-react"
       ],
-      "registryDependencies": ["utils", "spinner"],
+      "registryDependencies": ["utils", "spinner", "theme"],
       "files": [
         {
           "path": "registry/nebari/ui/button.tsx",
@@ -53,7 +53,7 @@
       "title": "Switch",
       "description": "Toggle a single setting on or off with immediate effect, built on Base UI's Switch.",
       "dependencies": ["@base-ui-components/react"],
-      "registryDependencies": ["utils"],
+      "registryDependencies": ["utils", "theme"],
       "files": [
         {
           "path": "registry/nebari/ui/switch.tsx",
