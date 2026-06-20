@@ -135,11 +135,6 @@ Motion tokens (`--duration-*`, `--ease-*`) and entrance animation utilities
 `registry.json` and defined in `globals.css`. Follow these rules when adding
 animation to components or compositions:
 
-- **Never animate by default inside a component primitive.** Components in
-  `registry/nebari/ui/` must be animation-free; they are copied into consumer
-  codebases and upgraded with `shadcn add`. Animation belongs at the
-  **composition layer** (the consumer's page/layout), not in the component
-  source.
 - **Always gate on `motion-safe:`.** Every animation or transition class must
   be prefixed: `motion-safe:animate-fade-in`, `motion-safe:transition-transform`.
   This respects the `prefers-reduced-motion` media query (WCAG 2.1 SC 2.3.3).
@@ -202,9 +197,7 @@ update the relevant skill so it doesn't drift from the code.
   registry source.
 - Don't use Radix or `asChild`; use Base UI `useRender`.
 - Don't hard-code colors or add `dark:` variants; use semantic tokens.
-- Don't add animation to component primitives (`ui/*.tsx`) — animation belongs
-  at the composition layer; always use `motion-safe:` and token vars, not
-  hardcoded durations.
+- Don't hard-code animation durations or easing — use `--duration-*` / `--ease-*` token vars and always gate with `motion-safe:`.
 - Don't co-locate stories/tests with components.
 - Don't hand-format or manually order imports; Biome owns that.
 - Don't edit `logo-mark/` or `symbol/` brand assets.
