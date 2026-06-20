@@ -128,6 +128,39 @@ rules that are easy to get wrong:
 - Tailwind is **v4** via `@tailwindcss/vite` (no `tailwind.config` — config is in
   CSS). Note: Biome does **not** format `.css` or `.svg` files (they're excluded).
 
+## Motion &amp; animation
+
+Motion tokens (`--duration-*`, `--ease-*`) and entrance animation utilities
+(`--animate-*` / `@keyframes`) are shipped as part of the `theme` item in
+`registry.json` and defined in `globals.css`. Follow these rules when adding
+animation to components or compositions:
+
+- **Never animate by default inside a component primitive.** Components in
+  `registry/nebari/ui/` must be animation-free; they are copied into consumer
+  codebases and upgraded with `shadcn add`. Animation belongs at the
+  **composition layer** (the consumer's page/layout), not in the component
+  source.
+- **Always gate on `motion-safe:`.** Every animation or transition class must
+  be prefixed: `motion-safe:animate-fade-in`, `motion-safe:transition-transform`.
+  This respects the `prefers-reduced-motion` media query (WCAG 2.1 SC 2.3.3).
+- **Use tokens, never hardcode durations or easing.** Reference
+  `var(--duration-fast/base/slow)` and `var(--ease-standard/emphasized)` in
+  custom CSS. Use the pre-built Tailwind `animate-*` utilities where possible.
+- **Animate `opacity` and `transform` only.** Layout properties (`height`,
+  `width`, `padding`, `margin`) force reflows — never animate them.
+- **`cn()` / tailwind-merge gotcha.** When adding `transition-*` classes via
+  `className`, tailwind-merge deduplicates against classes already in the
+  component's `cva` block. Re-enumerate every transition property explicitly
+  (e.g. `transition-[color,background-color,transform]`) so nothing is
+  silently dropped.
+- **Adding new motion tokens.** New `@keyframes` or timing variables go in
+  `globals.css` (`:root` for vars, top-level for keyframes) **and** in the
+  `theme` item in `registry.json` (`css` for keyframes, `cssVars.theme` for
+  vars) so `shadcn add @nebari/theme` ships them to consumers.
+- **JS animation.** Use the Motion library via Base UI's `render` prop as the
+  escape hatch when CSS transitions are insufficient. Do not add Motion as a
+  default `dependency` in any `registry.json` entry.
+
 ## Testing
 
 Vitest runs three projects (`vitest.config.ts`):
@@ -169,6 +202,9 @@ update the relevant skill so it doesn't drift from the code.
   registry source.
 - Don't use Radix or `asChild`; use Base UI `useRender`.
 - Don't hard-code colors or add `dark:` variants; use semantic tokens.
+- Don't add animation to component primitives (`ui/*.tsx`) — animation belongs
+  at the composition layer; always use `motion-safe:` and token vars, not
+  hardcoded durations.
 - Don't co-locate stories/tests with components.
 - Don't hand-format or manually order imports; Biome owns that.
 - Don't edit `logo-mark/` or `symbol/` brand assets.
