@@ -17,7 +17,7 @@ describe('Badge', () => {
 
     const badge = screen.getByText('Beta');
     expect(badge).toHaveAttribute('data-variant', 'secondary');
-    expect(badge).toHaveClass('bg-muted', 'text-muted-foreground');
+    expect(badge).toHaveClass('bg-secondary', 'text-secondary-foreground');
   });
 
   it('applies the destructive variant classes (soft fill + strong text)', () => {

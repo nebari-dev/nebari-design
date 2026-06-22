@@ -3,77 +3,210 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Nebari brand palette (https://github.com/nebari-dev/nebari-design)
- *   Purple #BA18DA — primary
- *   Green  #20AAA1
- *   Yellow #EAB54E
- *   Black  #0F1015
+ * Nebari color system — mirrored 1:1 from the Figma variables library.
+ *
+ *   1. Primitives  — the raw oklch ramps (magenta, teal, yellow, neutral, …),
+ *      named to match Figma, with the source hex recorded for auditability.
+ *      These are theme-independent and are NOT exposed as Tailwind utilities.
+ *   2. Semantic     — role-based tokens (`--background`, `--primary`, …) that
+ *      reference the primitives and switch with light/dark, following Figma's
+ *      Light/Dark collections. These are what components consume.
+ *
+ * Keep this file and the `theme` item in `registry.json` in sync: the installable
+ * theme ships the same semantic values (flattened to their resolved oklch).
+ */
+:root {
+  /* ── Primitives: Primary Magenta ─────────────────────────────────────── */
+  --primary-magenta-50: oklch(97.93% 0.0118 313.22); /* #fbf6fe */
+  --primary-magenta-100: oklch(95.07% 0.0323 311.75); /* #f6e9ff */
+  --primary-magenta-200: oklch(86.93% 0.0881 311.32); /* #e7c4ff */
+  --primary-magenta-300: oklch(77.96% 0.1496 311.14); /* #d69afd */
+  --primary-magenta-400: oklch(69.98% 0.1926 311.48); /* #c575f4 */
+  --primary-magenta-500: oklch(61.98% 0.2159 311.67); /* #b053e2 */
+  --primary-magenta-600: oklch(55.06% 0.1886 311.45); /* #9547c0 */
+  --primary-magenta-700: oklch(47.01% 0.1577 311.26); /* #77399a */
+  --primary-magenta-800: oklch(39.93% 0.1238 311.55); /* #5d2f77 */
+  --primary-magenta-900: oklch(32.97% 0.0867 312.00); /* #442655 */
+  --primary-magenta-950: oklch(27.03% 0.0852 311.77); /* #341744 */
+
+  /* ── Primitives: Accent Teal ─────────────────────────────────────────── */
+  --accent-teal-50: oklch(97.94% 0.0160 187.35); /* #edfcfa */
+  --accent-teal-100: oklch(95.02% 0.0407 187.03); /* #d1f8f3 */
+  --accent-teal-200: oklch(86.97% 0.0671 187.76); /* #a1e3dc */
+  --accent-teal-300: oklch(77.96% 0.0893 187.30); /* #6ecac1 */
+  --accent-teal-400: oklch(69.9% 0.0995 187.56); /* #45b2a9 */
+  --accent-teal-500: oklch(61.96% 0.0932 187.62); /* #319890 */
+  --accent-teal-600: oklch(55.09% 0.0808 187.38); /* #2c817a */
+  --accent-teal-700: oklch(47% 0.0677 188.28); /* #236762 */
+  --accent-teal-800: oklch(39.98% 0.0539 188.08); /* #1f514d */
+  --accent-teal-900: oklch(33.02% 0.0392 187.72); /* #1b3c39 */
+  --accent-teal-950: oklch(27.14% 0.0398 187.08); /* #0a2d2a */
+
+  /* ── Primitives: Highlight Yellow ────────────────────────────────────── */
+  --highlight-yellow-50: oklch(98.03% 0.0183 86.15); /* #fef8eb */
+  --highlight-yellow-100: oklch(94.96% 0.0461 86.46); /* #fcedcc */
+  --highlight-yellow-200: oklch(87.03% 0.0889 86.52); /* #eed190 */
+  --highlight-yellow-300: oklch(77.95% 0.1259 85.96); /* #dbb14e */
+  --highlight-yellow-400: oklch(70.05% 0.1417 86.43); /* #c59709 */
+  --highlight-yellow-500: oklch(62.04% 0.1267 87.01); /* #a78001 */
+  --highlight-yellow-600: oklch(55.01% 0.1117 86.53); /* #8e6c03 */
+  --highlight-yellow-700: oklch(46.93% 0.0960 86.63); /* #725600 */
+  --highlight-yellow-800: oklch(40.14% 0.0731 87.00); /* #594510 */
+  --highlight-yellow-900: oklch(32.9% 0.0514 85.56); /* #413313 */
+  --highlight-yellow-950: oklch(26.86% 0.0514 86.55); /* #312403 */
+
+  /* ── Primitives: Neutral ─────────────────────────────────────────────── */
+  --neutral-50: oklch(97.94% 0.0013 286.38); /* #f8f8f9 */
+  --neutral-100: oklch(95.04% 0.0042 236.50); /* #eceff1 */
+  --neutral-200: oklch(87.02% 0.0106 247.95); /* #cfd5db */
+  --neutral-300: oklch(77.94% 0.0168 253.93); /* #b0b8c2 */
+  --neutral-400: oklch(70% 0.0253 250.17); /* #93a0ae */
+  --neutral-500: oklch(62.01% 0.0331 251.43); /* #78889a */
+  --neutral-600: oklch(54.87% 0.0393 252.47); /* #617388 */
+  --neutral-700: oklch(46.94% 0.0327 253.44); /* #4e5c6d */
+  --neutral-800: oklch(40% 0.0269 250.57); /* #3d4956 */
+  --neutral-900: oklch(32.95% 0.0209 254.12); /* #2e3640 */
+  --neutral-950: oklch(26.95% 0.0219 254.20); /* #1f2731 */
+
+  /* ── Primitives: Zinc ────────────────────────────────────────────────── */
+  --zinc-50: oklch(97.91% 0 0); /* #f8f8f8 */
+  --zinc-100: oklch(94.94% 0.0013 286.37); /* #eeeeef */
+  --zinc-200: oklch(87.08% 0.0041 286.31); /* #d4d4d7 */
+  --zinc-300: oklch(78.06% 0.0056 286.27); /* #b7b7bb */
+  --zinc-400: oklch(69.88% 0.0130 286.06); /* #9d9da6 */
+  --zinc-500: oklch(61.96% 0.0134 286.00); /* #85858e */
+  --zinc-600: oklch(54.86% 0.0154 285.88); /* #70707a */
+  --zinc-700: oklch(47.01% 0.0112 285.96); /* #5a5a61 */
+  --zinc-800: oklch(39.94% 0.0066 286.10); /* #47474b */
+  --zinc-900: oklch(33.01% 0.0052 286.11); /* #353538 */
+  --zinc-950: oklch(26.94% 0.0037 286.15); /* #262628 */
+
+  /* ── Primitives: Blue ────────────────────────────────────────────────── */
+  --blue-50: oklch(97.93% 0.0083 271.33); /* #f6f8fe */
+  --blue-100: oklch(95.08% 0.0232 264.46); /* #e7efff */
+  --blue-200: oklch(87.12% 0.0567 264.22); /* #c2d5fb */
+  --blue-300: oklch(78.02% 0.0950 264.35); /* #99b7f5 */
+  --blue-400: oklch(69.95% 0.1433 264.44); /* #719bf7 */
+  --blue-500: oklch(62.1% 0.1880 264.30); /* #4b7ef6 */
+  --blue-600: oklch(55.04% 0.2158 264.34); /* #2e63ed */
+  --blue-700: oklch(47.06% 0.2174 264.33); /* #1848d2 */
+  --blue-800: oklch(40.02% 0.1811 264.47); /* #1339a7 */
+  --blue-900: oklch(33.01% 0.1387 264.40); /* #0f2c7b */
+  --blue-950: oklch(27.02% 0.0864 264.19); /* #102350 */
+
+  /* ── Primitives: Green ───────────────────────────────────────────────── */
+  --green-50: oklch(97.94% 0.0182 150.56); /* #f0fcf2 */
+  --green-100: oklch(94.94% 0.0433 149.41); /* #dbf7df */
+  --green-200: oklch(87.04% 0.0814 149.55); /* #afe4b8 */
+  --green-300: oklch(78.09% 0.1374 149.53); /* #72d087 */
+  --green-400: oklch(69.96% 0.1814 149.67); /* #28bc5c */
+  --green-500: oklch(61.95% 0.1718 149.70); /* #00a148 */
+  --green-600: oklch(55.08% 0.1525 149.53); /* #03893c */
+  --green-700: oklch(47.01% 0.1313 149.41); /* #006e2e */
+  --green-800: oklch(40.02% 0.1082 149.72); /* #055725 */
+  --green-900: oklch(32.88% 0.0887 149.73); /* #03411a */
+  --green-950: oklch(27.13% 0.0631 149.76); /* #0a2f15 */
+
+  /* ── Primitives: Red ─────────────────────────────────────────────────── */
+  --red-50: oklch(97.91% 0.0087 26.02); /* #fef6f5 */
+  --red-100: oklch(95.06% 0.0247 29.93); /* #ffe9e5 */
+  --red-200: oklch(86.96% 0.0594 27.38); /* #f9c6bf */
+  --red-300: oklch(78.02% 0.1024 27.78); /* #f29e93 */
+  --red-400: oklch(69.96% 0.1660 27.34); /* #f46f63 */
+  --red-500: oklch(62.07% 0.2077 27.48); /* #e93f38 */
+  --red-600: oklch(54.97% 0.2151 27.33); /* #d2161c */
+  --red-700: oklch(46.91% 0.1900 27.40); /* #ac030f */
+  --red-800: oklch(39.97% 0.1611 27.26); /* #8a030b */
+  --red-900: oklch(33.1% 0.1332 27.42); /* #6a0206 */
+  --red-950: oklch(27.06% 0.0890 26.98); /* #490e0c */
+
+  /* ── Primitives: Yellow ──────────────────────────────────────────────── */
+  --yellow-50: oklch(97.95% 0.0179 89.36); /* #fdf8eb */
+  --yellow-100: oklch(95.02% 0.0692 92.11); /* #ffeeba */
+  --yellow-200: oklch(87.09% 0.1248 91.93); /* #f2d26e */
+  --yellow-300: oklch(78.1% 0.1564 91.73); /* #dcb314 */
+  --yellow-400: oklch(69.92% 0.1414 91.77); /* #be9a09 */
+  --yellow-500: oklch(62.13% 0.1269 92.02); /* #a28301 */
+  --yellow-600: oklch(54.88% 0.1114 91.56); /* #896e03 */
+  --yellow-700: oklch(46.91% 0.0960 91.90); /* #6e5800 */
+  --yellow-800: oklch(40.15% 0.0821 92.02); /* #584600 */
+  --yellow-900: oklch(33.09% 0.0677 92.20); /* #423400 */
+  --yellow-950: oklch(26.96% 0.0539 91.43); /* #302501 */
+
+  /* ── Primitives: Foundation ──────────────────────────────────────────── */
+  --black: oklch(0% 0 0); /* #000000 */
+  --white: oklch(100% 0 0); /* #ffffff */
+  --foundation-black: oklch(20.76% 0.0135 258.37); /* #14181e */
+  --foundation-white: oklch(100% 0 0); /* #ffffff */
+}
+
+/*
+ * Semantic tokens — Light (Figma "Light" collection). secondary/accent have no
+ * Figma equivalent (Nebari uses a single magenta brand color), so they map to
+ * the neutral ramp; info has no Figma feedback frame, so it mirrors the
+ * destructive/success/warning soft-bg + strong-fg pattern in blue.
  */
 :root {
   --radius: 0.625rem;
 
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.1743 0.0105 276.35);
+  --background: var(--zinc-50);
+  --foreground: var(--zinc-950);
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.1743 0.0105 276.35);
+  --card: var(--white);
+  --card-foreground: var(--zinc-950);
 
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.1743 0.0105 276.35);
+  --popover: var(--white);
+  --popover-foreground: var(--zinc-950);
 
-  --primary: oklch(0.5809 0.2683 319.62);
-  --primary-foreground: oklch(0.985 0 0);
-  /* Figma token color/background/primary-hover (#682888) — hover/pressed fill. */
-  --primary-hover: oklch(0.4793 0.209 318.89);
+  --primary: var(--primary-magenta-600);
+  --primary-foreground: var(--white);
+  /* Figma color/background/primary-hover — hover/pressed fill. */
+  --primary-hover: var(--primary-magenta-700);
 
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  --secondary: var(--neutral-100);
+  --secondary-foreground: var(--neutral-900);
 
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.53 0 0);
+  --muted: var(--zinc-100);
+  --muted-foreground: var(--zinc-600);
 
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --accent: var(--neutral-100);
+  --accent-foreground: var(--neutral-900);
 
-  /* Figma feedback tokens as an explicit background/foreground pair (no opacity
-   * tint): color/background/destructive #ffe9e5 (soft fill) and
-   * color/foreground/destructive #d2161c (strong red text + border). */
-  --destructive: oklch(0.951 0.025 30.1);
-  --destructive-foreground: oklch(0.55 0.215 27.4);
+  /* Feedback pairs: a soft background fill + a strong foreground for text and
+   * borders. Mirrors Figma's color/background/* and color/foreground/* roles. */
+  --destructive: var(--red-100);
+  --destructive-foreground: var(--red-600);
 
-  /* Figma feedback tokens, same background/foreground pair convention as
-   * destructive. Warning: color/background/warning #ffeeba + color/foreground/warning
-   * #6e5800. Success has no Figma frame yet, so it mirrors the pattern in green. */
-  --warning: oklch(0.9502 0.0692 92.11);
-  --warning-foreground: oklch(0.4691 0.096 91.9);
+  --warning: var(--yellow-100);
+  --warning-foreground: var(--yellow-700);
 
-  --success: oklch(0.9535 0.0247 156.73);
-  --success-foreground: oklch(0.509 0.1401 148.04);
+  --success: var(--green-100);
+  --success-foreground: var(--green-700);
 
-  --info: oklch(0.9462 0.0252 249.95);
-  --info-foreground: oklch(0.515 0.1525 253.53);
+  --info: var(--blue-100);
+  --info-foreground: var(--blue-700);
 
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  /* Figma token color/border/default (#b7b7bb) — a stronger, more visible
-   * border than the default (used by the Badge outline variant). */
-  --border-strong: oklch(0.781 0.006 288.8);
-  --ring: oklch(0.5809 0.2683 319.62);
+  --border: var(--zinc-300);
+  --input: var(--zinc-400);
+  /* Figma color/border/strong — a stronger, more visible border than the
+   * default (used by the Badge outline variant). */
+  --border-strong: var(--zinc-500);
+  --ring: var(--primary-magenta-500);
 
-  --chart-1: oklch(0.5809 0.2683 319.62);
-  --chart-2: oklch(0.6679 0.1102 187.93);
-  --chart-3: oklch(0.8027 0.1334 81.28);
-  --chart-4: oklch(0.55 0.12 230);
-  --chart-5: oklch(0.7 0.18 340);
+  --chart-1: var(--primary-magenta-500);
+  --chart-2: var(--accent-teal-500);
+  --chart-3: var(--highlight-yellow-400);
+  --chart-4: var(--blue-500);
+  --chart-5: var(--green-500);
 
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.1743 0.0105 276.35);
-  --sidebar-primary: oklch(0.5809 0.2683 319.62);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.5809 0.2683 319.62);
+  --sidebar: var(--zinc-50);
+  --sidebar-foreground: var(--zinc-950);
+  --sidebar-primary: var(--primary-magenta-600);
+  --sidebar-primary-foreground: var(--white);
+  --sidebar-accent: var(--neutral-100);
+  --sidebar-accent-foreground: var(--neutral-900);
+  --sidebar-border: var(--zinc-300);
+  --sidebar-ring: var(--primary-magenta-500);
 
   /* Motion tokens */
   --duration-fast: 100ms;
@@ -83,64 +216,61 @@
   --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
 }
 
+/* Semantic tokens — Dark (Figma "Dark" collection). */
 .dark {
-  --background: oklch(0.1743 0.0105 276.35);
-  --foreground: oklch(0.985 0 0);
+  --background: var(--zinc-950);
+  --foreground: var(--zinc-50);
 
-  --card: oklch(0.205 0.0105 276.35);
-  --card-foreground: oklch(0.985 0 0);
+  --card: var(--zinc-900);
+  --card-foreground: var(--zinc-50);
 
-  --popover: oklch(0.205 0.0105 276.35);
-  --popover-foreground: oklch(0.985 0 0);
+  --popover: var(--zinc-950);
+  --popover-foreground: var(--zinc-50);
 
-  --primary: oklch(0.6809 0.2483 319.62);
-  --primary-foreground: oklch(0.1743 0.0105 276.35);
-  --primary-hover: oklch(0.6009 0.2483 319.62);
+  --primary: var(--primary-magenta-500);
+  --primary-foreground: var(--black);
+  --primary-hover: var(--primary-magenta-400);
 
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
+  --secondary: var(--neutral-800);
+  --secondary-foreground: var(--neutral-100);
 
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
+  --muted: var(--zinc-900);
+  --muted-foreground: var(--zinc-400);
 
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --accent: var(--neutral-800);
+  --accent-foreground: var(--neutral-100);
 
-  /* Figma Dark collection feedback pair: color/background/destructive red/900
-   * #6a0206 (deep red fill) and color/foreground/destructive red/300 #f29e93
-   * (light red text + border). */
-  --destructive: oklch(0.331 0.1332 27.42);
-  --destructive-foreground: oklch(0.7802 0.1024 27.78);
+  --destructive: var(--red-900);
+  --destructive-foreground: var(--red-300);
 
-  /* Dark feedback pairs mirror destructive: deep saturated fill + light text. */
-  --warning: oklch(0.3605 0.0739 94.11);
-  --warning-foreground: oklch(0.9142 0.1109 90.28);
+  --warning: var(--yellow-900);
+  --warning-foreground: var(--yellow-200);
 
-  --success: oklch(0.3209 0.069 153.73);
-  --success-foreground: oklch(0.8362 0.1258 156.83);
+  --success: var(--green-900);
+  --success-foreground: var(--green-200);
 
-  --info: oklch(0.3012 0.0744 252.24);
-  --info-foreground: oklch(0.8091 0.0956 251.81);
+  --info: var(--blue-900);
+  --info-foreground: var(--blue-200);
 
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --border-strong: oklch(1 0 0 / 20%);
-  --ring: oklch(0.6809 0.2483 319.62);
+  --border: var(--zinc-700);
+  --input: var(--zinc-600);
+  --border-strong: var(--zinc-500);
+  --ring: var(--primary-magenta-400);
 
-  --chart-1: oklch(0.6809 0.2483 319.62);
-  --chart-2: oklch(0.6679 0.1102 187.93);
-  --chart-3: oklch(0.8027 0.1334 81.28);
-  --chart-4: oklch(0.6 0.13 230);
-  --chart-5: oklch(0.75 0.18 340);
+  --chart-1: var(--primary-magenta-400);
+  --chart-2: var(--accent-teal-400);
+  --chart-3: var(--highlight-yellow-300);
+  --chart-4: var(--blue-400);
+  --chart-5: var(--green-400);
 
-  --sidebar: oklch(0.205 0.0105 276.35);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.6809 0.2483 319.62);
-  --sidebar-primary-foreground: oklch(0.1743 0.0105 276.35);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.6809 0.2483 319.62);
+  --sidebar: var(--zinc-950);
+  --sidebar-foreground: var(--zinc-50);
+  --sidebar-primary: var(--primary-magenta-500);
+  --sidebar-primary-foreground: var(--black);
+  --sidebar-accent: var(--neutral-800);
+  --sidebar-accent-foreground: var(--neutral-100);
+  --sidebar-border: var(--zinc-700);
+  --sidebar-ring: var(--primary-magenta-400);
 }
 
 @keyframes nebari-fade-in {
