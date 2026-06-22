@@ -39,7 +39,7 @@
         "class-variance-authority",
         "lucide-react"
       ],
-      "registryDependencies": ["utils", "spinner"],
+      "registryDependencies": ["utils", "spinner", "theme"],
       "files": [
         {
           "path": "registry/nebari/ui/button.tsx",
@@ -53,7 +53,7 @@
       "title": "Switch",
       "description": "Toggle a single setting on or off with immediate effect, built on Base UI's Switch.",
       "dependencies": ["@base-ui-components/react"],
-      "registryDependencies": ["utils"],
+      "registryDependencies": ["utils", "theme"],
       "files": [
         {
           "path": "registry/nebari/ui/switch.tsx",
@@ -121,9 +121,36 @@
       "type": "registry:theme",
       "title": "Nebari theme",
       "description": "Nebari brand color tokens and radius for light and dark modes.",
+      "css": {
+        "@keyframes nebari-fade-in": {
+          "from": { "opacity": "0" },
+          "to": { "opacity": "1" }
+        },
+        "@keyframes nebari-fade-out": {
+          "from": { "opacity": "1" },
+          "to": { "opacity": "0" }
+        },
+        "@keyframes nebari-slide-up-fade": {
+          "from": { "opacity": "0", "transform": "translateY(6px)" },
+          "to": { "opacity": "1", "transform": "translateY(0)" }
+        },
+        "@keyframes nebari-slide-down-fade": {
+          "from": { "opacity": "1", "transform": "translateY(0)" },
+          "to": { "opacity": "0", "transform": "translateY(6px)" }
+        }
+      },
       "cssVars": {
         "theme": {
-          "radius": "0.625rem"
+          "radius": "0.625rem",
+          "duration-fast": "100ms",
+          "duration-base": "200ms",
+          "duration-slow": "350ms",
+          "ease-standard": "cubic-bezier(0.4, 0, 0.2, 1)",
+          "ease-emphasized": "cubic-bezier(0.2, 0, 0, 1)",
+          "animate-fade-in": "nebari-fade-in var(--duration-base) var(--ease-standard) both",
+          "animate-fade-out": "nebari-fade-out var(--duration-base) var(--ease-standard) both",
+          "animate-slide-up-fade": "nebari-slide-up-fade var(--duration-base) var(--ease-emphasized) both",
+          "animate-slide-down-fade": "nebari-slide-down-fade var(--duration-base) var(--ease-emphasized) both"
         },
         "light": {
           "background": "oklch(97.91% 0 0)",

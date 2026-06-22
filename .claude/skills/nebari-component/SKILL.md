@@ -4,10 +4,12 @@ description: >-
   House recipe for adding a new component to the nebari-design shadcn registry.
   Use when adding, creating, or scaffolding a registry component — e.g. "add a
   Button component to the registry", "create a new nebari component", "scaffold
-  <X> in registry/nebari/ui". Covers the component file pattern (cva variants,
-  data-slot/data-variant/data-size attributes, cn() merging, Base UI render-prop
-  composition), the registry.json entry shape (dependencies vs
-  registryDependencies), story and test templates, and the verification gate.
+  <X> in registry/nebari/ui", or "animate / add motion to a component". Covers
+  the component file pattern (cva variants, data-slot/data-variant/data-size
+  attributes, cn() merging, Base UI render-prop composition), the registry.json
+  entry shape (dependencies vs registryDependencies), motion and animation
+  (interaction states, overlay enter/exit, motion-safe gating, token usage),
+  story and test templates, and the verification gate.
 ---
 
 # Authoring a nebari-design registry component
@@ -46,7 +48,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium motion-safe:transition-[color,background-color,border-color,opacity,transform] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] motion-safe:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
@@ -119,6 +121,12 @@ The rules this encodes:
   `ref` as a normal prop and Base UI threads it through).
 - **Semantic tokens only.** Use theme tokens; never hard-code brand hex values or
   add `dark:` utilities — the `.dark` class on an ancestor remaps the tokens.
+- **Motion via tokens.** Add
+  `motion-safe:transition-[color,background-color,border-color,opacity,transform]`,
+  `motion-safe:duration-[--duration-fast]`, and `motion-safe:ease-[--ease-standard]`
+  to the `cva` base class of every interactive component, plus
+  `motion-safe:active:scale-[0.97]` for press feedback. See the
+  [Motion](#motion) section for the full rules and overlay patterns.
 
 For a component that is purely a styled wrapper with no element swapping, a plain
 `React.ComponentProps<'tag'>` + `<tag data-slot=… className={cn(...)} {...props} />`
@@ -160,7 +168,92 @@ Add an item to the `items` array:
 - Reference items in *this* registry by bare name (`"utils"`, `"theme"`); reference
   the upstream shadcn registry by URL or `@scope/name`.
 - If the component relies on tokens that aren't guaranteed present, list `"theme"`
-  too.
+  too. **Any component that uses motion tokens (`--duration-*`, `--ease-*`,
+  `--animate-*`) must list `"theme"` in `registryDependencies`** so `shadcn add`
+  installs those variables automatically.
+
+## Motion
+
+Motion is a first-class authoring concern. Every interactive component should
+ship with token-driven interaction feedback baked into its `cva` base class;
+components that mount/unmount should wire Base UI's CSS-transition hooks in
+their source. Retrofitting motion is always harder than getting it right at
+authoring time.
+
+### Ground rules
+
+1. **Always gate on `motion-safe:`** — Nebari targets WCAG 2.1 SC 2.3.3
+   (`prefers-reduced-motion`). Every animation or transition class must carry
+   the prefix: `motion-safe:transition-[…]`, `motion-safe:active:scale-[0.97]`.
+2. **Use tokens, never hardcode durations or easing.** In `cva` strings, use
+   the Tailwind arbitrary-value syntax: `motion-safe:duration-[--duration-fast]`,
+   `motion-safe:ease-[--ease-standard]`. In hand-written CSS, use
+   `var(--duration-fast)` / `var(--ease-standard)`.
+3. **Animate `opacity` and `transform` only.** Layout properties (`height`,
+   `width`, `padding`, `margin`) force reflows — never animate them.
+4. **Enumerate transition properties explicitly.** When `transform` or `opacity`
+   is animated alongside color, `tailwind-merge` can silently drop properties if
+   a bare `transition-colors` already exists in the same `cva` block. Always
+   list every property you need:
+   `transition-[color,background-color,border-color,opacity,transform]`.
+
+### Interaction states (all interactive components)
+
+Add to every interactive component's `cva` base class:
+
+```
+motion-safe:transition-[color,background-color,border-color,opacity,transform]
+motion-safe:duration-[--duration-fast]
+motion-safe:ease-[--ease-standard]
+motion-safe:active:scale-[0.97]
+```
+
+This gives the component a fast, token-driven color/scale transition and a
+subtle 3 % press-down effect with no additional work for the consumer. The
+canonical Button example in Step 1 models this pattern exactly.
+
+### Overlay enter/exit (dialog, popover, menu, tooltip, select)
+
+Components that mount/unmount on state must wire Base UI's CSS-transition
+lifecycle attributes **in the component source** (not in a consumer stylesheet
+or a wrapper). Base UI applies these attributes automatically during the
+open/close cycle:
+
+| Attribute | Applied when | What to set |
+|---|---|---|
+| `data-open` | panel is fully open | resting (visible) state |
+| `data-closed` | panel is closing | collapsed/hidden state |
+| `data-starting-style` | first frame after mount | entering state (opacity/translate) |
+| `data-ending-style` | last frame before unmount | exiting state (opacity/translate) |
+
+Wire them in the overlay element's `cva` base class or `cn()` call:
+
+```tsx
+// Overlay panel — dropdown, tooltip, etc.
+const panelVariants = cva([
+  'bg-popover text-popover-foreground shadow-md rounded-md border border-border',
+  // enter: fade in + slide up from 4 px below
+  'data-[starting-style]:opacity-0 data-[starting-style]:translate-y-1',
+  // exit: same values — Base UI reverses the transition automatically
+  'data-[ending-style]:opacity-0 data-[ending-style]:translate-y-1',
+  // transition — enumerate both opacity and transform
+  'motion-safe:transition-[opacity,transform]',
+  'motion-safe:duration-[--duration-base]',
+  'motion-safe:ease-[--ease-emphasized]',
+]);
+```
+
+For panels that slide in from an edge (drawer, sheet), swap `translate-y-1` for
+`translate-x-full` / `-translate-x-full` and use `--duration-slow`.
+
+### `registry.json` reminder
+
+A component that references motion tokens (`--duration-*`, `--ease-*`,
+`--animate-*`) must list `"theme"` in `registryDependencies`:
+
+```json
+"registryDependencies": ["utils", "theme"]
+```
 
 ## Step 3 — the story
 
@@ -189,6 +282,15 @@ export const Small: Story = { args: { size: 'sm' } };
 
 To preview dark mode, wrap a story in `<div className="dark bg-background p-8">`
 (see `stories/Welcome.stories.tsx`).
+
+Where feasible, include a story that exercises the component's interactive or
+animated states — for example a `Playground` story with all props exposed via
+controls, or an `Interactive` story with a `play` function that focuses, hovers,
+or clicks the element. Vitest/jsdom has no layout engine and cannot assert CSS
+transitions; Storybook stories are the right place to visually verify motion.
+Add a comment in the test file where CSS transition coverage is intentionally
+absent (e.g. `// CSS transitions are not testable in jsdom; animated states are
+// verified in Storybook`).
 
 ## Step 4 — the test
 
