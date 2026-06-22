@@ -119,6 +119,35 @@ bun install          # install dependencies
 bun run build:registry   # build the registry into public/r
 ```
 
+### Storybook
+
+Storybook is the local workbench for registry components and the published docs
+site for this repo. Run it with Bun:
+
+```sh
+bun run storybook
+```
+
+The dev server runs at <http://localhost:6006>. Stories live in the top-level
+`stories/` directory, including MDX docs pages and component stories named
+`*.stories.tsx`. Storybook uses the same Tailwind v4 setup and `@/*` alias as the
+registry source, so imports resolve the same way they do in tests and builds.
+
+The preview loads the Nebari theme tokens and webfonts, enables autodocs for
+every component, and includes a toolbar switcher for light and dark themes.
+The a11y addon runs axe checks in the UI and fails the Storybook Vitest project
+when violations are found.
+
+```sh
+bun run test:storybook   # render every story in Chromium with a11y checks
+bun run build:storybook  # build the static Storybook site into public/
+bun run build:pages      # build Storybook plus registry JSON for GitHub Pages
+```
+
+The deployed Storybook site is served from
+<https://nebari-dev.github.io/nebari-design/>. The installable registry JSON is
+served from the same Pages build under `/r/`.
+
 ### Testing
 
 Components are tested with [Vitest](https://vitest.dev/),
