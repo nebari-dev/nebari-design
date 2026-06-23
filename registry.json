@@ -62,6 +62,20 @@
       ]
     },
     {
+      "name": "radio-group",
+      "type": "registry:ui",
+      "title": "Radio Group",
+      "description": "Mutually-exclusive radio options with default and boxed variants, selection states, validation feedback, and Base UI behavior.",
+      "dependencies": ["@base-ui-components/react", "class-variance-authority"],
+      "registryDependencies": ["utils", "theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/radio-group.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "field",
       "type": "registry:ui",
       "title": "Field",
@@ -166,6 +180,7 @@
           "secondary-foreground": "oklch(32.95% 0.0209 254.12)",
           "muted": "oklch(94.94% 0.0013 286.37)",
           "muted-foreground": "oklch(54.86% 0.0154 285.88)",
+          "muted-foreground-strong": "oklch(47.01% 0.0112 285.96)",
           "accent": "oklch(95.04% 0.0042 236.50)",
           "accent-foreground": "oklch(32.95% 0.0209 254.12)",
           "destructive": "oklch(95.06% 0.0247 29.93)",
@@ -208,6 +223,7 @@
           "secondary-foreground": "oklch(95.04% 0.0042 236.50)",
           "muted": "oklch(33.01% 0.0052 286.11)",
           "muted-foreground": "oklch(69.88% 0.0130 286.06)",
+          "muted-foreground-strong": "oklch(78.06% 0.0056 286.27)",
           "accent": "oklch(40% 0.0269 250.57)",
           "accent-foreground": "oklch(95.04% 0.0042 236.50)",
           "destructive": "oklch(33.1% 0.1332 27.42)",
