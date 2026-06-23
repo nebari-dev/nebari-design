@@ -168,6 +168,8 @@
 
   --muted: var(--zinc-100);
   --muted-foreground: var(--zinc-600);
+  /* Figma color/foreground/muted-strong — pressed interactive text. */
+  --muted-foreground-strong: var(--zinc-700);
 
   --accent: var(--neutral-100);
   --accent-foreground: var(--neutral-900);
@@ -236,6 +238,7 @@
 
   --muted: var(--zinc-900);
   --muted-foreground: var(--zinc-400);
+  --muted-foreground-strong: var(--zinc-300);
 
   --accent: var(--neutral-800);
   --accent-foreground: var(--neutral-100);
@@ -335,6 +338,7 @@
 
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-muted-foreground-strong: var(--muted-foreground-strong);
 
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
