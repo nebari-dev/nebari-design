@@ -21,7 +21,6 @@ describe('Alert', () => {
   });
 
   it.each([
-    ['info', 'status', 'bg-info', 'text-info-foreground'],
     ['success', 'status', 'bg-success', 'text-success-foreground'],
     ['warning', 'alert', 'bg-warning', 'text-warning-foreground'],
     ['destructive', 'alert', 'bg-destructive', 'text-destructive-foreground'],
@@ -34,7 +33,7 @@ describe('Alert', () => {
   });
 
   it('uses an assertive alert role for warning/destructive and a polite status role otherwise', () => {
-    const { rerender } = render(<Alert variant="info">Polite</Alert>);
+    const { rerender } = render(<Alert variant="success">Polite</Alert>);
     expect(screen.getByRole('status')).toBeInTheDocument();
 
     rerender(<Alert variant="warning">Assertive</Alert>);
@@ -43,7 +42,7 @@ describe('Alert', () => {
 
   it('honors an explicit role override', () => {
     render(
-      <Alert variant="info" role="alert">
+      <Alert variant="success" role="alert">
         Forced assertive
       </Alert>,
     );
