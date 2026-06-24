@@ -110,19 +110,6 @@ describe('Checkbox', () => {
     );
   });
 
-  it('merges caller classes after the variant classes', () => {
-    render(
-      <Checkbox className="custom-class border-0" variant="box">
-        Checkbox Text
-      </Checkbox>,
-    );
-
-    expect(screen.getByRole('checkbox', { name: 'Checkbox Text' })).toHaveClass(
-      'custom-class',
-      'border-0',
-    );
-  });
-
   it('preserves styling and data hooks with Base UI render composition', () => {
     render(
       <Checkbox nativeButton={false} render={<div />}>

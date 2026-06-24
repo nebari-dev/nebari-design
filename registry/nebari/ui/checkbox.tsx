@@ -29,7 +29,6 @@ type CheckboxProps = Omit<
     children?: ReactNode;
     /** Supplementary text exposed as the checkbox's accessible description. */
     description?: ReactNode;
-    className?: string;
   };
 
 /**
@@ -41,7 +40,6 @@ type CheckboxProps = Omit<
  * hover, focus, and pressed visuals use their native CSS interaction states.
  */
 function Checkbox({
-  className,
   variant,
   children,
   description,
@@ -92,7 +90,6 @@ function Checkbox({
           state.disabled &&
             state.checked &&
             '[&_[data-slot=checkbox-control]]:border-transparent [&_[data-slot=checkbox-control]]:bg-muted-foreground [&_[data-slot=checkbox-control]]:text-background',
-          className,
         );
       }}
       data-slot="checkbox"

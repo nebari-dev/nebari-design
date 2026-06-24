@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect } from 'storybook/test';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/ui/checkbox';
 
@@ -29,16 +30,18 @@ function getPreviewClassName(
     state === 'Hover' && '[&_[data-slot=checkbox-label]]:underline',
     state === 'Hover' &&
       variant === 'box' &&
-      'border-border-strong bg-muted [&_[data-slot=checkbox-description]]:text-muted-foreground-strong',
+      '[&_[data-slot=checkbox]]:border-border-strong [&_[data-slot=checkbox]]:bg-muted [&_[data-slot=checkbox-description]]:text-muted-foreground-strong',
     state === 'Focus' &&
       variant === 'default' &&
-      'ring-2 ring-ring ring-offset-2 ring-offset-background',
+      '[&_[data-slot=checkbox]]:ring-2 [&_[data-slot=checkbox]]:ring-ring [&_[data-slot=checkbox]]:ring-offset-2 [&_[data-slot=checkbox]]:ring-offset-background',
     state === 'Focus' &&
       variant === 'box' &&
-      'border-transparent ring-2 ring-inset ring-ring',
+      '[&_[data-slot=checkbox]]:border-transparent [&_[data-slot=checkbox]]:ring-2 [&_[data-slot=checkbox]]:ring-inset [&_[data-slot=checkbox]]:ring-ring',
     state === 'Pressed' &&
-      'text-muted-foreground-strong motion-safe:scale-[0.97] [&_[data-slot=checkbox-description]]:text-muted-foreground-strong',
-    state === 'Pressed' && variant === 'box' && 'border-border-strong bg-muted',
+      '[&_[data-slot=checkbox]]:text-muted-foreground-strong motion-safe:[&_[data-slot=checkbox]]:scale-[0.97] [&_[data-slot=checkbox-description]]:text-muted-foreground-strong',
+    state === 'Pressed' &&
+      variant === 'box' &&
+      '[&_[data-slot=checkbox]]:border-border-strong [&_[data-slot=checkbox]]:bg-muted',
     state === 'Pressed' &&
       checked &&
       '[&_[data-slot=checkbox-control]]:border-primary-hover [&_[data-slot=checkbox-control]]:bg-primary-hover',
@@ -127,22 +130,56 @@ export const Variants: Story = {
               {state}
             </p>
             {variantColumns.map((column) => (
-              <Checkbox
-                {...args}
-                aria-invalid={state === 'Invalid' || undefined}
+              <div
                 className={cn(
-                  args.className,
-                  getPreviewClassName(state, column.variant, column.checked),
+                  column.variant === 'default' &&
+                    'border border-transparent p-3',
+                  getPreviewClassName(
+                    state,
+                    column.variant,
+                    column.checked,
+                  ),
                 )}
-                defaultChecked={column.checked}
-                disabled={state === 'Disabled'}
                 key={column.label}
-                variant={column.variant}
-              />
+              >
+                <Checkbox
+                  {...args}
+                  aria-invalid={state === 'Invalid' || undefined}
+                  defaultChecked={column.checked}
+                  disabled={state === 'Disabled'}
+                  variant={column.variant}
+                />
+              </div>
             ))}
           </div>
         ))}
       </div>
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    const controls = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>(
+        '[data-slot="checkbox-control"]',
+      ),
+    );
+
+    await expect(controls).toHaveLength(
+      interactionStates.length * variantColumns.length,
+    );
+
+    for (let row = 0; row < interactionStates.length; row += 1) {
+      const rowControls = controls.slice(
+        row * variantColumns.length,
+        (row + 1) * variantColumns.length,
+      );
+      const firstControlTop = rowControls[0].getBoundingClientRect().top;
+
+      for (const control of rowControls.slice(1)) {
+        await expect(control.getBoundingClientRect().top).toBeCloseTo(
+          firstControlTop,
+          0,
+        );
+      }
+    }
+  },
 };
