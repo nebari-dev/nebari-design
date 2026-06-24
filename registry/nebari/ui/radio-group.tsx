@@ -10,8 +10,8 @@ const radioGroupItemVariants = cva(
     variants: {
       variant: {
         default:
-          'rounded-[2px] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-        box: 'rounded-sm border border-border bg-background p-3 hover:border-border-strong hover:bg-muted active:border-border-strong active:bg-muted focus-visible:border-transparent focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
+          'rounded-sm border-2 border-transparent p-0.5 focus-visible:border-ring',
+        box: 'rounded-sm border border-border bg-background p-3 hover:border-border-strong hover:bg-muted active:border-border-strong active:bg-muted focus-visible:border-2 focus-visible:border-ring',
       },
     },
     defaultVariants: {
@@ -38,7 +38,7 @@ function RadioGroup(props: RadioGroupProps) {
   return (
     <RadioGroupPrimitive
       {...props}
-      className="grid w-full gap-3"
+      className="grid w-full gap-3 rounded-sm aria-invalid:border-2 aria-invalid:border-destructive-foreground aria-invalid:p-3 data-[invalid]:border-2 data-[invalid]:border-destructive-foreground data-[invalid]:p-3"
       data-slot="radio-group"
     />
   );
@@ -109,12 +109,18 @@ function RadioGroupItem({
       data-variant={variant ?? 'default'}
     >
       <span
-        className="relative mt-0.5 flex size-4 shrink-0 items-center justify-center overflow-hidden rounded-full border-[1.5px] border-border-strong bg-transparent text-primary-foreground motion-safe:transition-[color,background-color,border-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]"
+        className="relative mt-0.5 flex size-4 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-border-strong bg-transparent text-primary-foreground motion-safe:transition-[color,background-color,border-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]"
         data-slot="radio-group-control"
       >
         <RadioPrimitive.Indicator
-          className="grid size-full place-content-center text-current"
+          className={(state) =>
+            cn(
+              'absolute inset-0 grid place-items-center text-current',
+              !state.checked && 'invisible',
+            )
+          }
           data-slot="radio-group-indicator"
+          keepMounted
         >
           <span className="size-2 rounded-full bg-current" />
         </RadioPrimitive.Indicator>

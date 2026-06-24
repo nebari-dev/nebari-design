@@ -65,7 +65,7 @@
       "name": "radio-group",
       "type": "registry:ui",
       "title": "Radio Group",
-      "description": "Mutually-exclusive radio options with default and boxed variants, selection states, validation feedback, and Base UI behavior.",
+      "description": "Mutually exclusive radio group with default and boxed item variants, stable selected targets, and group-level validation feedback.",
       "dependencies": ["@base-ui-components/react", "class-variance-authority"],
       "registryDependencies": ["utils", "theme"],
       "files": [

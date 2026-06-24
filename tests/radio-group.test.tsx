@@ -27,6 +27,9 @@ describe('RadioGroup', () => {
     expect(
       radio.querySelector('[data-slot="radio-group-control"]'),
     ).toBeInTheDocument();
+    expect(
+      radio.querySelector('[data-slot="radio-group-indicator"]'),
+    ).toHaveClass('invisible');
   });
 
   it('associates the visible description with its radio item', () => {
@@ -54,7 +57,7 @@ describe('RadioGroup', () => {
     expect(radio).toHaveAttribute('data-checked');
     expect(
       radio.querySelector('[data-slot="radio-group-indicator"]'),
-    ).toBeInTheDocument();
+    ).not.toHaveClass('invisible');
     expect(radio).toHaveClass('[&_[data-slot=radio-group-control]]:bg-primary');
   });
 
@@ -160,6 +163,20 @@ describe('RadioGroup', () => {
     );
   });
 
+  it('highlights invalid state at the radio group level', () => {
+    render(
+      <RadioGroup aria-invalid="true" aria-label="Plan">
+        <RadioGroupItem value="starter">Starter</RadioGroupItem>
+        <RadioGroupItem value="pro">Pro</RadioGroupItem>
+      </RadioGroup>,
+    );
+
+    expect(screen.getByRole('radiogroup', { name: 'Plan' })).toHaveClass(
+      'aria-invalid:border-2',
+      'aria-invalid:border-destructive-foreground',
+    );
+  });
+
   it('preserves data hooks with Base UI render composition', () => {
     render(
       <RadioGroup
@@ -198,11 +215,12 @@ describe('RadioGroup', () => {
     const defaultClasses = radioGroupItemVariants({ variant: 'default' });
     const boxClasses = radioGroupItemVariants({ variant: 'box' });
 
-    expect(defaultClasses).toContain('focus-visible:ring-offset-2');
-    expect(defaultClasses).toContain('rounded-[2px]');
+    expect(defaultClasses).toContain('focus-visible:border-ring');
+    expect(defaultClasses).toContain('rounded-sm');
+    expect(defaultClasses).toContain('p-0.5');
     expect(defaultClasses).toContain('active:text-muted-foreground-strong');
     expect(boxClasses).toContain('hover:bg-muted');
-    expect(boxClasses).toContain('focus-visible:ring-inset');
+    expect(boxClasses).toContain('focus-visible:border-2');
     expect(boxClasses).toContain('rounded-sm');
   });
 });
