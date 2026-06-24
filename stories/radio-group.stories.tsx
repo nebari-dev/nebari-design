@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ComponentProps } from 'react';
+import { expect } from 'storybook/test';
 import { cn } from '@/lib/utils';
 import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
 
@@ -33,16 +34,18 @@ function getPreviewClassName(
     state === 'Hover' && '[&_[data-slot=radio-group-label]]:underline',
     state === 'Hover' &&
       variant === 'box' &&
-      'border-border-strong bg-muted [&_[data-slot=radio-group-description]]:text-muted-foreground-strong',
+      '[&_[data-slot=radio-group-item]]:border-border-strong [&_[data-slot=radio-group-item]]:bg-muted [&_[data-slot=radio-group-description]]:text-muted-foreground-strong',
     state === 'Focus' &&
       variant === 'default' &&
-      'ring-2 ring-ring ring-offset-2 ring-offset-background',
+      '[&_[data-slot=radio-group-item]]:ring-2 [&_[data-slot=radio-group-item]]:ring-ring [&_[data-slot=radio-group-item]]:ring-offset-2 [&_[data-slot=radio-group-item]]:ring-offset-background',
     state === 'Focus' &&
       variant === 'box' &&
-      'border-transparent ring-2 ring-inset ring-ring',
+      '[&_[data-slot=radio-group-item]]:border-transparent [&_[data-slot=radio-group-item]]:ring-2 [&_[data-slot=radio-group-item]]:ring-inset [&_[data-slot=radio-group-item]]:ring-ring',
     state === 'Pressed' &&
-      'text-muted-foreground-strong motion-safe:scale-[0.97] [&_[data-slot=radio-group-description]]:text-muted-foreground-strong',
-    state === 'Pressed' && variant === 'box' && 'border-border-strong bg-muted',
+      '[&_[data-slot=radio-group-item]]:text-muted-foreground-strong motion-safe:[&_[data-slot=radio-group-item]]:scale-[0.97] [&_[data-slot=radio-group-description]]:text-muted-foreground-strong',
+    state === 'Pressed' &&
+      variant === 'box' &&
+      '[&_[data-slot=radio-group-item]]:border-border-strong [&_[data-slot=radio-group-item]]:bg-muted',
     state === 'Pressed' &&
       checked &&
       '[&_[data-slot=radio-group-control]]:border-primary-hover [&_[data-slot=radio-group-control]]:bg-primary-hover',
@@ -153,19 +156,27 @@ export const Variants: Story = {
               const value = `${state}-${column.label}`;
 
               return (
-                <RadioPreview
-                  {...args}
-                  aria-invalid={state === 'Invalid' || undefined}
-                  checked={column.checked}
+                <div
                   className={cn(
-                    args.className,
-                    getPreviewClassName(state, column.variant, column.checked),
+                    column.variant === 'default' &&
+                      'border border-transparent p-3',
+                    getPreviewClassName(
+                      state,
+                      column.variant,
+                      column.checked,
+                    ),
                   )}
-                  disabled={state === 'Disabled'}
                   key={column.label}
-                  value={value}
-                  variant={column.variant}
-                />
+                >
+                  <RadioPreview
+                    {...args}
+                    aria-invalid={state === 'Invalid' || undefined}
+                    checked={column.checked}
+                    disabled={state === 'Disabled'}
+                    value={value}
+                    variant={column.variant}
+                  />
+                </div>
               );
             })}
           </div>
@@ -173,4 +184,30 @@ export const Variants: Story = {
       </div>
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    const controls = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>(
+        '[data-slot="radio-group-control"]',
+      ),
+    );
+
+    await expect(controls).toHaveLength(
+      interactionStates.length * variantColumns.length,
+    );
+
+    for (let row = 0; row < interactionStates.length; row += 1) {
+      const rowControls = controls.slice(
+        row * variantColumns.length,
+        (row + 1) * variantColumns.length,
+      );
+      const firstControlTop = rowControls[0].getBoundingClientRect().top;
+
+      for (const control of rowControls.slice(1)) {
+        await expect(control.getBoundingClientRect().top).toBeCloseTo(
+          firstControlTop,
+          0,
+        );
+      }
+    }
+  },
 };

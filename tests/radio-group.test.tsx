@@ -160,25 +160,6 @@ describe('RadioGroup', () => {
     );
   });
 
-  it('merges caller classes after the item variant classes', () => {
-    render(
-      <RadioGroup aria-label="Plan">
-        <RadioGroupItem
-          className="custom-class border-0"
-          value="starter"
-          variant="box"
-        >
-          Starter
-        </RadioGroupItem>
-      </RadioGroup>,
-    );
-
-    expect(screen.getByRole('radio', { name: 'Starter' })).toHaveClass(
-      'custom-class',
-      'border-0',
-    );
-  });
-
   it('preserves data hooks with Base UI render composition', () => {
     render(
       <RadioGroup

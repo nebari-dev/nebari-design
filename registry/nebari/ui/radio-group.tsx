@@ -20,9 +20,7 @@ const radioGroupItemVariants = cva(
   },
 );
 
-type RadioGroupProps = Omit<RadioGroupPrimitive.Props, 'className'> & {
-  className?: string;
-};
+type RadioGroupProps = Omit<RadioGroupPrimitive.Props, 'className'>;
 
 type RadioGroupItemProps = Omit<
   RadioPrimitive.Root.Props,
@@ -33,15 +31,14 @@ type RadioGroupItemProps = Omit<
     children?: ReactNode;
     /** Supplementary text exposed as the radio's accessible description. */
     description?: ReactNode;
-    className?: string;
   };
 
 /** Provides mutually-exclusive selection state to a set of radio items. */
-function RadioGroup({ className, ...props }: RadioGroupProps) {
+function RadioGroup(props: RadioGroupProps) {
   return (
     <RadioGroupPrimitive
       {...props}
-      className={cn('grid w-full gap-3', className)}
+      className="grid w-full gap-3"
       data-slot="radio-group"
     />
   );
@@ -56,7 +53,6 @@ function RadioGroup({ className, ...props }: RadioGroupProps) {
  * visuals use their native CSS interaction states.
  */
 function RadioGroupItem({
-  className,
   variant,
   children,
   description,
@@ -107,7 +103,6 @@ function RadioGroupItem({
           state.disabled &&
             state.checked &&
             '[&_[data-slot=radio-group-control]]:border-transparent [&_[data-slot=radio-group-control]]:bg-muted-foreground [&_[data-slot=radio-group-control]]:text-background',
-          className,
         );
       }}
       data-slot="radio-group-item"
