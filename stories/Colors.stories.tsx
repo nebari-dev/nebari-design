@@ -93,8 +93,6 @@ const SEMANTIC_GROUPS: { title: string; tokens: [string, string][] }[] = [
       ['--warning-foreground', 'Warning foreground'],
       ['--success', 'Success'],
       ['--success-foreground', 'Success foreground'],
-      ['--info', 'Info'],
-      ['--info-foreground', 'Info foreground'],
     ],
   },
   {
