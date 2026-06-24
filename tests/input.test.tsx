@@ -43,6 +43,16 @@ describe('Input', () => {
     expect(screen.getByRole('textbox', { name: 'Email' })).toBeInTheDocument();
   });
 
+  it('renders a non-color cue (icon) alongside the invalid state', () => {
+    // WCAG 1.4.1: the invalid state must not rely on the red outline alone.
+    // The trailing triangle-alert icon is the non-color cue; its CSS-driven
+    // visibility is verified in Storybook.
+    render(<Input aria-invalid />);
+    const input = screen.getByRole('textbox');
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    expect(input.parentElement?.querySelector('svg')).toBeInTheDocument();
+  });
+
   it('pairs with a label via htmlFor / id', () => {
     render(
       <>

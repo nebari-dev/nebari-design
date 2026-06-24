@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useState } from 'react';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/ui/field';
 import { Input } from '@/ui/input';
 
@@ -27,8 +26,19 @@ export const Filled: Story = { args: { defaultValue: 'you@nebari.dev' } };
 
 export const Disabled: Story = { args: { disabled: true } };
 
-export const Invalid: Story = {
-  args: { defaultValue: 'invalid@email', 'aria-invalid': true },
+/**
+ * The error state pairs the 2px `destructive` outline with a trailing
+ * `triangle-alert` icon and a `FieldError` message, so it's conveyed by more
+ * than color alone (WCAG 1.4.1).
+ */
+export const WithError: Story = {
+  render: () => (
+    <Field>
+      <FieldLabel>Email</FieldLabel>
+      <Input defaultValue="invalid@email" aria-invalid />
+      <FieldError match>Enter a valid email address.</FieldError>
+    </Field>
+  ),
 };
 
 /** Composed in a `Field` — label, description, and control auto-associate. */
@@ -40,33 +50,4 @@ export const WithField: Story = {
       <FieldDescription>We'll never share your email.</FieldDescription>
     </Field>
   ),
-};
-
-/**
- * Validates live from local state. The story holds the value in `useState` and
- * derives validity on each keystroke, toggling the `destructive` border
- * (`aria-invalid`) and the message together. Type a valid address to watch the
- * error resolve.
- */
-export const WithError: Story = {
-  render: function WithErrorStory() {
-    const [value, setValue] = useState('not-an-email');
-    const isInvalid =
-      value.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-    return (
-      <Field>
-        <FieldLabel>Email</FieldLabel>
-        <Input
-          type="email"
-          placeholder="you@nebari.dev"
-          value={value}
-          onChange={(event) => setValue(event.target.value)}
-          aria-invalid={isInvalid || undefined}
-        />
-        {isInvalid && (
-          <FieldError match>Enter a valid email address.</FieldError>
-        )}
-      </Field>
-    );
-  },
 };

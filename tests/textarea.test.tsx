@@ -31,4 +31,19 @@ describe('Textarea', () => {
     render(<Textarea className="min-h-32" />);
     expect(screen.getByRole('textbox')).toHaveClass('min-h-32');
   });
+
+  it('disables resizing when disabled', () => {
+    render(<Textarea disabled />);
+    expect(screen.getByRole('textbox')).toHaveClass('disabled:resize-none');
+  });
+
+  it('renders a non-color cue (icon) alongside the invalid state', () => {
+    // WCAG 1.4.1: the invalid state must not rely on the red outline alone.
+    // The trailing triangle-alert icon is the non-color cue; its CSS-driven
+    // visibility is verified in Storybook.
+    render(<Textarea aria-invalid />);
+    const textarea = screen.getByRole('textbox');
+    expect(textarea).toHaveAttribute('aria-invalid', 'true');
+    expect(textarea.parentElement?.querySelector('svg')).toBeInTheDocument();
+  });
 });

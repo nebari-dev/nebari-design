@@ -80,7 +80,7 @@
       "type": "registry:ui",
       "title": "Input",
       "description": "Single-line text-entry field with hover, focus, disabled, and invalid states, built on Base UI's Input and auto-wired to Field.",
-      "dependencies": ["@base-ui-components/react"],
+      "dependencies": ["@base-ui-components/react", "lucide-react"],
       "registryDependencies": ["utils", "theme"],
       "files": [
         {
@@ -107,6 +107,7 @@
       "type": "registry:ui",
       "title": "Textarea",
       "description": "Multi-line text-entry field — a styled native textarea mirroring Input's border, focus ring, disabled, and invalid states.",
+      "dependencies": ["lucide-react"],
       "registryDependencies": ["utils", "theme"],
       "files": [
         {
