@@ -58,7 +58,9 @@ describe('RadioGroup', () => {
     expect(
       radio.querySelector('[data-slot="radio-group-indicator"]'),
     ).not.toHaveClass('invisible');
-    expect(radio).toHaveClass('[&_[data-slot=radio-group-control]]:bg-primary');
+    expect(radio).toHaveClass(
+      '[&_[data-slot=radio-group-target]]:fill-primary',
+    );
   });
 
   it('selects one item and reports group value changes', async () => {
@@ -112,7 +114,7 @@ describe('RadioGroup', () => {
     expect(radio).toHaveClass(
       'cursor-not-allowed',
       'border-transparent',
-      '[&_[data-slot=radio-group-control]]:bg-muted',
+      '[&_[data-slot=radio-group-target]]:fill-muted',
     );
     await userEvent.click(radio);
     expect(onValueChange).not.toHaveBeenCalled();
@@ -128,7 +130,7 @@ describe('RadioGroup', () => {
     );
 
     expect(screen.getByRole('radio', { name: 'Starter' })).toHaveClass(
-      '[&_[data-slot=radio-group-control]]:bg-muted-foreground',
+      '[&_[data-slot=radio-group-target]]:fill-muted-foreground',
       '[&_[data-slot=radio-group-control]]:text-background',
     );
   });
@@ -145,7 +147,7 @@ describe('RadioGroup', () => {
     let radio = screen.getByRole('radio', { name: 'Starter' });
     expect(radio).toHaveClass(
       'text-destructive-foreground',
-      '[&_[data-slot=radio-group-control]]:bg-destructive-foreground',
+      '[&_[data-slot=radio-group-target]]:fill-destructive-foreground',
     );
     expect(radio).not.toHaveClass('bg-destructive');
 

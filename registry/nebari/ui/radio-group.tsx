@@ -86,45 +86,51 @@ function RadioGroupItem({
         return cn(
           radioGroupItemVariants({ variant }),
           state.checked &&
-            '[&_[data-slot=radio-group-control]]:border-primary [&_[data-slot=radio-group-control]]:bg-primary active:[&_[data-slot=radio-group-control]]:border-primary-hover active:[&_[data-slot=radio-group-control]]:bg-primary-hover',
+            '[&_[data-slot=radio-group-target]]:stroke-primary [&_[data-slot=radio-group-target]]:fill-primary active:[&_[data-slot=radio-group-target]]:stroke-primary-hover active:[&_[data-slot=radio-group-target]]:fill-primary-hover',
           isInvalid &&
-            'text-destructive-foreground active:text-destructive-foreground [&_[data-slot=radio-group-control]]:border-destructive-foreground [&_[data-slot=radio-group-description]]:text-destructive-foreground',
+            'text-destructive-foreground active:text-destructive-foreground [&_[data-slot=radio-group-target]]:stroke-destructive-foreground [&_[data-slot=radio-group-description]]:text-destructive-foreground',
           isInvalid &&
             variant === 'box' &&
             'border-destructive-foreground bg-destructive hover:border-destructive-foreground hover:bg-destructive active:border-destructive-foreground active:bg-destructive',
           isInvalid &&
             state.checked &&
-            '[&_[data-slot=radio-group-control]]:bg-destructive-foreground active:[&_[data-slot=radio-group-control]]:bg-destructive-foreground',
+            '[&_[data-slot=radio-group-target]]:fill-destructive-foreground active:[&_[data-slot=radio-group-target]]:fill-destructive-foreground',
           state.disabled &&
-            'pointer-events-none cursor-not-allowed text-muted-foreground [&_[data-slot=radio-group-control]]:border-border [&_[data-slot=radio-group-control]]:bg-muted [&_[data-slot=radio-group-description]]:text-muted-foreground',
+            'pointer-events-none cursor-not-allowed text-muted-foreground [&_[data-slot=radio-group-target]]:stroke-border [&_[data-slot=radio-group-target]]:fill-muted [&_[data-slot=radio-group-description]]:text-muted-foreground',
           state.disabled &&
             variant === 'box' &&
             'border-transparent bg-background',
           state.disabled &&
             state.checked &&
-            '[&_[data-slot=radio-group-control]]:border-transparent [&_[data-slot=radio-group-control]]:bg-muted-foreground [&_[data-slot=radio-group-control]]:text-background',
+            '[&_[data-slot=radio-group-target]]:stroke-transparent [&_[data-slot=radio-group-target]]:fill-muted-foreground [&_[data-slot=radio-group-control]]:text-background',
         );
       }}
       data-slot="radio-group-item"
       data-variant={variant ?? 'default'}
     >
-      <span
-        className="relative mt-0.5 flex size-4 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-border-strong bg-transparent text-primary-foreground motion-safe:transition-[color,background-color,border-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]"
+      <svg
+        aria-hidden="true"
+        className="mt-0.5 size-4 shrink-0 overflow-visible text-primary-foreground"
         data-slot="radio-group-control"
+        viewBox="0 0 16 16"
       >
+        <circle
+          className="fill-transparent stroke-border-strong motion-safe:transition-[fill,stroke] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]"
+          cx="8"
+          cy="8"
+          data-slot="radio-group-target"
+          r="7.25"
+          strokeWidth="1.5"
+        />
         <RadioPrimitive.Indicator
-          className={(state) =>
-            cn(
-              'absolute inset-0 grid place-items-center text-current',
-              !state.checked && 'invisible',
-            )
-          }
+          className={(state) => cn(!state.checked && 'invisible')}
           data-slot="radio-group-indicator"
           keepMounted
+          render={<g />}
         >
-          <span className="size-2 rounded-full bg-current" />
+          <circle cx="8" cy="8" fill="currentColor" r="4" />
         </RadioPrimitive.Indicator>
-      </span>
+      </svg>
 
       {(children != null || description != null) && (
         <span

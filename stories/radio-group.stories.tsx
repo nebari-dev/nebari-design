@@ -43,7 +43,7 @@ function getPreviewClassName(state: InteractionState, variant: RadioVariant) {
       variant === 'box' &&
       '[&_[data-slot=radio-group-item]]:border-border-strong [&_[data-slot=radio-group-item]]:bg-muted',
     state === 'Pressed' &&
-      '[&_[data-slot=radio-group-item][data-checked]_[data-slot=radio-group-control]]:border-primary-hover [&_[data-slot=radio-group-item][data-checked]_[data-slot=radio-group-control]]:bg-primary-hover',
+      '[&_[data-slot=radio-group-item][data-checked]_[data-slot=radio-group-target]]:stroke-primary-hover [&_[data-slot=radio-group-item][data-checked]_[data-slot=radio-group-target]]:fill-primary-hover',
   );
 }
 
