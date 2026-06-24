@@ -143,8 +143,7 @@
 /*
  * Semantic tokens — Light (Figma "Light" collection). secondary/accent have no
  * Figma equivalent (Nebari uses a single magenta brand color), so they map to
- * the neutral ramp; info has no Figma feedback frame, so it mirrors the
- * destructive/success/warning soft-bg + strong-fg pattern in blue.
+ * the neutral ramp.
  */
 :root {
   --radius: 0.625rem;
@@ -182,9 +181,6 @@
 
   --success: var(--green-100);
   --success-foreground: var(--green-700);
-
-  --info: var(--blue-100);
-  --info-foreground: var(--blue-700);
 
   --border: var(--zinc-300);
   --input: var(--zinc-400);
@@ -248,9 +244,6 @@
 
   --success: var(--green-900);
   --success-foreground: var(--green-200);
-
-  --info: var(--blue-900);
-  --info-foreground: var(--blue-200);
 
   --border: var(--zinc-700);
   --input: var(--zinc-600);
@@ -347,9 +340,6 @@
 
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
-
-  --color-info: var(--info);
-  --color-info-foreground: var(--info-foreground);
 
   --color-border: var(--border);
   --color-input: var(--input);
