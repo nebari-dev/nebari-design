@@ -65,7 +65,7 @@
       "name": "checkbox",
       "type": "registry:ui",
       "title": "Checkbox",
-      "description": "Labeled checkbox with default and boxed variants, checked and unchecked states, validation feedback, and Base UI behavior.",
+      "description": "Labeled checkbox with default and boxed variants, checked, unchecked, and indeterminate states, validation feedback, and Base UI behavior.",
       "dependencies": [
         "@base-ui-components/react",
         "class-variance-authority",

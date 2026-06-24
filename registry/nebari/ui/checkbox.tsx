@@ -1,6 +1,6 @@
 import { Checkbox as CheckboxPrimitive } from '@base-ui-components/react/checkbox';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { CheckIcon } from 'lucide-react';
+import { CheckIcon, MinusIcon } from 'lucide-react';
 import { type ReactNode, useId } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -36,8 +36,9 @@ type CheckboxProps = Omit<
  *
  * `variant="default"` renders an inline label and description, while
  * `variant="box"` turns the same content into a bordered, clickable card.
- * Checked, unchecked, disabled, and validation state come from Base UI;
- * hover, focus, and pressed visuals use their native CSS interaction states.
+ * Checked, unchecked, indeterminate, disabled, and validation state come from
+ * Base UI; hover, focus, and pressed visuals use their native CSS interaction
+ * states.
  */
 function Checkbox({
   variant,
@@ -69,10 +70,11 @@ function Checkbox({
       }
       className={(state) => {
         const isInvalid = state.valid === false || isAriaInvalid;
+        const isMarked = state.checked || state.indeterminate;
 
         return cn(
           checkboxVariants({ variant }),
-          state.checked &&
+          isMarked &&
             '[&_[data-slot=checkbox-control]]:border-primary [&_[data-slot=checkbox-control]]:bg-primary active:[&_[data-slot=checkbox-control]]:border-primary-hover active:[&_[data-slot=checkbox-control]]:bg-primary-hover',
           isInvalid &&
             'text-destructive-foreground active:text-destructive-foreground [&_[data-slot=checkbox-control]]:border-destructive-foreground [&_[data-slot=checkbox-description]]:text-destructive-foreground',
@@ -80,7 +82,7 @@ function Checkbox({
             variant === 'box' &&
             'border-destructive-foreground bg-destructive hover:border-destructive-foreground hover:bg-destructive active:border-destructive-foreground active:bg-destructive',
           isInvalid &&
-            state.checked &&
+            isMarked &&
             '[&_[data-slot=checkbox-control]]:bg-destructive-foreground active:[&_[data-slot=checkbox-control]]:bg-destructive-foreground',
           state.disabled &&
             'pointer-events-none cursor-not-allowed text-muted-foreground [&_[data-slot=checkbox-control]]:border-border [&_[data-slot=checkbox-control]]:bg-muted [&_[data-slot=checkbox-description]]:text-muted-foreground',
@@ -88,7 +90,7 @@ function Checkbox({
             variant === 'box' &&
             'border-transparent bg-background',
           state.disabled &&
-            state.checked &&
+            isMarked &&
             '[&_[data-slot=checkbox-control]]:border-transparent [&_[data-slot=checkbox-control]]:bg-muted-foreground [&_[data-slot=checkbox-control]]:text-background',
         );
       }}
@@ -100,10 +102,28 @@ function Checkbox({
         data-slot="checkbox-control"
       >
         <CheckboxPrimitive.Indicator
-          className="grid place-content-center text-current [&_svg]:size-3"
+          className={(state) =>
+            cn(
+              'absolute inset-0 grid place-content-center text-current [&_svg]:size-3',
+              (!state.checked || state.indeterminate) && 'invisible',
+            )
+          }
           data-slot="checkbox-indicator"
+          keepMounted
         >
           <CheckIcon aria-hidden="true" />
+        </CheckboxPrimitive.Indicator>
+        <CheckboxPrimitive.Indicator
+          className={(state) =>
+            cn(
+              'absolute inset-0 grid place-content-center text-current [&_svg]:size-3',
+              !state.indeterminate && 'invisible',
+            )
+          }
+          data-slot="checkbox-indeterminate-indicator"
+          keepMounted
+        >
+          <MinusIcon aria-hidden="true" />
         </CheckboxPrimitive.Indicator>
       </span>
 

@@ -39,6 +39,23 @@ describe('Checkbox', () => {
     expect(checkbox).toHaveClass('[&_[data-slot=checkbox-control]]:bg-primary');
   });
 
+  it('renders an indeterminate state with a stable minus indicator', () => {
+    render(<Checkbox indeterminate>Checkbox Text</Checkbox>);
+
+    const checkbox = screen.getByRole('checkbox', { name: 'Checkbox Text' });
+    const checkedIndicator = checkbox.querySelector(
+      '[data-slot="checkbox-indicator"]',
+    );
+    const indeterminateIndicator = checkbox.querySelector(
+      '[data-slot="checkbox-indeterminate-indicator"]',
+    );
+
+    expect(checkbox).toHaveAttribute('aria-checked', 'mixed');
+    expect(checkbox).toHaveClass('[&_[data-slot=checkbox-control]]:bg-primary');
+    expect(checkedIndicator).toHaveClass('invisible');
+    expect(indeterminateIndicator).not.toHaveClass('invisible');
+  });
+
   it('toggles and reports checked state changes', async () => {
     const onCheckedChange = vi.fn();
     render(
