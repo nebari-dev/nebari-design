@@ -149,10 +149,7 @@
       "type": "registry:ui",
       "title": "Select",
       "description": "Accessible standard-size select menu with grouped labels, separators, validation states, and anchored popup positioning.",
-      "dependencies": [
-        "@base-ui-components/react",
-        "lucide-react"
-      ],
+      "dependencies": ["@base-ui-components/react", "lucide-react"],
       "registryDependencies": ["utils", "theme"],
       "files": [
         {
