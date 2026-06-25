@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+import { Field, FieldError, FieldLabel } from '@/ui/field';
 import {
   RadioGroup,
   RadioGroupItem,
@@ -99,6 +100,21 @@ describe('RadioGroup', () => {
     expect(radio).toHaveClass('border', 'bg-background', 'p-3');
   });
 
+  it('forwards className to the group and item', () => {
+    render(
+      <RadioGroup aria-label="Plan" className="gap-5">
+        <RadioGroupItem className="p-4" value="starter">
+          Starter
+        </RadioGroupItem>
+      </RadioGroup>,
+    );
+
+    expect(screen.getByRole('radiogroup', { name: 'Plan' })).toHaveClass(
+      'gap-5',
+    );
+    expect(screen.getByRole('radio', { name: 'Starter' })).toHaveClass('p-4');
+  });
+
   it('does not select a disabled item', async () => {
     const onValueChange = vi.fn();
     render(
@@ -135,37 +151,45 @@ describe('RadioGroup', () => {
     );
   });
 
-  it('applies invalid styling to default and boxed items', () => {
-    const { rerender } = render(
-      <RadioGroup aria-label="Plan" defaultValue="starter">
-        <RadioGroupItem aria-invalid="true" value="starter">
-          Starter
-        </RadioGroupItem>
-      </RadioGroup>,
+  it('keeps radio items visually neutral when the group is invalid', () => {
+    render(
+      <Field invalid>
+        <FieldLabel id="plan-label">Choose a plan</FieldLabel>
+        <RadioGroup
+          aria-describedby="plan-error"
+          aria-labelledby="plan-label"
+          required
+        >
+          <RadioGroupItem value="starter">Starter</RadioGroupItem>
+          <RadioGroupItem value="pro" variant="box">
+            Pro
+          </RadioGroupItem>
+        </RadioGroup>
+        <FieldError id="plan-error" match>
+          Please select a plan to continue.
+        </FieldError>
+      </Field>,
     );
 
-    let radio = screen.getByRole('radio', { name: 'Starter' });
-    expect(radio).toHaveClass(
+    const group = screen.getByRole('radiogroup', { name: 'Choose a plan' });
+    const starter = screen.getByRole('radio', { name: 'Starter' });
+    const pro = screen.getByRole('radio', { name: 'Pro' });
+
+    expect(group).toHaveAttribute('data-invalid');
+    expect(group).toHaveAccessibleDescription(
+      'Please select a plan to continue.',
+    );
+    expect(starter).not.toHaveClass(
       'text-destructive-foreground',
-      '[&_[data-slot=radio-group-target]]:fill-destructive-foreground',
+      '[&_[data-slot=radio-group-target]]:stroke-destructive-foreground',
     );
-    expect(radio).not.toHaveClass('bg-destructive');
-
-    rerender(
-      <RadioGroup aria-label="Plan">
-        <RadioGroupItem aria-invalid="true" value="starter" variant="box">
-          Starter
-        </RadioGroupItem>
-      </RadioGroup>,
-    );
-    radio = screen.getByRole('radio', { name: 'Starter' });
-    expect(radio).toHaveClass(
+    expect(pro).not.toHaveClass(
       'border-destructive-foreground',
       'bg-destructive',
     );
   });
 
-  it('highlights invalid state at the radio group level', () => {
+  it('keeps invalid group state semantic without visual chrome', () => {
     render(
       <RadioGroup aria-invalid="true" aria-label="Plan">
         <RadioGroupItem value="starter">Starter</RadioGroupItem>
@@ -173,9 +197,14 @@ describe('RadioGroup', () => {
       </RadioGroup>,
     );
 
-    expect(screen.getByRole('radiogroup', { name: 'Plan' })).toHaveClass(
-      'aria-invalid:border-2',
-      'aria-invalid:border-destructive-foreground',
+    expect(screen.getByRole('radiogroup', { name: 'Plan' })).toHaveAttribute(
+      'aria-invalid',
+      'true',
+    );
+    expect(screen.getByRole('radiogroup', { name: 'Plan' })).not.toHaveClass(
+      'aria-invalid:ring-2',
+      'data-[invalid]:ring-2',
+      'aria-invalid:p-3',
     );
   });
 

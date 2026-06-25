@@ -20,12 +20,9 @@ const radioGroupItemVariants = cva(
   },
 );
 
-type RadioGroupProps = Omit<RadioGroupPrimitive.Props, 'className'>;
+type RadioGroupProps = RadioGroupPrimitive.Props;
 
-type RadioGroupItemProps = Omit<
-  RadioPrimitive.Root.Props,
-  'children' | 'className'
-> &
+type RadioGroupItemProps = Omit<RadioPrimitive.Root.Props, 'children'> &
   VariantProps<typeof radioGroupItemVariants> & {
     /** The visible and accessible radio label. */
     children?: ReactNode;
@@ -34,11 +31,16 @@ type RadioGroupItemProps = Omit<
   };
 
 /** Provides mutually-exclusive selection state to a set of radio items. */
-function RadioGroup(props: RadioGroupProps) {
+function RadioGroup({ className, ...props }: RadioGroupProps) {
   return (
     <RadioGroupPrimitive
       {...props}
-      className="grid w-full gap-3 rounded-sm aria-invalid:border-2 aria-invalid:border-destructive-foreground aria-invalid:p-3 data-[invalid]:border-2 data-[invalid]:border-destructive-foreground data-[invalid]:p-3"
+      className={(state) =>
+        cn(
+          'grid w-full gap-3 rounded-sm',
+          typeof className === 'function' ? className(state) : className,
+        )
+      }
       data-slot="radio-group"
     />
   );
@@ -48,18 +50,22 @@ function RadioGroup(props: RadioGroupProps) {
  * Labeled radio item implemented from the Nebari Figma spec on top of Base UI.
  *
  * `variant="default"` renders an inline option, while `variant="box"` turns
- * the same content into a bordered, clickable card. Selected, unselected,
- * disabled, and validation state come from Base UI; hover, focus, and pressed
- * visuals use their native CSS interaction states.
+ * the same content into a bordered, clickable card. Selected, unselected, and
+ * disabled state come from Base UI; hover, focus, and pressed visuals use their
+ * native CSS interaction states.
+ *
+ * Radio-group validation belongs to the unanswered question, not to the group
+ * container or each individual option. Keep item visuals neutral and pair
+ * semantic group invalid state with a visible error message via `FieldError`.
  */
 function RadioGroupItem({
   variant,
+  className,
   children,
   description,
   'aria-label': ariaLabel,
   'aria-labelledby': ariaLabelledBy,
   'aria-describedby': ariaDescribedBy,
-  'aria-invalid': ariaInvalid,
   ...props
 }: RadioGroupItemProps) {
   const generatedId = useId();
@@ -69,32 +75,20 @@ function RadioGroupItem({
   const describedBy = [ariaDescribedBy, descriptionId]
     .filter(Boolean)
     .join(' ');
-  const isAriaInvalid = ariaInvalid === true || ariaInvalid === 'true';
 
   return (
     <RadioPrimitive.Root
       {...props}
       aria-describedby={describedBy || undefined}
-      aria-invalid={ariaInvalid}
       aria-label={ariaLabel}
       aria-labelledby={
         ariaLabelledBy ?? (ariaLabel === undefined ? labelId : undefined)
       }
       className={(state) => {
-        const isInvalid = state.valid === false || isAriaInvalid;
-
         return cn(
           radioGroupItemVariants({ variant }),
           state.checked &&
             '[&_[data-slot=radio-group-target]]:stroke-primary [&_[data-slot=radio-group-target]]:fill-primary active:[&_[data-slot=radio-group-target]]:stroke-primary-hover active:[&_[data-slot=radio-group-target]]:fill-primary-hover',
-          isInvalid &&
-            'text-destructive-foreground active:text-destructive-foreground [&_[data-slot=radio-group-target]]:stroke-destructive-foreground [&_[data-slot=radio-group-description]]:text-destructive-foreground',
-          isInvalid &&
-            variant === 'box' &&
-            'border-destructive-foreground bg-destructive hover:border-destructive-foreground hover:bg-destructive active:border-destructive-foreground active:bg-destructive',
-          isInvalid &&
-            state.checked &&
-            '[&_[data-slot=radio-group-target]]:fill-destructive-foreground active:[&_[data-slot=radio-group-target]]:fill-destructive-foreground',
           state.disabled &&
             'pointer-events-none cursor-not-allowed text-muted-foreground [&_[data-slot=radio-group-target]]:stroke-border [&_[data-slot=radio-group-target]]:fill-muted [&_[data-slot=radio-group-description]]:text-muted-foreground',
           state.disabled &&
@@ -103,6 +97,7 @@ function RadioGroupItem({
           state.disabled &&
             state.checked &&
             '[&_[data-slot=radio-group-target]]:stroke-transparent [&_[data-slot=radio-group-target]]:fill-muted-foreground [&_[data-slot=radio-group-control]]:text-background',
+          typeof className === 'function' ? className(state) : className,
         );
       }}
       data-slot="radio-group-item"
