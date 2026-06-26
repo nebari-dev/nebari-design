@@ -82,6 +82,7 @@ const SEMANTIC_GROUPS: { title: string; tokens: [string, string][] }[] = [
       ['--accent-foreground', 'Accent foreground'],
       ['--muted', 'Muted'],
       ['--muted-foreground', 'Muted foreground'],
+      ['--muted-foreground-strong', 'Muted foreground strong'],
     ],
   },
   {
