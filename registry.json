@@ -80,6 +80,20 @@
       ]
     },
     {
+      "name": "radio-group",
+      "type": "registry:ui",
+      "title": "Radio Group",
+      "description": "Mutually exclusive radio group with default and boxed item variants, stable selected targets, and group-level validation feedback.",
+      "dependencies": ["@base-ui-components/react", "class-variance-authority"],
+      "registryDependencies": ["utils", "theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/radio-group.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "field",
       "type": "registry:ui",
       "title": "Field",
@@ -94,10 +108,51 @@
       ]
     },
     {
+      "name": "input",
+      "type": "registry:ui",
+      "title": "Input",
+      "description": "Single-line text-entry field with hover, focus, disabled, and invalid states, built on Base UI's Input and auto-wired to Field.",
+      "dependencies": ["@base-ui-components/react", "lucide-react"],
+      "registryDependencies": ["utils", "theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/input.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "label",
+      "type": "registry:ui",
+      "title": "Label",
+      "description": "Accessible label for a form control, paired via htmlFor or composed with Field.",
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/label.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "textarea",
+      "type": "registry:ui",
+      "title": "Textarea",
+      "description": "Multi-line text-entry field — a styled native textarea mirroring Input's border, focus ring, disabled, and invalid states.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["utils", "theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/textarea.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "alert",
       "type": "registry:ui",
       "title": "Alert",
-      "description": "Inline status message with default, info, success, warning, and destructive variants, composed of Alert, AlertTitle, AlertDescription, and AlertAction.",
+      "description": "Inline status message with default, success, warning, and destructive variants, composed of Alert, AlertTitle, AlertDescription, and AlertAction.",
       "dependencies": ["class-variance-authority", "lucide-react"],
       "registryDependencies": ["utils"],
       "files": [
@@ -193,8 +248,6 @@
           "warning-foreground": "oklch(46.91% 0.0960 91.90)",
           "success": "oklch(94.94% 0.0433 149.41)",
           "success-foreground": "oklch(47.01% 0.1313 149.41)",
-          "info": "oklch(95.08% 0.0232 264.46)",
-          "info-foreground": "oklch(47.06% 0.2174 264.33)",
           "border": "oklch(78.06% 0.0056 286.27)",
           "input": "oklch(69.88% 0.0130 286.06)",
           "border-strong": "oklch(61.96% 0.0134 286.00)",
@@ -236,8 +289,6 @@
           "warning-foreground": "oklch(87.09% 0.1248 91.93)",
           "success": "oklch(32.88% 0.0887 149.73)",
           "success-foreground": "oklch(87.04% 0.0814 149.55)",
-          "info": "oklch(33.01% 0.1387 264.40)",
-          "info-foreground": "oklch(87.12% 0.0567 264.22)",
           "border": "oklch(47.01% 0.0112 285.96)",
           "input": "oklch(54.86% 0.0154 285.88)",
           "border-strong": "oklch(61.96% 0.0134 286.00)",

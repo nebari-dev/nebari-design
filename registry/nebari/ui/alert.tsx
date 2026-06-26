@@ -13,14 +13,13 @@ const alertVariants = cva(
   {
     variants: {
       // Maps onto the Figma `Alert` variant set. `default` is the neutral card
-      // style; `destructive` doubles as the "error" state. Colored variants
-      // (info, success, warning, destructive) paint title, description, icon,
-      // and border with the same foreground token; only `default` mutes its
-      // description.
+      // style and also carries informational messages; `destructive` doubles as
+      // the "error" state. Colored variants (success, warning, destructive)
+      // paint title, description, icon, and border with the same foreground
+      // token; only `default` mutes its description.
       variant: {
         default:
           'border-border bg-card text-foreground *:data-[slot=alert-description]:text-muted-foreground',
-        info: 'border-info-foreground bg-info text-info-foreground',
         success: 'border-success-foreground bg-success text-success-foreground',
         warning: 'border-warning-foreground bg-warning text-warning-foreground',
         destructive:
@@ -38,7 +37,7 @@ type AlertProps = React.ComponentProps<'div'> &
 
 // Map severity onto the ARIA live-region role. `alert` (assertive) interrupts
 // the screen reader immediately and is reserved for variants that demand
-// attention — `warning`/`destructive`. The calmer `info`/`success`/`default`
+// attention — `warning`/`destructive`. The calmer `success`/`default`
 // variants use `status` (polite) so they're announced without cutting off
 // whatever the user is doing. Callers can override with an explicit `role`.
 const alertRoleForVariant: Record<
@@ -46,7 +45,6 @@ const alertRoleForVariant: Record<
   'alert' | 'status'
 > = {
   default: 'status',
-  info: 'status',
   success: 'status',
   warning: 'alert',
   destructive: 'alert',

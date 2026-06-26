@@ -21,7 +21,7 @@ const meta = {
       description:
         'Severity of the message. `default` is the neutral card style; `destructive` doubles as the “error” state.',
       control: 'select',
-      options: ['default', 'info', 'success', 'warning', 'destructive'],
+      options: ['default', 'success', 'warning', 'destructive'],
       table: { defaultValue: { summary: 'default' } },
     },
   },
@@ -58,7 +58,7 @@ export const Variants: Story = {
     docs: {
       description: {
         story:
-          'All four severities. Colored variants tint the icon, title, description, and border with a single foreground token.',
+          'The neutral default plus all three severities. Colored variants tint the icon, title, description, and border with a single foreground token.',
       },
     },
   },
@@ -69,13 +69,6 @@ export const Variants: Story = {
         <AlertTitle>New environment available</AlertTitle>
         <AlertDescription>
           nebari-default-env 2.4.1 has been deployed to your cluster.
-        </AlertDescription>
-      </Alert>
-      <Alert variant="info">
-        <Info />
-        <AlertTitle>Session refreshed</AlertTitle>
-        <AlertDescription>
-          Your credentials were renewed — no action needed.
         </AlertDescription>
       </Alert>
       <Alert variant="success">
@@ -129,7 +122,7 @@ export const WithoutIcon: Story = {
     docs: {
       description: {
         story:
-          'With no leading icon the content sits flush left — the icon column collapses to zero width. Reserve the icon-less layout for the neutral default variant. When an alert conveys severity (`info`, `success`, `warning`, `destructive`), always pair it with an icon so meaning is carried by shape and not color alone (WCAG 1.4.1).',
+          'With no leading icon the content sits flush left — the icon column collapses to zero width. Reserve the icon-less layout for the neutral default variant. When an alert conveys severity (`success`, `warning`, `destructive`), always pair it with an icon so meaning is carried by shape and not color alone (WCAG 1.4.1).',
       },
     },
   },
@@ -154,7 +147,7 @@ export const WithAction: Story = {
     },
   },
   render: () => (
-    <Alert variant="info">
+    <Alert>
       <Info />
       <AlertTitle>Your session will expire soon</AlertTitle>
       <AlertDescription>
