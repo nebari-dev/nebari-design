@@ -145,6 +145,20 @@
       ]
     },
     {
+      "name": "tabs",
+      "type": "registry:ui",
+      "title": "Tabs",
+      "description": "Tabs for switching between related panels, with pill and underline variants built on Base UI.",
+      "dependencies": ["@base-ui-components/react", "class-variance-authority"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/tabs.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "claude-skill",
       "type": "registry:file",
       "title": "Nebari UI Claude Code skill",
