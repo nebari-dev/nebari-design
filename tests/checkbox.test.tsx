@@ -155,6 +155,7 @@ describe('Checkbox', () => {
     const defaultClasses = checkboxVariants({ variant: 'default' });
     const boxClasses = checkboxVariants({ variant: 'box' });
 
+    expect(defaultClasses).not.toContain('motion-safe:');
     expect(defaultClasses).toContain('focus-visible:ring-offset-2');
     expect(defaultClasses).toContain('rounded-[2px]');
     expect(defaultClasses).toContain('active:text-muted-foreground-strong');

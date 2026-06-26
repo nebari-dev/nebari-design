@@ -5,7 +5,7 @@ import { type ReactNode, useId } from 'react';
 import { cn } from '@/lib/utils';
 
 const checkboxVariants = cva(
-  'group/checkbox inline-flex cursor-pointer select-none items-start gap-2 text-left text-foreground outline-none motion-safe:transition-[color,background-color,border-color,opacity,transform] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] motion-safe:active:scale-[0.97] active:text-muted-foreground-strong',
+  'group/checkbox inline-flex cursor-pointer select-none items-start gap-2 text-left text-foreground outline-none active:text-muted-foreground-strong',
   {
     variants: {
       variant: {
@@ -98,7 +98,7 @@ function Checkbox({
       data-variant={variant ?? 'default'}
     >
       <span
-        className="relative flex size-4 shrink-0 items-center justify-center overflow-hidden rounded-[2px] border-[1.5px] border-border-strong bg-transparent text-primary-foreground motion-safe:transition-[color,background-color,border-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]"
+        className="relative flex size-4 shrink-0 items-center justify-center overflow-hidden rounded-[2px] border-[1.5px] border-border-strong bg-transparent text-primary-foreground"
         data-slot="checkbox-control"
       >
         <CheckboxPrimitive.Indicator
