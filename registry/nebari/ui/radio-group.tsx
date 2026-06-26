@@ -5,7 +5,7 @@ import { type ReactNode, useId } from 'react';
 import { cn } from '@/lib/utils';
 
 const radioGroupItemVariants = cva(
-  'group/radio-group-item inline-flex cursor-pointer select-none items-start gap-2 text-left text-foreground outline-none motion-safe:transition-[color,background-color,border-color,opacity,transform] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] motion-safe:active:scale-[0.97] active:text-muted-foreground-strong',
+  'group/radio-group-item inline-flex cursor-pointer select-none items-start gap-2 text-left text-foreground outline-none active:text-muted-foreground-strong',
   {
     variants: {
       variant: {
@@ -110,7 +110,7 @@ function RadioGroupItem({
         viewBox="0 0 16 16"
       >
         <circle
-          className="fill-transparent stroke-border-strong motion-safe:transition-[fill,stroke] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]"
+          className="fill-transparent stroke-border-strong"
           cx="8"
           cy="8"
           data-slot="radio-group-target"

@@ -29,6 +29,11 @@ describe('RadioGroup', () => {
       radio.querySelector('[data-slot="radio-group-control"]'),
     ).toBeInTheDocument();
     expect(
+      radio
+        .querySelector('[data-slot="radio-group-target"]')
+        ?.getAttribute('class'),
+    ).not.toContain('motion-safe:');
+    expect(
       radio.querySelector('[data-slot="radio-group-indicator"]'),
     ).toHaveClass('invisible');
   });
@@ -246,6 +251,7 @@ describe('RadioGroup', () => {
     const defaultClasses = radioGroupItemVariants({ variant: 'default' });
     const boxClasses = radioGroupItemVariants({ variant: 'box' });
 
+    expect(defaultClasses).not.toContain('motion-safe:');
     expect(defaultClasses).toContain('focus-visible:border-ring');
     expect(defaultClasses).toContain('rounded-sm');
     expect(defaultClasses).toContain('p-0.5');
