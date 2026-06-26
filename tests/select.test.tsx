@@ -73,6 +73,23 @@ describe('Select', () => {
     expect(trigger).toHaveAttribute('data-slot', 'select-trigger');
   });
 
+  it('uses stable trigger sizing and ring-based interaction states', () => {
+    render(<TestSelect />);
+
+    const trigger = screen.getByRole('combobox', { name: 'Framework' });
+    expect(trigger).toHaveClass(
+      'w-full',
+      'border',
+      'focus-visible:ring-2',
+      'data-[pressed]:ring-2',
+      'data-[popup-open]:ring-2',
+      'aria-invalid:ring-2',
+    );
+    expect(trigger.className).not.toContain('border-2');
+    expect(trigger.className).not.toContain('motion-safe:');
+    expect(trigger.className).not.toContain('active:scale');
+  });
+
   it('opens below the trigger mode and selects an item', async () => {
     const onValueChange = vi.fn();
     const user = userEvent.setup();
@@ -84,6 +101,7 @@ describe('Select', () => {
     const listbox = await screen.findByRole('listbox');
     const popup = listbox.closest('[data-slot="select-content"]');
     expect(popup).toHaveAttribute('data-align-trigger', 'false');
+    expect(listbox).toHaveClass('p-1');
     expect(screen.getByText('Frameworks')).toHaveAttribute(
       'data-slot',
       'select-label',
@@ -92,6 +110,31 @@ describe('Select', () => {
 
     await user.click(screen.getByRole('option', { name: 'Remix' }));
     expect(onValueChange).toHaveBeenCalledWith('remix', expect.anything());
+  });
+
+  it('does not select disabled items', async () => {
+    const onValueChange = vi.fn();
+    const user = userEvent.setup();
+    render(<TestSelect onValueChange={onValueChange} />);
+
+    const trigger = screen.getByRole('combobox', { name: 'Framework' });
+    await user.click(trigger);
+
+    const disabledOption = await screen.findByRole('option', {
+      name: 'Gatsby',
+    });
+    expect(disabledOption).toHaveAttribute('aria-disabled', 'true');
+    expect(disabledOption).toHaveClass('data-[disabled]:cursor-not-allowed');
+    expect(disabledOption.className).not.toContain(
+      'data-[disabled]:pointer-events-none',
+    );
+    expect(disabledOption.className).not.toContain(
+      'data-disabled:pointer-events-none',
+    );
+
+    await user.click(disabledOption);
+    expect(onValueChange).not.toHaveBeenCalled();
+    expect(trigger).toHaveTextContent('Select a framework');
   });
 
   // CSS positioning has no layout engine in jsdom; the Default story's play

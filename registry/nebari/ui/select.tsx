@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 const Select = SelectPrimitive.Root;
 
 const selectTriggerClassName =
-  "flex h-9 w-fit items-center justify-between gap-1.5 rounded-md border border-input bg-background py-2 pr-2 pl-2.5 text-sm whitespace-nowrap shadow-xs outline-none hover:border-border-strong focus-visible:border-2 focus-visible:border-ring focus-visible:hover:border-ring data-[pressed]:border-2 data-[pressed]:border-ring data-[pressed]:hover:border-ring data-[popup-open]:border-2 data-[popup-open]:border-ring data-[popup-open]:hover:border-ring disabled:cursor-not-allowed disabled:border-border disabled:bg-muted disabled:text-muted-foreground aria-invalid:border-2 aria-invalid:border-destructive-foreground aria-invalid:hover:border-destructive-foreground aria-invalid:focus-visible:border-destructive-foreground aria-invalid:data-[pressed]:border-destructive-foreground aria-invalid:data-[popup-open]:border-destructive-foreground data-placeholder:text-muted-foreground motion-safe:transition-[color,background-color,border-color,transform] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] motion-safe:active:scale-[0.97] *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4";
+  "flex h-9 w-full items-center justify-between gap-1.5 rounded-md border border-input bg-background py-2 pr-2 pl-2.5 text-sm whitespace-nowrap shadow-xs outline-none hover:border-border-strong focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:hover:border-ring data-[pressed]:border-ring data-[pressed]:ring-2 data-[pressed]:ring-ring data-[pressed]:hover:border-ring data-[popup-open]:border-ring data-[popup-open]:ring-2 data-[popup-open]:ring-ring data-[popup-open]:hover:border-ring disabled:cursor-not-allowed disabled:border-border disabled:bg-muted disabled:text-muted-foreground aria-invalid:border-destructive-foreground aria-invalid:ring-2 aria-invalid:ring-destructive-foreground aria-invalid:hover:border-destructive-foreground aria-invalid:focus-visible:border-destructive-foreground aria-invalid:focus-visible:ring-destructive-foreground aria-invalid:data-[pressed]:border-destructive-foreground aria-invalid:data-[pressed]:ring-destructive-foreground aria-invalid:data-[popup-open]:border-destructive-foreground aria-invalid:data-[popup-open]:ring-destructive-foreground data-placeholder:text-muted-foreground *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4";
 
 type SelectTriggerProps = SelectPrimitive.Trigger.Props;
 
@@ -14,7 +14,7 @@ function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
   return (
     <SelectPrimitive.Group
       data-slot="select-group"
-      className={cn('scroll-my-1 p-1', className)}
+      className={cn('scroll-my-1', className)}
       {...props}
     />
   );
@@ -81,7 +81,9 @@ function SelectContent({
           {...props}
         >
           <SelectScrollUpButton />
-          <SelectPrimitive.List>{children}</SelectPrimitive.List>
+          <SelectPrimitive.List className="p-1">
+            {children}
+          </SelectPrimitive.List>
           <SelectScrollDownButton />
         </SelectPrimitive.Popup>
       </SelectPrimitive.Positioner>
@@ -114,7 +116,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        "relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className,
       )}
       {...props}
