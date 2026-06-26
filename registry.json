@@ -62,6 +62,24 @@
       ]
     },
     {
+      "name": "checkbox",
+      "type": "registry:ui",
+      "title": "Checkbox",
+      "description": "Labeled checkbox with default and boxed variants, checked, unchecked, and indeterminate states, validation feedback, and Base UI behavior.",
+      "dependencies": [
+        "@base-ui-components/react",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "registryDependencies": ["utils", "theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/checkbox.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "radio-group",
       "type": "registry:ui",
       "title": "Radio Group",
