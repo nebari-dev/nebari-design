@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
-import { Checkbox } from '@/ui/checkbox';
+import { Checkbox, CheckboxGroup } from '@/ui/checkbox';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/ui/field';
 
 type CheckboxVariant = NonNullable<ComponentProps<typeof Checkbox>['variant']>;
@@ -66,7 +66,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Checkbox implemented from the Nebari Figma spec on top of Base UI. `Checkbox` represents a single boolean field with `default` (inline) and `box` (card) layouts. Compose with `Field` to add a standalone field label, description, and validation message.',
+          'Checkbox implemented from the Nebari Figma spec on top of Base UI. `Checkbox` represents a single boolean field with `default` (inline) and `box` (card) layouts. Use `CheckboxGroup` with `orientation="horizontal"` or `orientation="vertical"` to lay out related checkbox fields. Compose with `Field` to add a standalone field label, description, and validation message.',
       },
     },
   },
@@ -114,6 +114,22 @@ export const WithDescription: Story = {
         Enable automatic updates
       </Checkbox>
     </div>
+  ),
+};
+
+/**
+ * Use `CheckboxGroup` with `orientation="horizontal"` to arrange related
+ * checkbox fields in a wrapping row.
+ */
+export const Horizontal: Story = {
+  render: () => (
+    <CheckboxGroup aria-label="Workspace features" orientation="horizontal">
+      <Checkbox defaultChecked value="notebooks">
+        Notebooks
+      </Checkbox>
+      <Checkbox value="dashboards">Dashboards</Checkbox>
+      <Checkbox value="jobs">Jobs</Checkbox>
+    </CheckboxGroup>
   ),
 };
 

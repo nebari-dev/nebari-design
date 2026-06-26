@@ -20,7 +20,26 @@ const radioGroupItemVariants = cva(
   },
 );
 
-type RadioGroupProps = RadioGroupPrimitive.Props;
+const radioGroupVariants = cva('w-full rounded-sm', {
+  variants: {
+    orientation: {
+      vertical: 'grid gap-3',
+      horizontal: 'flex flex-wrap items-start gap-x-5 gap-y-3',
+    },
+  },
+  defaultVariants: {
+    orientation: 'vertical',
+  },
+});
+
+type RadioGroupOrientation = NonNullable<
+  VariantProps<typeof radioGroupVariants>['orientation']
+>;
+
+type RadioGroupProps = Omit<RadioGroupPrimitive.Props, 'orientation'> & {
+  /** Controls whether radio items stack vertically or wrap horizontally. */
+  orientation?: RadioGroupOrientation;
+};
 
 type RadioGroupItemProps = Omit<RadioPrimitive.Root.Props, 'children'> &
   VariantProps<typeof radioGroupItemVariants> & {
@@ -31,16 +50,21 @@ type RadioGroupItemProps = Omit<RadioPrimitive.Root.Props, 'children'> &
   };
 
 /** Provides mutually-exclusive selection state to a set of radio items. */
-function RadioGroup({ className, ...props }: RadioGroupProps) {
+function RadioGroup({
+  className,
+  orientation = 'vertical',
+  ...props
+}: RadioGroupProps) {
   return (
     <RadioGroupPrimitive
       {...props}
       className={(state) =>
         cn(
-          'grid w-full gap-3 rounded-sm',
+          radioGroupVariants({ orientation }),
           typeof className === 'function' ? className(state) : className,
         )
       }
+      data-orientation={orientation}
       data-slot="radio-group"
     />
   );
@@ -157,4 +181,9 @@ function RadioGroupItem({
 }
 
 export type { RadioGroupItemProps, RadioGroupProps };
-export { RadioGroup, RadioGroupItem, radioGroupItemVariants };
+export {
+  RadioGroup,
+  RadioGroupItem,
+  radioGroupItemVariants,
+  radioGroupVariants,
+};
