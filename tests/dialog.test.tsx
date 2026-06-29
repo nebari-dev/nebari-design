@@ -66,10 +66,15 @@ describe('Dialog', () => {
     );
     expect(document.querySelector('[data-slot="dialog-overlay"]')).toHaveClass(
       'bg-foreground/30',
+      'motion-safe:transition-[opacity]',
     );
     expect(document.querySelector('[data-slot="dialog-viewport"]')).toHaveClass(
       'fixed',
       'p-4',
+    );
+    expect(dialog).toHaveClass(
+      'focus-visible:ring-2',
+      'focus-visible:ring-ring',
     );
   });
 
@@ -128,5 +133,31 @@ describe('Dialog', () => {
       'data-slot',
       'dialog-close',
     );
+  });
+
+  it('traps keyboard focus and restores focus after Escape', async () => {
+    const user = userEvent.setup();
+    render(<TestDialog />);
+
+    const trigger = screen.getByRole('button', { name: 'Open dialog' });
+    trigger.focus();
+    await user.keyboard('{Enter}');
+
+    const dialog = await screen.findByRole('dialog', { name: 'Invite user' });
+
+    await user.tab();
+    expect(screen.getByRole('button', { name: 'Send invite' })).toHaveFocus();
+
+    await user.tab({ shift: true });
+    expect(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus();
+    expect(dialog).toContainElement(document.activeElement as HTMLElement);
+
+    await user.keyboard('{Escape}');
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('dialog', { name: 'Invite user' }),
+      ).not.toBeInTheDocument();
+    });
+    expect(trigger).toHaveFocus();
   });
 });

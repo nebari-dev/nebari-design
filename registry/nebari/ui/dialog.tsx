@@ -6,6 +6,10 @@ import { Button } from '@/ui/button';
 
 type DialogProps = DialogPrimitive.Root.Props;
 
+/**
+ * Dialog groups modal state, trigger, overlay, content, title, and description.
+ * Base UI handles focus trapping, Escape dismissal, and focus restoration.
+ */
 function Dialog({ children, ...props }: DialogProps) {
   return (
     <DialogPrimitive.Root {...props}>
@@ -28,21 +32,24 @@ type DialogContentProps = DialogPrimitive.Popup.Props & {
   overlayClassName?: string;
 };
 
+/** Button that opens the dialog. */
 function DialogTrigger(props: DialogTriggerProps) {
   return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
 }
 
+/** Portal used to render the dialog overlay and content outside the page flow. */
 function DialogPortal(props: DialogPortalProps) {
   return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
 }
 
+/** Full-screen backdrop shown behind the dialog content. */
 function DialogOverlay({ className, ...props }: DialogOverlayProps) {
   return (
     <DialogPrimitive.Backdrop
       data-slot="dialog-overlay"
       className={(state) =>
         cn(
-          'fixed inset-0 z-50 bg-foreground/30 data-[starting-style]:opacity-0 data-[ending-style]:opacity-0 motion-safe:transition-opacity motion-safe:duration-[--duration-base] motion-safe:ease-[--ease-standard]',
+          'fixed inset-0 z-50 bg-foreground/30 data-[starting-style]:opacity-0 data-[ending-style]:opacity-0 motion-safe:transition-[opacity] motion-safe:duration-[--duration-base] motion-safe:ease-[--ease-standard]',
           typeof className === 'function' ? className(state) : className,
         )
       }
@@ -51,6 +58,10 @@ function DialogOverlay({ className, ...props }: DialogOverlayProps) {
   );
 }
 
+/**
+ * Centered dialog surface with the default overlay, viewport, and optional
+ * top-right close button.
+ */
 function DialogContent({
   className,
   children,
@@ -74,7 +85,7 @@ function DialogContent({
           data-slot="dialog-content"
           className={(state) =>
             cn(
-              'relative grid max-h-[min(calc(100vh-2rem),42rem)] w-full max-w-lg gap-4 overflow-hidden rounded-md border border-border bg-popover p-6 text-popover-foreground shadow-lg outline-none data-[starting-style]:translate-y-2 data-[starting-style]:scale-95 data-[starting-style]:opacity-0 data-[ending-style]:translate-y-2 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 motion-safe:transition-[opacity,transform] motion-safe:duration-[--duration-base] motion-safe:ease-[--ease-emphasized]',
+              'relative grid max-h-[min(calc(100vh-2rem),42rem)] w-full max-w-lg gap-4 overflow-hidden rounded-md border border-border bg-popover p-6 text-popover-foreground shadow-lg outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background data-[starting-style]:translate-y-2 data-[starting-style]:scale-95 data-[starting-style]:opacity-0 data-[ending-style]:translate-y-2 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 motion-safe:transition-[opacity,transform] motion-safe:duration-[--duration-base] motion-safe:ease-[--ease-emphasized]',
               typeof className === 'function' ? className(state) : className,
             )
           }
@@ -91,7 +102,7 @@ function DialogContent({
                 />
               }
             >
-              <XIcon />
+              <XIcon aria-hidden="true" />
               <span className="sr-only">Close</span>
             </DialogClose>
           )}
@@ -101,10 +112,12 @@ function DialogContent({
   );
 }
 
+/** Button that closes the dialog. */
 function DialogClose(props: DialogPrimitive.Close.Props) {
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
 }
 
+/** Layout wrapper for dialog title and description. */
 function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -115,6 +128,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+/** Layout wrapper for confirmation or cancellation actions. */
 function DialogFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -128,6 +142,7 @@ function DialogFooter({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+/** Accessible dialog title. */
 function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
   return (
     <DialogPrimitive.Title
@@ -143,6 +158,7 @@ function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
   );
 }
 
+/** Accessible dialog description. */
 function DialogDescription({
   className,
   ...props
