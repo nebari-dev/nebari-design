@@ -3,13 +3,24 @@ import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 import type * as React from 'react';
 import { cn } from '@/lib/utils';
 
+type SelectTriggerProps = SelectPrimitive.Trigger.Props;
+
+type SelectContentProps = SelectPrimitive.Popup.Props &
+  Pick<
+    SelectPrimitive.Positioner.Props,
+    'align' | 'alignOffset' | 'side' | 'sideOffset' | 'alignItemWithTrigger'
+  >;
+
+/**
+ * Select groups the trigger, value, popup, and option items. Value, open state,
+ * disabled/read-only behavior, and Field integration come from Base UI.
+ */
 const Select = SelectPrimitive.Root;
 
 const selectTriggerClassName =
   "flex h-9 w-full items-center justify-between gap-1.5 rounded-md border border-input bg-background py-2 pr-2 pl-2.5 text-sm whitespace-nowrap shadow-xs outline-none hover:border-border-strong focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:hover:border-ring data-[pressed]:border-ring data-[pressed]:ring-2 data-[pressed]:ring-ring data-[pressed]:hover:border-ring data-[popup-open]:border-ring data-[popup-open]:ring-2 data-[popup-open]:ring-ring data-[popup-open]:hover:border-ring disabled:cursor-not-allowed disabled:border-border disabled:bg-muted disabled:text-muted-foreground aria-invalid:border-destructive-foreground aria-invalid:ring-2 aria-invalid:ring-destructive-foreground aria-invalid:hover:border-destructive-foreground aria-invalid:focus-visible:border-destructive-foreground aria-invalid:focus-visible:ring-destructive-foreground aria-invalid:data-[pressed]:border-destructive-foreground aria-invalid:data-[pressed]:ring-destructive-foreground aria-invalid:data-[popup-open]:border-destructive-foreground aria-invalid:data-[popup-open]:ring-destructive-foreground data-placeholder:text-muted-foreground *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4";
 
-type SelectTriggerProps = SelectPrimitive.Trigger.Props;
-
+/** Groups related options inside the popup list. */
 function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
   return (
     <SelectPrimitive.Group
@@ -20,6 +31,7 @@ function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
   );
 }
 
+/** Displays the selected value inside the trigger. */
 function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
   return (
     <SelectPrimitive.Value
@@ -30,6 +42,7 @@ function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
   );
 }
 
+/** Combobox button that opens the popup and shows the selected value. */
 function SelectTrigger({ className, children, ...props }: SelectTriggerProps) {
   return (
     <SelectPrimitive.Trigger
@@ -47,6 +60,10 @@ function SelectTrigger({ className, children, ...props }: SelectTriggerProps) {
   );
 }
 
+/**
+ * Portaled popup that positions the option list against the trigger and adds
+ * scroll affordances for long menus.
+ */
 function SelectContent({
   className,
   children,
@@ -56,11 +73,7 @@ function SelectContent({
   alignOffset = 0,
   alignItemWithTrigger = false,
   ...props
-}: SelectPrimitive.Popup.Props &
-  Pick<
-    SelectPrimitive.Positioner.Props,
-    'align' | 'alignOffset' | 'side' | 'sideOffset' | 'alignItemWithTrigger'
-  >) {
+}: SelectContentProps) {
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Positioner
@@ -91,6 +104,7 @@ function SelectContent({
   );
 }
 
+/** Label for a `SelectGroup`, rendered inside the popup list. */
 function SelectLabel({
   className,
   ...props
@@ -107,6 +121,7 @@ function SelectLabel({
   );
 }
 
+/** Selectable option row. Disabled items are announced and cannot be selected. */
 function SelectItem({
   className,
   children,
@@ -135,6 +150,7 @@ function SelectItem({
   );
 }
 
+/** Visual separator between option groups inside the popup list. */
 function SelectSeparator({
   className,
   ...props
@@ -148,6 +164,9 @@ function SelectSeparator({
   );
 }
 
+/**
+ * Scroll affordance shown when options overflow above the visible popup area.
+ */
 function SelectScrollUpButton({
   className,
   ...props
@@ -166,6 +185,9 @@ function SelectScrollUpButton({
   );
 }
 
+/**
+ * Scroll affordance shown when options overflow below the visible popup area.
+ */
 function SelectScrollDownButton({
   className,
   ...props
