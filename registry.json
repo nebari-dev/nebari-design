@@ -177,6 +177,20 @@
       ]
     },
     {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog",
+      "description": "Modal dialog with overlay, close control, header, footer, title, and description parts, built on Base UI's Dialog.",
+      "dependencies": ["@base-ui-components/react", "lucide-react"],
+      "registryDependencies": ["utils", "button", "theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/dialog.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "claude-skill",
       "type": "registry:file",
       "title": "Nebari UI Claude Code skill",
