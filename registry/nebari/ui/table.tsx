@@ -1,14 +1,69 @@
+// biome-ignore-all lint/a11y/noNoninteractiveTabindex: table scroll containers need keyboard access when content overflows.
 import type * as React from 'react';
 import { cn } from '@/lib/utils';
 
+type TableProps = React.ComponentProps<'table'> & {
+  /** Accessible name for the keyboard-focusable horizontal scroll container. */
+  scrollContainerLabel?: string;
+  /** Additional classes for the horizontal scroll container. */
+  scrollContainerClassName?: string;
+  /** Props forwarded to the horizontal scroll container. */
+  scrollContainerProps?: Omit<React.ComponentProps<'section'>, 'children'>;
+};
+
+type TableHeadProps = Omit<
+  React.ComponentProps<'th'>,
+  'onClick' | 'onKeyDown'
+> & {
+  /** Makes the header sortable by rendering its contents in a real button. */
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
+};
+
 /** Responsive table frame with Nebari border, radius, and surface styling. */
-function Table({ className, ...props }: React.ComponentProps<'table'>) {
+function Table({
+  className,
+  scrollContainerClassName,
+  scrollContainerLabel,
+  scrollContainerProps,
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy,
+  ...props
+}: TableProps) {
+  const {
+    className: scrollContainerPropsClassName,
+    'aria-label': scrollContainerAriaLabel,
+    'aria-labelledby': scrollContainerAriaLabelledBy,
+    tabIndex: scrollContainerTabIndex,
+    ...resolvedScrollContainerProps
+  } = scrollContainerProps ?? {};
+  const resolvedScrollContainerLabel =
+    scrollContainerAriaLabel ??
+    scrollContainerLabel ??
+    (ariaLabel === undefined
+      ? 'Table scroll area'
+      : `${ariaLabel} scroll area`);
+
   return (
-    <div
+    <section
+      {...resolvedScrollContainerProps}
+      aria-label={
+        scrollContainerAriaLabelledBy === undefined
+          ? resolvedScrollContainerLabel
+          : undefined
+      }
+      aria-labelledby={scrollContainerAriaLabelledBy}
       data-slot="table-container"
-      className="relative w-full overflow-x-auto rounded-md border border-border bg-background"
+      tabIndex={scrollContainerTabIndex ?? 0}
+      className={cn(
+        'relative w-full overflow-x-auto rounded-md border border-border bg-background outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+        scrollContainerClassName,
+        scrollContainerPropsClassName,
+      )}
     >
       <table
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
         data-slot="table"
         className={cn(
           'w-full border-collapse caption-bottom text-left text-sm',
@@ -16,7 +71,7 @@ function Table({ className, ...props }: React.ComponentProps<'table'>) {
         )}
         {...props}
       />
-    </div>
+    </section>
   );
 }
 
@@ -58,7 +113,7 @@ function TableRow({ className, ...props }: React.ComponentProps<'tr'>) {
     <tr
       data-slot="table-row"
       className={cn(
-        'border-b border-border data-[state=selected]:bg-muted motion-safe:transition-[color,background-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]',
+        'border-b border-border hover:bg-muted/50 data-[state=selected]:bg-muted data-[state=selected]:hover:bg-muted motion-safe:transition-[color,background-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]',
         className,
       )}
       {...props}
@@ -68,40 +123,42 @@ function TableRow({ className, ...props }: React.ComponentProps<'tr'>) {
 
 function TableHead({
   className,
+  children,
   onClick,
   onKeyDown,
   tabIndex,
   ...props
-}: React.ComponentProps<'th'>) {
+}: TableHeadProps) {
   const isInteractive = onClick != null;
+  const ariaSort = props['aria-sort'] ?? (isInteractive ? 'none' : undefined);
 
   return (
     <th
       {...props}
+      aria-sort={ariaSort}
       data-slot="table-head"
-      tabIndex={tabIndex ?? (isInteractive ? 0 : undefined)}
+      tabIndex={isInteractive ? undefined : tabIndex}
       className={cn(
-        'relative h-10 px-4 text-left align-middle font-medium text-foreground text-xs leading-4 whitespace-nowrap [&:has([role=checkbox])]:pr-0',
-        isInteractive &&
-          'cursor-pointer underline-offset-4 hover:bg-muted-foreground/10 hover:underline focus:z-10 focus:bg-muted-foreground/10 focus:outline-none focus:after:pointer-events-none focus:after:absolute focus:after:inset-0 focus:after:border-2 focus:after:border-ring focus:after:content-[""] first:focus:after:rounded-tl-[calc(var(--radius-md)-1px)] last:focus:after:rounded-tr-[calc(var(--radius-md)-1px)] motion-safe:transition-[color,background-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]',
+        'relative h-10 text-left align-middle font-medium text-foreground text-xs leading-4 whitespace-nowrap [&:has([role=checkbox])]:pr-0',
+        isInteractive ? 'p-0' : 'px-4',
         className,
       )}
-      onClick={onClick}
-      onKeyDown={(event) => {
-        onKeyDown?.(event);
-
-        if (
-          event.defaultPrevented ||
-          !isInteractive ||
-          (event.key !== 'Enter' && event.key !== ' ')
-        ) {
-          return;
-        }
-
-        event.preventDefault();
-        event.currentTarget.click();
-      }}
-    />
+    >
+      {isInteractive ? (
+        <button
+          className="inline-flex h-10 w-full cursor-pointer items-center justify-start gap-1 bg-transparent px-4 text-left font-medium text-foreground text-xs leading-4 underline-offset-4 outline-none hover:bg-muted-foreground/10 hover:underline focus-visible:bg-muted-foreground/10 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset motion-safe:transition-[color,background-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]"
+          data-slot="table-head-button"
+          onClick={onClick}
+          onKeyDown={onKeyDown}
+          tabIndex={tabIndex}
+          type="button"
+        >
+          {children}
+        </button>
+      ) : (
+        children
+      )}
+    </th>
   );
 }
 
@@ -110,7 +167,7 @@ function TableCell({ className, ...props }: React.ComponentProps<'td'>) {
     <td
       data-slot="table-cell"
       className={cn(
-        'h-12 px-4 py-3 align-middle text-foreground text-sm leading-5 hover:bg-muted/50 motion-safe:transition-[color,background-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] [&:has([role=checkbox])]:pr-0',
+        'h-12 px-4 py-3 align-middle text-foreground text-sm leading-5 [&:has([role=checkbox])]:pr-0',
         className,
       )}
       {...props}
@@ -131,6 +188,7 @@ function TableCaption({
   );
 }
 
+export type { TableHeadProps, TableProps };
 export {
   Table,
   TableBody,

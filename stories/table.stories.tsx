@@ -1,10 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { ArrowDown, ArrowUp, ChevronsUpDown } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import {
   Table,
   TableBody,
   TableCaption,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -23,23 +25,10 @@ type SortDirection = 'ascending' | 'descending';
 type SortKey = 'name' | 'updated';
 type SortState = { direction: SortDirection; key: SortKey };
 
-const sortIconClassName =
-  'inline-flex w-3 shrink-0 justify-center text-muted-foreground/70';
+const sortIconClassName = 'size-3.5 shrink-0 text-muted-foreground/70';
 
-const tableDocsDescription = `Nebari table primitives for building semantic data tables. Each primitive forwards native HTML attributes for consumer customization.
-
-### Props
-
-| Component | Common props | Controls |
-| --- | --- | --- |
-| \`Table\` | \`children\`, \`aria-label\`, native \`<table>\` props | Renders the semantic table inside a responsive scroll container. |
-| \`TableHeader\` | \`children\`, native \`<thead>\` props | Groups column header rows. |
-| \`TableBody\` | \`children\`, native \`<tbody>\` props | Groups the primary data rows. |
-| \`TableFooter\` | \`children\`, native \`<tfoot>\` props | Groups summary or total rows. |
-| \`TableRow\` | \`children\`, \`data-state\`, native \`<tr>\` props | Renders a row. Use \`data-state="selected"\` for the selected-row style. |
-| \`TableHead\` | \`children\`, \`scope\`, \`onClick\`, \`aria-sort\`, \`tabIndex\`, native \`<th>\` props | Renders a header cell. Passing \`onClick\` makes it focusable and keyboard-activatable. |
-| \`TableCell\` | \`children\`, \`colSpan\`, native \`<td>\` props | Renders one data cell. Hover styling is applied per cell. |
-| \`TableCaption\` | \`children\`, native \`<caption>\` props | Adds a table caption. Use \`sr-only\` for screen-reader-only captions. |`;
+const tableDocsDescription =
+  'Nebari table primitives for building semantic data tables with responsive horizontal scrolling, captions, headers, body rows, footers, sortable headers, selected rows, and empty states.';
 
 const environments = [
   {
@@ -68,7 +57,9 @@ const environments = [
   },
 ] satisfies Environment[];
 
-const sortableColumnsSource = `type SortDirection = 'ascending' | 'descending';
+const sortableColumnsSource = `import { ArrowDown, ArrowUp, ChevronsUpDown } from 'lucide-react';
+
+type SortDirection = 'ascending' | 'descending';
 type SortKey = 'name' | 'updated';
 
 // Keep sort state in the component that owns the table data.
@@ -101,8 +92,8 @@ function handleSort(key: SortKey) {
 
 <TableHead
   // aria-sort tells assistive technology which column is sorted.
-  aria-sort={sort.key === 'name' ? sort.direction : undefined}
-  // TableHead becomes focusable and keyboard-activatable when onClick exists.
+  aria-sort={sort.key === 'name' ? sort.direction : 'none'}
+  // TableHead wraps sortable labels in a real button when onClick exists.
   onClick={() => {
     handleSort('name');
   }}
@@ -110,14 +101,15 @@ function handleSort(key: SortKey) {
 >
   <span className="inline-flex items-center gap-1">
     Environment
-    // Reserve a fixed icon slot so sorting does not resize the header.
-    <span aria-hidden="true" className="inline-flex w-3 justify-center">
-      {sort.key === 'name'
-        ? sort.direction === 'ascending'
-          ? '↑'
-          : '↓'
-        : '↕'}
-    </span>
+    {sort.key === 'name' ? (
+      sort.direction === 'ascending' ? (
+        <ArrowUp aria-hidden="true" className="size-3.5 shrink-0" />
+      ) : (
+        <ArrowDown aria-hidden="true" className="size-3.5 shrink-0" />
+      )
+    ) : (
+      <ChevronsUpDown aria-hidden="true" className="size-3.5 shrink-0" />
+    )}
   </span>
 </TableHead>
 
@@ -151,17 +143,44 @@ function sortEnvironments(
 
 function getSortIcon(sort: SortState, key: SortKey) {
   if (sort.key !== key) {
-    return '↕';
+    return <ChevronsUpDown aria-hidden="true" className={sortIconClassName} />;
   }
 
-  return sort.direction === 'ascending' ? '↑' : '↓';
+  const SortIcon = sort.direction === 'ascending' ? ArrowUp : ArrowDown;
+
+  return <SortIcon aria-hidden="true" className={sortIconClassName} />;
 }
 
-function EnvironmentRows({ rows }: { rows: Environment[] }) {
+function totalCpuCount(rows: Environment[]) {
+  return rows.reduce((total, environment) => {
+    const cpuMatch = environment.resources.match(/^(\d+) CPUs/);
+    return total + (cpuMatch == null ? 0 : Number(cpuMatch[1]));
+  }, 0);
+}
+
+function totalMemoryCount(rows: Environment[]) {
+  return rows.reduce((total, environment) => {
+    const memoryMatch = environment.resources.match(/\/ (\d+) GB$/);
+    return total + (memoryMatch == null ? 0 : Number(memoryMatch[1]));
+  }, 0);
+}
+
+function EnvironmentRows({
+  rows,
+  selectedName,
+}: {
+  rows: Environment[];
+  selectedName?: string;
+}) {
   return (
     <TableBody>
       {rows.map((environment) => (
-        <TableRow key={environment.name}>
+        <TableRow
+          data-state={
+            environment.name === selectedName ? 'selected' : undefined
+          }
+          key={environment.name}
+        >
           <TableCell className="font-medium">{environment.name}</TableCell>
           <TableCell>
             <span className="inline-flex items-center gap-2">
@@ -183,9 +202,24 @@ function EnvironmentRows({ rows }: { rows: Environment[] }) {
   );
 }
 
+function EnvironmentFooter({ rows }: { rows: Environment[] }) {
+  return (
+    <TableFooter>
+      <TableRow>
+        <TableCell className="font-medium" colSpan={4}>
+          Total allocated
+        </TableCell>
+        <TableCell className="text-right">
+          {totalCpuCount(rows)} CPUs / {totalMemoryCount(rows)} GB
+        </TableCell>
+      </TableRow>
+    </TableFooter>
+  );
+}
+
 function StaticEnvironmentsTable() {
   return (
-    <Table>
+    <Table aria-label="Nebari environments">
       <TableCaption className="sr-only">
         Nebari environments and their current status
       </TableCaption>
@@ -201,6 +235,58 @@ function StaticEnvironmentsTable() {
         </TableRow>
       </TableHeader>
       <EnvironmentRows rows={environments} />
+    </Table>
+  );
+}
+
+function DefaultEnvironmentsTable() {
+  return (
+    <Table aria-label="Environment resource allocation">
+      <TableCaption>
+        Environment resource allocation across active Nebari workspaces.
+      </TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead scope="col">Environment</TableHead>
+          <TableHead scope="col">Status</TableHead>
+          <TableHead scope="col">Owner</TableHead>
+          <TableHead scope="col">Last updated</TableHead>
+          <TableHead className="text-right" scope="col">
+            Resources
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <EnvironmentRows rows={environments} />
+      <EnvironmentFooter rows={environments} />
+    </Table>
+  );
+}
+
+function EmptyEnvironmentsTable() {
+  return (
+    <Table aria-label="Environment search results">
+      <TableCaption>No environments match the current filters.</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead scope="col">Environment</TableHead>
+          <TableHead scope="col">Status</TableHead>
+          <TableHead scope="col">Owner</TableHead>
+          <TableHead scope="col">Last updated</TableHead>
+          <TableHead className="text-right" scope="col">
+            Resources
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <TableRow>
+          <TableCell
+            className="h-24 text-center text-muted-foreground"
+            colSpan={5}
+          >
+            No environments found.
+          </TableCell>
+        </TableRow>
+      </TableBody>
     </Table>
   );
 }
@@ -230,7 +316,7 @@ function SortEnabledHeaderPreview() {
       <TableHeader>
         <TableRow>
           <TableHead
-            aria-sort={sort.key === 'name' ? sort.direction : undefined}
+            aria-sort={sort.key === 'name' ? sort.direction : 'none'}
             onClick={() => {
               handleSort('name');
             }}
@@ -238,15 +324,13 @@ function SortEnabledHeaderPreview() {
           >
             <span className="inline-flex items-center gap-1">
               Environment
-              <span aria-hidden="true" className={sortIconClassName}>
-                {getSortIcon(sort, 'name')}
-              </span>
+              {getSortIcon(sort, 'name')}
             </span>
           </TableHead>
           <TableHead scope="col">Status</TableHead>
           <TableHead scope="col">Owner</TableHead>
           <TableHead
-            aria-sort={sort.key === 'updated' ? sort.direction : undefined}
+            aria-sort={sort.key === 'updated' ? sort.direction : 'none'}
             onClick={() => {
               handleSort('updated');
             }}
@@ -254,9 +338,7 @@ function SortEnabledHeaderPreview() {
           >
             <span className="inline-flex items-center gap-1">
               Last updated
-              <span aria-hidden="true" className={sortIconClassName}>
-                {getSortIcon(sort, 'updated')}
-              </span>
+              {getSortIcon(sort, 'updated')}
             </span>
           </TableHead>
           <TableHead className="text-right" scope="col">
@@ -301,7 +383,7 @@ function SortableEnvironmentsTable() {
       <TableHeader>
         <TableRow>
           <TableHead
-            aria-sort={sort.key === 'name' ? sort.direction : undefined}
+            aria-sort={sort.key === 'name' ? sort.direction : 'none'}
             onClick={() => {
               handleSort('name');
             }}
@@ -309,15 +391,13 @@ function SortableEnvironmentsTable() {
           >
             <span className="inline-flex items-center gap-1">
               Environment
-              <span aria-hidden="true" className={sortIconClassName}>
-                {getSortIcon(sort, 'name')}
-              </span>
+              {getSortIcon(sort, 'name')}
             </span>
           </TableHead>
           <TableHead scope="col">Status</TableHead>
           <TableHead scope="col">Owner</TableHead>
           <TableHead
-            aria-sort={sort.key === 'updated' ? sort.direction : undefined}
+            aria-sort={sort.key === 'updated' ? sort.direction : 'none'}
             onClick={() => {
               handleSort('updated');
             }}
@@ -325,9 +405,7 @@ function SortableEnvironmentsTable() {
           >
             <span className="inline-flex items-center gap-1">
               Last updated
-              <span aria-hidden="true" className={sortIconClassName}>
-                {getSortIcon(sort, 'updated')}
-              </span>
+              {getSortIcon(sort, 'updated')}
             </span>
           </TableHead>
           <TableHead className="text-right" scope="col">
@@ -357,6 +435,14 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  render: () => (
+    <div className="w-[56rem] max-w-[calc(100vw-3rem)]">
+      <DefaultEnvironmentsTable />
+    </div>
+  ),
+};
 
 export const Header: Story = {
   render: () => (
@@ -404,6 +490,66 @@ export const Cell: Story = {
           </TableRow>
         </TableBody>
       </Table>
+    </div>
+  ),
+};
+
+export const WithFooter: Story = {
+  name: 'With footer',
+  render: () => (
+    <div className="w-[56rem] max-w-[calc(100vw-3rem)]">
+      <Table aria-label="Environment totals">
+        <TableCaption className="sr-only">
+          Nebari environments with total allocated resources
+        </TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead scope="col">Environment</TableHead>
+            <TableHead scope="col">Status</TableHead>
+            <TableHead scope="col">Owner</TableHead>
+            <TableHead scope="col">Last updated</TableHead>
+            <TableHead className="text-right" scope="col">
+              Resources
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <EnvironmentRows rows={environments} />
+        <EnvironmentFooter rows={environments} />
+      </Table>
+    </div>
+  ),
+};
+
+export const SelectedRow: Story = {
+  name: 'Selected row',
+  render: () => (
+    <div className="w-[56rem] max-w-[calc(100vw-3rem)]">
+      <Table aria-label="Selected environment">
+        <TableCaption className="sr-only">
+          Nebari environments with the selected row highlighted
+        </TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead scope="col">Environment</TableHead>
+            <TableHead scope="col">Status</TableHead>
+            <TableHead scope="col">Owner</TableHead>
+            <TableHead scope="col">Last updated</TableHead>
+            <TableHead className="text-right" scope="col">
+              Resources
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <EnvironmentRows rows={environments} selectedName="Model Training" />
+      </Table>
+    </div>
+  ),
+};
+
+export const EmptyState: Story = {
+  name: 'Empty state',
+  render: () => (
+    <div className="w-[56rem] max-w-[calc(100vw-3rem)]">
+      <EmptyEnvironmentsTable />
     </div>
   ),
 };

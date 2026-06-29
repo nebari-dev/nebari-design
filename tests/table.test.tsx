@@ -81,8 +81,17 @@ describe('Table', () => {
     render(<TestTable />);
 
     const table = screen.getByRole('table', { name: 'Environments' });
+    const scrollContainer = screen.getByRole('region', {
+      name: 'Environments scroll area',
+    });
+
     expect(table).toHaveAttribute('data-slot', 'table');
-    expect(table.parentElement).toHaveAttribute('data-slot', 'table-container');
+    expect(scrollContainer).toHaveAttribute('data-slot', 'table-container');
+    expect(scrollContainer).toHaveAttribute('tabindex', '0');
+    expect(scrollContainer).toHaveClass(
+      'overflow-x-auto',
+      'focus-visible:ring-2',
+    );
     expect(
       table.querySelector('[data-slot="table-header"]'),
     ).toBeInTheDocument();
@@ -117,9 +126,10 @@ describe('Table', () => {
       expect(header).not.toHaveAttribute('tabindex');
       expect(header).not.toHaveClass('hover:underline');
     }
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 
-  it('allows interactive header cells to be hovered and focused by clicking', async () => {
+  it('renders sortable header labels as real buttons', async () => {
     const user = userEvent.setup();
     const onSort = vi.fn();
     render(
@@ -135,23 +145,24 @@ describe('Table', () => {
     );
 
     const header = screen.getByRole('columnheader', { name: 'Name' });
-    expect(header).toHaveAttribute('tabindex', '0');
-    expect(header).toHaveClass(
+    const sortButton = screen.getByRole('button', { name: 'Name' });
+
+    expect(header).not.toHaveAttribute('tabindex');
+    expect(header).toHaveAttribute('aria-sort', 'none');
+    expect(sortButton).toHaveAttribute('data-slot', 'table-head-button');
+    expect(sortButton).toHaveClass(
       'hover:bg-muted-foreground/10',
       'hover:underline',
-      'focus:after:border-2',
-      'focus:after:border-ring',
-      'first:focus:after:rounded-tl-[calc(var(--radius-md)-1px)]',
-      'last:focus:after:rounded-tr-[calc(var(--radius-md)-1px)]',
+      'focus-visible:ring-2',
+      'focus-visible:ring-ring',
     );
-    expect(header).not.toHaveClass('focus:after:rounded-sm');
 
-    await user.click(header);
-    expect(header).toHaveFocus();
+    await user.click(sortButton);
+    expect(sortButton).toHaveFocus();
     expect(onSort).toHaveBeenCalledOnce();
   });
 
-  it('activates interactive header cells from the keyboard', async () => {
+  it('activates sortable header buttons from the keyboard', async () => {
     const user = userEvent.setup();
     const onSort = vi.fn();
     render(
@@ -166,7 +177,7 @@ describe('Table', () => {
       </Table>,
     );
 
-    screen.getByRole('columnheader', { name: 'Name' }).focus();
+    screen.getByRole('button', { name: 'Name' }).focus();
     await user.keyboard('{Enter}');
     await user.keyboard(' ');
 
@@ -181,14 +192,14 @@ describe('Table', () => {
       ['Beta', 'Stopped', 'Alpha', 'Running'],
     );
 
-    await user.click(screen.getByRole('columnheader', { name: 'Name' }));
+    await user.click(screen.getByRole('button', { name: 'Name' }));
 
     expect(screen.getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
       ['Alpha', 'Running', 'Beta', 'Stopped'],
     );
   });
 
-  it('keeps selection on the row and hover styling on each cell', () => {
+  it('keeps selection and hover styling on the row', () => {
     render(<TestTable />);
 
     const nameCell = screen.getByRole('cell', { name: 'Data Science' });
@@ -197,9 +208,9 @@ describe('Table', () => {
 
     expect(row).toHaveAttribute('data-state', 'selected');
     expect(row).toHaveClass('data-[state=selected]:bg-muted');
-    expect(row).not.toHaveClass('hover:bg-muted/50');
-    expect(nameCell).toHaveClass('hover:bg-muted/50');
-    expect(statusCell).toHaveClass('hover:bg-muted/50');
+    expect(row).toHaveClass('hover:bg-muted/50');
+    expect(nameCell).not.toHaveClass('hover:bg-muted/50');
+    expect(statusCell).not.toHaveClass('hover:bg-muted/50');
   });
 
   it('merges caller classes onto the table and cells', () => {
