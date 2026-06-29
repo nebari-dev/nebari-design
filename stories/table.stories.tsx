@@ -174,30 +174,38 @@ function EnvironmentRows({
 }) {
   return (
     <TableBody>
-      {rows.map((environment) => (
-        <TableRow
-          data-state={
-            environment.name === selectedName ? 'selected' : undefined
-          }
-          key={environment.name}
-        >
-          <TableCell className="font-medium">{environment.name}</TableCell>
-          <TableCell>
-            <span className="inline-flex items-center gap-2">
-              <span
-                aria-hidden="true"
-                className="size-2 rounded-full bg-primary"
-              />
-              {environment.status}
-            </span>
-          </TableCell>
-          <TableCell>{environment.owner}</TableCell>
-          <TableCell className="text-muted-foreground">
-            {environment.updated}
-          </TableCell>
-          <TableCell className="text-right">{environment.resources}</TableCell>
-        </TableRow>
-      ))}
+      {rows.map((environment) => {
+        const isSelected = environment.name === selectedName;
+
+        return (
+          <TableRow
+            data-state={isSelected ? 'selected' : undefined}
+            key={environment.name}
+          >
+            <TableCell className="font-medium">{environment.name}</TableCell>
+            <TableCell>
+              <span className="inline-flex items-center gap-2">
+                <span
+                  aria-hidden="true"
+                  className="size-2 rounded-full bg-primary"
+                />
+                {environment.status}
+              </span>
+            </TableCell>
+            <TableCell>{environment.owner}</TableCell>
+            <TableCell
+              className={
+                isSelected ? 'text-foreground' : 'text-muted-foreground'
+              }
+            >
+              {environment.updated}
+            </TableCell>
+            <TableCell className="text-right">
+              {environment.resources}
+            </TableCell>
+          </TableRow>
+        );
+      })}
     </TableBody>
   );
 }
