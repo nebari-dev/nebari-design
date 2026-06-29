@@ -23,15 +23,15 @@ const tabsListVariants = cva(
 );
 
 const tabsTabVariants = cva(
-  'relative z-10 inline-flex min-w-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium underline-offset-4 outline-none hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background data-[active]:text-foreground data-[disabled]:pointer-events-none data-[disabled]:text-muted-foreground/50 data-[disabled]:no-underline data-[orientation=vertical]:justify-start disabled:pointer-events-none disabled:text-muted-foreground/50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*="size-"])]:size-4',
+  'relative z-10 inline-flex min-w-0 items-center justify-center gap-1.5 whitespace-nowrap px-3 py-2 text-sm font-medium underline-offset-4 outline-none hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background data-[active]:text-foreground data-[disabled]:pointer-events-none data-[disabled]:text-muted-foreground/50 data-[disabled]:no-underline data-[orientation=vertical]:justify-start disabled:pointer-events-none disabled:text-muted-foreground/50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*="size-"])]:size-4',
   {
     variants: {
       variant: {
-        pill: 'h-[calc(100%-1px)] rounded-md border border-border bg-card px-2 py-1 data-[active]:border-border-strong data-[disabled]:bg-muted data-[orientation=vertical]:h-8',
+        pill: 'h-[calc(100%-1px)] rounded-sm border border-border bg-card px-2 py-1 data-[active]:border-border-strong data-[active]:shadow-[0_1px_1.5px_rgb(0_0_0_/_0.1)] data-[disabled]:bg-muted data-[orientation=vertical]:h-8',
         underline: 'rounded-none px-0 pb-2',
         line: 'rounded-none px-0 pb-2',
         toggle:
-          'h-[calc(100%-1px)] rounded-md border border-border bg-card px-2 py-1 data-[active]:border-border-strong data-[disabled]:bg-muted data-[orientation=vertical]:h-8',
+          'h-[calc(100%-1px)] rounded-sm border border-border bg-card px-2 py-1 data-[active]:border-border-strong data-[active]:shadow-[0_1px_1.5px_rgb(0_0_0_/_0.1)] data-[disabled]:bg-muted data-[orientation=vertical]:h-8',
       },
     },
     defaultVariants: {
