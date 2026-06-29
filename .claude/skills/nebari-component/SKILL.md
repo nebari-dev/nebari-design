@@ -121,12 +121,13 @@ The rules this encodes:
   `ref` as a normal prop and Base UI threads it through).
 - **Semantic tokens only.** Use theme tokens; never hard-code brand hex values or
   add `dark:` utilities — the `.dark` class on an ancestor remaps the tokens.
-- **Motion via tokens.** Add
+- **Motion via tokens (where it makes sense).** For interactive components, add
   `motion-safe:transition-[color,background-color,border-color,opacity,transform]`,
   `motion-safe:duration-[--duration-fast]`, and `motion-safe:ease-[--ease-standard]`
-  to the `cva` base class of every interactive component, plus
-  `motion-safe:active:scale-[0.97]` for press feedback. See the
-  [Motion](#motion) section for the full rules and overlay patterns.
+  to the `cva` base class, plus `motion-safe:active:scale-[0.97]` for press
+  feedback. Static structure/content components stay still. See the
+  [Motion](#motion) section for when to animate, the full rules, and overlay
+  patterns.
 
 For a component that is purely a styled wrapper with no element swapping, a plain
 `React.ComponentProps<'tag'>` + `<tag data-slot=… className={cn(...)} {...props} />`
@@ -174,11 +175,40 @@ Add an item to the `items` array:
 
 ## Motion
 
-Motion is a first-class authoring concern. Every interactive component should
-ship with token-driven interaction feedback baked into its `cva` base class;
-components that mount/unmount should wire Base UI's CSS-transition hooks in
-their source. Retrofitting motion is always harder than getting it right at
-authoring time.
+Motion is a first-class authoring concern, but **not every component needs it**.
+Add motion where it carries meaning — communicating a state change, a press, or
+an element entering/leaving — and skip it where it would be decoration. Motion
+applied indiscriminately reads as noise; motion withheld where the eye expects
+feedback reads as broken. Decide deliberately per component.
+
+### When motion makes sense (and when to skip it)
+
+Add motion when the component **changes state or position the user should
+perceive**:
+
+- **Interactive controls** that respond to hover/focus/press — `button`,
+  `badge` (when actionable), `switch`, `checkbox`, `radio-group`. These get the
+  token-driven interaction-state classes below baked into their `cva` base.
+- **Overlays that mount/unmount** — `dialog`, `popover`, `menu`, `tooltip`,
+  `select`, `sheet`/`drawer`. These wire Base UI's enter/exit transition
+  attributes in their source.
+- **Status / async feedback** — `spinner`, skeleton/shimmer, progress, toast.
+  The motion *is* the information.
+
+Skip motion (or keep it to inherited focus rings only) for components that are
+**static structure or content**:
+
+- Layout and text primitives — `label`, `field`, plain `input`/`textarea`
+  (beyond the focus-ring transition they inherit), separators, cards used purely
+  as containers, typography.
+- Anything where added movement wouldn't reflect a real state change. A
+  resting, non-interactive element should sit still.
+
+When unsure, ask: *does something the user did, or something that changed,
+warrant visible feedback here?* If yes, animate it with the tokens below. If no,
+leave it static — that is a valid and often correct choice. Retrofitting motion
+onto a component that needs it is harder than getting it right at authoring
+time, so make the call deliberately rather than defaulting either way.
 
 ### Ground rules
 
@@ -197,9 +227,10 @@ authoring time.
    list every property you need:
    `transition-[color,background-color,border-color,opacity,transform]`.
 
-### Interaction states (all interactive components)
+### Interaction states (interactive components only)
 
-Add to every interactive component's `cva` base class:
+For the interactive components identified above — those that respond to
+hover/focus/press — add to the `cva` base class:
 
 ```
 motion-safe:transition-[color,background-color,border-color,opacity,transform]

@@ -70,6 +70,22 @@ export const WithDescription: Story = {
 };
 
 /**
+ * Use `orientation="horizontal"` to arrange related radio options in a
+ * wrapping row. The group still owns the single-selection behavior.
+ */
+export const Horizontal: Story = {
+  render: () => (
+    <div className="w-[28rem]">
+      <RadioGroup aria-label="Plan" defaultValue="pro" orientation="horizontal">
+        <RadioGroupItem value="starter">Starter</RadioGroupItem>
+        <RadioGroupItem value="pro">Pro</RadioGroupItem>
+        <RadioGroupItem value="team">Team</RadioGroupItem>
+      </RadioGroup>
+    </div>
+  ),
+};
+
+/**
  * The `box` variant turns each option into a bordered, fully clickable card.
  * Reach for it when options carry more content or need a larger hit target.
  */

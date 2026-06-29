@@ -132,8 +132,19 @@ rules that are easy to get wrong:
 
 Motion tokens (`--duration-*`, `--ease-*`) and entrance animation utilities
 (`--animate-*` / `@keyframes`) are shipped as part of the `theme` item in
-`registry.json` and defined in `globals.css`. Follow these rules when adding
-animation to components or compositions:
+`registry.json` and defined in `globals.css`.
+
+**Add motion where it carries meaning, not everywhere.** Animate components that
+change state or position the user should perceive — interactive controls
+(hover/focus/press feedback), overlays that mount/unmount (enter/exit), and
+status/async indicators (spinner, skeleton, progress). Leave static structure
+and content primitives (`label`, `field`, separators, typography, plain
+containers) still, beyond any focus-ring transition they inherit. When unsure,
+ask whether something the user did — or something that changed — warrants
+visible feedback; if not, no motion is the right answer. The `nebari-component`
+skill's Motion section has the full per-component rubric.
+
+Once you've decided a component should move, follow these rules:
 
 - **Always gate on `motion-safe:`.** Every animation or transition class must
   be prefixed: `motion-safe:animate-fade-in`, `motion-safe:transition-transform`.

@@ -1,8 +1,21 @@
 import { Checkbox as CheckboxPrimitive } from '@base-ui-components/react/checkbox';
+import { CheckboxGroup as CheckboxGroupPrimitive } from '@base-ui-components/react/checkbox-group';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { CheckIcon, MinusIcon } from 'lucide-react';
 import { type ReactNode, useId } from 'react';
 import { cn } from '@/lib/utils';
+
+const checkboxGroupVariants = cva('w-full rounded-sm', {
+  variants: {
+    orientation: {
+      vertical: 'grid gap-3',
+      horizontal: 'flex flex-wrap items-start gap-x-5 gap-y-3',
+    },
+  },
+  defaultVariants: {
+    orientation: 'vertical',
+  },
+});
 
 const checkboxVariants = cva(
   'group/checkbox inline-flex cursor-pointer select-none items-start gap-2 text-left text-foreground outline-none active:text-muted-foreground-strong',
@@ -20,6 +33,15 @@ const checkboxVariants = cva(
   },
 );
 
+type CheckboxGroupOrientation = NonNullable<
+  VariantProps<typeof checkboxGroupVariants>['orientation']
+>;
+
+type CheckboxGroupProps = Omit<CheckboxGroupPrimitive.Props, 'orientation'> & {
+  /** Controls whether checkbox items stack vertically or wrap horizontally. */
+  orientation?: CheckboxGroupOrientation;
+};
+
 type CheckboxProps = Omit<
   CheckboxPrimitive.Root.Props,
   'children' | 'className'
@@ -30,6 +52,27 @@ type CheckboxProps = Omit<
     /** Supplementary text exposed as the checkbox's accessible description. */
     description?: ReactNode;
   };
+
+/** Groups related checkboxes and controls their vertical or horizontal layout. */
+function CheckboxGroup({
+  className,
+  orientation = 'vertical',
+  ...props
+}: CheckboxGroupProps) {
+  return (
+    <CheckboxGroupPrimitive
+      {...props}
+      className={(state) =>
+        cn(
+          checkboxGroupVariants({ orientation }),
+          typeof className === 'function' ? className(state) : className,
+        )
+      }
+      data-orientation={orientation}
+      data-slot="checkbox-group"
+    />
+  );
+}
 
 /**
  * Checkbox implemented from the Nebari Figma spec on top of Base UI.
@@ -156,5 +199,5 @@ function Checkbox({
   );
 }
 
-export type { CheckboxProps };
-export { Checkbox, checkboxVariants };
+export type { CheckboxGroupProps, CheckboxProps };
+export { Checkbox, CheckboxGroup, checkboxGroupVariants, checkboxVariants };
