@@ -1,9 +1,45 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { Checkbox, checkboxVariants } from '@/ui/checkbox';
+import {
+  Checkbox,
+  CheckboxGroup,
+  checkboxGroupVariants,
+  checkboxVariants,
+} from '@/ui/checkbox';
 
 describe('Checkbox', () => {
+  it('renders a vertical checkbox group by default', () => {
+    render(
+      <CheckboxGroup aria-label="Workspace features">
+        <Checkbox value="notebooks">Notebooks</Checkbox>
+      </CheckboxGroup>,
+    );
+
+    const group = screen.getByRole('group', {
+      name: 'Workspace features',
+    });
+    expect(group).toHaveAttribute('data-slot', 'checkbox-group');
+    expect(group).toHaveAttribute('data-orientation', 'vertical');
+    expect(group).toHaveClass('grid', 'gap-3');
+  });
+
+  it('lays out a checkbox group horizontally when requested', () => {
+    render(
+      <CheckboxGroup aria-label="Workspace features" orientation="horizontal">
+        <Checkbox value="notebooks">Notebooks</Checkbox>
+        <Checkbox value="dashboards">Dashboards</Checkbox>
+      </CheckboxGroup>,
+    );
+
+    const group = screen.getByRole('group', {
+      name: 'Workspace features',
+    });
+    expect(group).toHaveAttribute('data-orientation', 'horizontal');
+    expect(group).toHaveClass('flex', 'flex-wrap', 'gap-x-5', 'gap-y-3');
+    expect(group).not.toHaveClass('grid');
+  });
+
   it('renders the default, unchecked variant with stable data hooks', () => {
     render(<Checkbox description="A description">Checkbox Text</Checkbox>);
 
@@ -152,9 +188,12 @@ describe('Checkbox', () => {
   });
 
   it('exposes interaction classes and checkboxVariants', () => {
+    const groupClasses = checkboxGroupVariants({ orientation: 'horizontal' });
     const defaultClasses = checkboxVariants({ variant: 'default' });
     const boxClasses = checkboxVariants({ variant: 'box' });
 
+    expect(groupClasses).toContain('flex');
+    expect(groupClasses).toContain('gap-x-5');
     expect(defaultClasses).not.toContain('motion-safe:');
     expect(defaultClasses).toContain('focus-visible:ring-offset-2');
     expect(defaultClasses).toContain('rounded-[2px]');

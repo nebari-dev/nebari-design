@@ -6,6 +6,7 @@ import {
   RadioGroup,
   RadioGroupItem,
   radioGroupItemVariants,
+  radioGroupVariants,
 } from '@/ui/radio-group';
 
 describe('RadioGroup', () => {
@@ -21,6 +22,7 @@ describe('RadioGroup', () => {
     const group = screen.getByRole('radiogroup', { name: 'Plan' });
     const radio = screen.getByRole('radio', { name: 'Starter' });
     expect(group).toHaveAttribute('data-slot', 'radio-group');
+    expect(group).toHaveAttribute('data-orientation', 'vertical');
     expect(group).toHaveClass('grid', 'gap-3');
     expect(radio).toHaveAttribute('data-slot', 'radio-group-item');
     expect(radio).toHaveAttribute('data-variant', 'default');
@@ -118,6 +120,20 @@ describe('RadioGroup', () => {
       'gap-5',
     );
     expect(screen.getByRole('radio', { name: 'Starter' })).toHaveClass('p-4');
+  });
+
+  it('lays out the group horizontally when requested', () => {
+    render(
+      <RadioGroup aria-label="Plan" orientation="horizontal">
+        <RadioGroupItem value="starter">Starter</RadioGroupItem>
+        <RadioGroupItem value="pro">Pro</RadioGroupItem>
+      </RadioGroup>,
+    );
+
+    const group = screen.getByRole('radiogroup', { name: 'Plan' });
+    expect(group).toHaveAttribute('data-orientation', 'horizontal');
+    expect(group).toHaveClass('flex', 'flex-wrap', 'gap-x-5', 'gap-y-3');
+    expect(group).not.toHaveClass('grid');
   });
 
   it('does not select a disabled item', async () => {
@@ -248,9 +264,12 @@ describe('RadioGroup', () => {
   });
 
   it('exposes interaction classes and radioGroupItemVariants', () => {
+    const groupClasses = radioGroupVariants({ orientation: 'horizontal' });
     const defaultClasses = radioGroupItemVariants({ variant: 'default' });
     const boxClasses = radioGroupItemVariants({ variant: 'box' });
 
+    expect(groupClasses).toContain('flex');
+    expect(groupClasses).toContain('gap-x-5');
     expect(defaultClasses).not.toContain('motion-safe:');
     expect(defaultClasses).toContain('focus-visible:border-ring');
     expect(defaultClasses).toContain('rounded-sm');
