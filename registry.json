@@ -191,6 +191,20 @@
       ]
     },
     {
+      "name": "code-block",
+      "type": "registry:ui",
+      "title": "Code Block",
+      "description": "Formatted, monospaced code snippet with an optional language/filename header, a copy-to-clipboard button, and optional line numbers. Composed of CodeBlock, CodeBlockHeader, CodeBlockBody, and CodeBlockCopyButton.",
+      "dependencies": ["class-variance-authority", "lucide-react"],
+      "registryDependencies": ["utils", "theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/code-block.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "claude-skill",
       "type": "registry:file",
       "title": "Nebari UI Claude Code skill",
