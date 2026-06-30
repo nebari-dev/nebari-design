@@ -191,6 +191,20 @@
       ]
     },
     {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "title": "Tooltip",
+      "description": "Compact supplemental information shown on hover or keyboard focus, with anchored positioning and optional arrow.",
+      "dependencies": ["@base-ui-components/react"],
+      "registryDependencies": ["utils", "theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/tooltip.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "claude-skill",
       "type": "registry:file",
       "title": "Nebari UI Claude Code skill",
