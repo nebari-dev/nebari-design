@@ -120,7 +120,7 @@
       "name": "table",
       "type": "registry:ui",
       "title": "Table",
-      "description": "Responsive data table with Nebari header, cell, row, footer, caption, selection, and hover styling.",
+      "description": "Responsive data table with Nebari header, cell, row, footer, caption, and hover styling.",
       "registryDependencies": ["utils", "theme"],
       "files": [
         {
