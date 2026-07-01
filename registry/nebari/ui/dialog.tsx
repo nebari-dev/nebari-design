@@ -49,7 +49,7 @@ function DialogOverlay({ className, ...props }: DialogOverlayProps) {
       data-slot="dialog-overlay"
       className={(state) =>
         cn(
-          'fixed inset-0 z-50 bg-foreground/30 data-[starting-style]:opacity-0 data-[ending-style]:opacity-0 motion-safe:transition-[opacity] motion-safe:duration-[--duration-base] motion-safe:ease-[--ease-standard]',
+          'fixed inset-0 z-50 bg-scrim data-[starting-style]:opacity-0 data-[ending-style]:opacity-0 motion-safe:transition-[opacity] motion-safe:duration-[--duration-base] motion-safe:ease-[--ease-standard]',
           typeof className === 'function' ? className(state) : className,
         )
       }

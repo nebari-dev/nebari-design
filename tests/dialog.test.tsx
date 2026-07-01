@@ -65,7 +65,7 @@ describe('Dialog', () => {
       'dialog-description',
     );
     expect(document.querySelector('[data-slot="dialog-overlay"]')).toHaveClass(
-      'bg-foreground/30',
+      'bg-scrim',
       'motion-safe:transition-[opacity]',
     );
     expect(document.querySelector('[data-slot="dialog-viewport"]')).toHaveClass(

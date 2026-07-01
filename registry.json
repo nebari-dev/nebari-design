@@ -191,6 +191,20 @@
       ]
     },
     {
+      "name": "tabs",
+      "type": "registry:ui",
+      "title": "Tabs",
+      "description": "Tabs for switching between related panels, with pill and underline variants built on Base UI.",
+      "dependencies": ["@base-ui-components/react", "class-variance-authority"],
+      "registryDependencies": ["utils"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/tabs.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "select",
       "type": "registry:ui",
       "title": "Select",
@@ -256,6 +270,7 @@
         "light": {
           "background": "oklch(97.91% 0 0)",
           "foreground": "oklch(26.94% 0.0037 286.15)",
+          "scrim": "rgba(0, 0, 0, 0.5)",
           "card": "oklch(100% 0 0)",
           "card-foreground": "oklch(26.94% 0.0037 286.15)",
           "popover": "oklch(100% 0 0)",
@@ -297,6 +312,7 @@
         "dark": {
           "background": "oklch(26.94% 0.0037 286.15)",
           "foreground": "oklch(97.91% 0 0)",
+          "scrim": "rgba(0, 0, 0, 0.6)",
           "card": "oklch(33.01% 0.0052 286.11)",
           "card-foreground": "oklch(97.91% 0 0)",
           "popover": "oklch(26.94% 0.0037 286.15)",
