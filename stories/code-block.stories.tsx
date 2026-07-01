@@ -30,7 +30,12 @@ const meta = {
       },
     },
   },
-  args: { code: basicSnippet, showLineNumbers: false, dark: false },
+  args: {
+    code: basicSnippet,
+    showLineNumbers: false,
+    showCopyButton: true,
+    dark: false,
+  },
   argTypes: {
     code: {
       description:
@@ -41,6 +46,12 @@ const meta = {
       description: 'Render a non-selectable, aria-hidden line-number gutter.',
       control: 'boolean',
       table: { defaultValue: { summary: 'false' } },
+    },
+    showCopyButton: {
+      description:
+        'Render a floating copy button in the top-right — for header-less blocks.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'true' } },
     },
     dark: {
       description:
@@ -60,7 +71,8 @@ export const Basic: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'A bare snippet with no header — just the monospaced body.',
+        story:
+          'A header-less snippet with a floating copy button. Copy is the most-expected action, so the button sits in the top-right corner over the body even without a header bar.',
       },
     },
   },
@@ -71,8 +83,9 @@ export const Basic: Story = {
   ),
 };
 
-export const WithHeaderAndCopy: Story = {
-  name: 'With header + copy',
+export const WithHeader: Story = {
+  name: 'With header',
+  args: { showCopyButton: false },
   parameters: {
     docs: {
       description: {
@@ -94,7 +107,11 @@ export const WithHeaderAndCopy: Story = {
 
 export const WithLineNumbers: Story = {
   name: 'With line numbers',
-  args: { code: multiLineSnippet, showLineNumbers: true },
+  args: {
+    code: multiLineSnippet,
+    showLineNumbers: true,
+    showCopyButton: false,
+  },
   parameters: {
     docs: {
       description: {
@@ -116,7 +133,12 @@ export const WithLineNumbers: Story = {
 
 export const Dark: Story = {
   name: 'Dark',
-  args: { code: multiLineSnippet, showLineNumbers: true, dark: true },
+  args: {
+    code: multiLineSnippet,
+    showLineNumbers: true,
+    showCopyButton: false,
+    dark: true,
+  },
   parameters: {
     docs: {
       description: {

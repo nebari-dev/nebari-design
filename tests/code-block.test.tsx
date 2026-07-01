@@ -106,6 +106,27 @@ describe('CodeBlock', () => {
     expect(within(body).getByText('3')).toBeInTheDocument();
   });
 
+  it('renders all gutter cells in a single shared grid so the column stays aligned past 9 lines', () => {
+    // A per-line grid sizes its gutter column independently, so the code column
+    // shifts when the count crosses 9→10. One grid for the whole snippet keeps
+    // the `auto` gutter column uniform.
+    const tenLines = Array.from({ length: 10 }, (_, i) => `line ${i + 1}`).join(
+      '\n',
+    );
+    render(
+      <CodeBlock code={tenLines} showLineNumbers>
+        <CodeBlockBody />
+      </CodeBlock>,
+    );
+
+    const one = screen.getByText('1');
+    const ten = screen.getByText('10');
+    const grid = one.closest('code');
+    expect(grid).toHaveClass('grid', 'grid-cols-[auto_1fr]');
+    // Both gutter numbers live in the same grid, so they share one column.
+    expect(ten.closest('code')).toBe(grid);
+  });
+
   it('does not render line numbers by default', () => {
     render(
       <CodeBlock code={snippet}>
@@ -124,7 +145,7 @@ describe('CodeBlock', () => {
     mockClipboard(writeText);
 
     render(
-      <CodeBlock code={snippet}>
+      <CodeBlock code={snippet} showCopyButton={false}>
         <CodeBlockHeader>
           <CodeBlockCopyButton />
         </CodeBlockHeader>
@@ -148,7 +169,7 @@ describe('CodeBlock', () => {
     mockClipboard(writeText);
 
     render(
-      <CodeBlock code={snippet}>
+      <CodeBlock code={snippet} showCopyButton={false}>
         <CodeBlockCopyButton />
       </CodeBlock>,
     );
@@ -161,7 +182,7 @@ describe('CodeBlock', () => {
 
   it('reflects the copy-button size as a data attribute and exposes its variants', () => {
     render(
-      <CodeBlock code={snippet}>
+      <CodeBlock code={snippet} showCopyButton={false}>
         <CodeBlockCopyButton size="sm" />
       </CodeBlock>,
     );
@@ -171,6 +192,34 @@ describe('CodeBlock', () => {
       'sm',
     );
     expect(codeBlockCopyButtonVariants({ size: 'sm' })).toContain('size-6');
+  });
+
+  it('renders a floating copy button from the root by default', () => {
+    render(
+      <CodeBlock code={snippet}>
+        <CodeBlockBody />
+      </CodeBlock>,
+    );
+
+    const button = screen.getByRole('button', { name: 'Copy code' });
+    expect(button).toHaveAttribute('data-floating', 'true');
+    expect(button).toHaveClass('absolute');
+  });
+
+  it('omits the floating copy button when showCopyButton is false', () => {
+    render(
+      <CodeBlock code={snippet} showCopyButton={false}>
+        <CodeBlockBody />
+      </CodeBlock>,
+    );
+
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  it('exposes the floating variant on the copy button', () => {
+    expect(codeBlockCopyButtonVariants({ floating: true })).toContain(
+      'absolute',
+    );
   });
 
   it('throws when a slot is used outside CodeBlock', () => {
