@@ -17,7 +17,7 @@ const meta = {
     children: 'This is a tooltip',
     showArrow: true,
     side: 'top',
-    sideOffset: 6,
+    sideOffset: 8,
   },
   argTypes: {
     children: {
@@ -40,7 +40,7 @@ const meta = {
     sideOffset: {
       control: { type: 'number', min: 0, max: 24, step: 1 },
       description: 'Distance between the trigger and tooltip.',
-      table: { defaultValue: { summary: '6' } },
+      table: { defaultValue: { summary: '8' } },
     },
     alignOffset: {
       control: { type: 'number', min: -24, max: 24, step: 1 },
@@ -81,10 +81,14 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+const triggerButtonClassName = 'min-w-24 leading-none';
+
 export const Default: Story = {
   render: ({ children, ...args }) => (
     <Tooltip>
-      <TooltipTrigger render={<Button variant="outline" />}>
+      <TooltipTrigger
+        render={<Button className={triggerButtonClassName} variant="outline" />}
+      >
         Hover me
       </TooltipTrigger>
       <TooltipContent {...args}>{children}</TooltipContent>
@@ -96,44 +100,46 @@ export const Sides: Story = {
   render: () => (
     <div className="grid grid-cols-2 items-center justify-items-center gap-6 sm:grid-cols-4">
       <Tooltip>
-        <TooltipTrigger render={<Button variant="outline" />}>
+        <TooltipTrigger
+          render={
+            <Button className={triggerButtonClassName} variant="outline" />
+          }
+        >
+          Left
+        </TooltipTrigger>
+        <TooltipContent side="left">Left Tooltip</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <Button className={triggerButtonClassName} variant="outline" />
+          }
+        >
           Top
         </TooltipTrigger>
         <TooltipContent side="top">Top Tooltip</TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger render={<Button variant="outline" />}>
-          Right
-        </TooltipTrigger>
-        <TooltipContent side="right">Right Tooltip</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger render={<Button variant="outline" />}>
+        <TooltipTrigger
+          render={
+            <Button className={triggerButtonClassName} variant="outline" />
+          }
+        >
           Bottom
         </TooltipTrigger>
         <TooltipContent side="bottom">Bottom Tooltip</TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger render={<Button variant="outline" />}>
-          Left
+        <TooltipTrigger
+          render={
+            <Button className={triggerButtonClassName} variant="outline" />
+          }
+        >
+          Right
         </TooltipTrigger>
-        <TooltipContent side="left">Left Tooltip</TooltipContent>
+        <TooltipContent side="right">Right Tooltip</TooltipContent>
       </Tooltip>
     </div>
-  ),
-};
-
-export const Left: Story = {
-  name: 'Left hover',
-  render: () => (
-    <Tooltip>
-      <TooltipTrigger render={<Button variant="outline" />}>
-        Hover left
-      </TooltipTrigger>
-      <TooltipContent side="left">
-        Tooltip content displayed on the left.
-      </TooltipContent>
-    </Tooltip>
   ),
 };
 
@@ -163,7 +169,9 @@ export const WithShortcut: Story = {
   name: 'With shortcut',
   render: () => (
     <Tooltip>
-      <TooltipTrigger render={<Button variant="outline" />}>
+      <TooltipTrigger
+        render={<Button className={triggerButtonClassName} variant="outline" />}
+      >
         <CopyIcon />
         Copy
       </TooltipTrigger>
@@ -178,24 +186,15 @@ export const WithShortcut: Story = {
 export const Focus: Story = {
   render: () => (
     <Tooltip>
-      <TooltipTrigger render={<Button variant="outline" />}>
+      <TooltipTrigger
+        render={<Button className={triggerButtonClassName} variant="outline" />}
+      >
         <CircleHelpIcon />
         Focus me
       </TooltipTrigger>
       <TooltipContent>
         Tooltips are available from keyboard focus, not only pointer hover.
       </TooltipContent>
-    </Tooltip>
-  ),
-};
-
-export const Disabled: Story = {
-  render: () => (
-    <Tooltip disabled>
-      <TooltipTrigger render={<Button disabled variant="outline" />}>
-        Disabled
-      </TooltipTrigger>
-      <TooltipContent>This tooltip is disabled.</TooltipContent>
     </Tooltip>
   ),
 };

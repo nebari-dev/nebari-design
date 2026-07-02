@@ -88,7 +88,7 @@ function TooltipTrigger({
 function TooltipContent({
   className,
   side = 'top',
-  sideOffset = 6,
+  sideOffset = 8,
   align = 'center',
   alignOffset = 0,
   portalProps,
@@ -128,7 +128,7 @@ function TooltipContent({
           {showArrow && (
             <TooltipPrimitive.Arrow
               data-slot="tooltip-arrow"
-              className="pointer-events-none z-50 size-2.5 rotate-45 rounded-[2px] bg-foreground data-[side=bottom]:bottom-full data-[side=bottom]:translate-y-1/2 data-[side=left]:left-full data-[side=left]:-translate-x-1/2 data-[side=right]:right-full data-[side=right]:translate-x-1/2 data-[side=top]:top-full data-[side=top]:-translate-y-1/2"
+              className="pointer-events-none z-50 size-2.5 rotate-45 bg-foreground data-[side=bottom]:bottom-full data-[side=bottom]:translate-y-1/2 data-[side=left]:left-full data-[side=left]:-translate-x-1/2 data-[side=right]:right-full data-[side=right]:translate-x-1/2 data-[side=top]:top-full data-[side=top]:-translate-y-1/2"
             />
           )}
         </TooltipPrimitive.Popup>

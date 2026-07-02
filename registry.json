@@ -208,7 +208,7 @@
       "name": "tooltip",
       "type": "registry:ui",
       "title": "Tooltip",
-      "description": "Compact supplemental information shown on hover or keyboard focus, with anchored positioning and optional arrow.",
+      "description": "Compact supplemental information shown on hover or keyboard focus, with anchored positioning and optional arrow. Touch devices don't trigger tooltips so critical information shouldn't live only in a tooltip.",
       "dependencies": ["@base-ui-components/react"],
       "registryDependencies": ["utils", "theme"],
       "files": [

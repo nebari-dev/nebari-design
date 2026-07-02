@@ -43,9 +43,11 @@ describe('Tooltip', () => {
       'text-background',
       'motion-safe:transition-[opacity,transform]',
     );
-    expect(
-      document.querySelector('[data-slot="tooltip-arrow"]'),
-    ).toBeInTheDocument();
+    const arrow = document.querySelector('[data-slot="tooltip-arrow"]');
+
+    expect(arrow).toBeInTheDocument();
+    expect(arrow).toHaveClass('size-2.5', 'rotate-45', 'bg-foreground');
+    expect(arrow).not.toHaveClass('rounded-[2px]');
   });
 
   it('supports hiding the arrow', async () => {
