@@ -32,6 +32,7 @@ describe('Card', () => {
     expect(card).toHaveAttribute('data-size', 'default');
     expect(card).toHaveClass(
       'rounded-md',
+      'min-w-0',
       'border-border',
       'bg-card',
       'text-card-foreground',

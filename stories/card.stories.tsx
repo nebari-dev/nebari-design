@@ -63,9 +63,16 @@ export default meta;
 
 type Story = StoryObj<CardStoryArgs>;
 
+const singleCardClassName = 'w-[min(calc(100vw-3rem),22.5rem)] min-w-0';
+const rowCardClassName = 'w-full min-w-0';
+const responsiveTwoCardGridClassName =
+  'grid w-[min(calc(100vw-3rem),42rem)] grid-cols-[repeat(auto-fit,minmax(min(100%,16rem),1fr))] gap-4';
+const responsiveThreeCardGridClassName =
+  'grid w-[min(calc(100vw-3rem),56rem)] grid-cols-[repeat(auto-fit,minmax(min(100%,16rem),1fr))] gap-4';
+
 export const Default: Story = {
   render: ({ showFooter, showHeader, ...args }) => (
-    <Card {...args} className="w-[360px]">
+    <Card {...args} className={singleCardClassName}>
       {showHeader && (
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
@@ -114,8 +121,8 @@ export const Default: Story = {
 export const Sizes: Story = {
   name: 'Size',
   render: () => (
-    <div className="grid gap-4 sm:grid-cols-2">
-      <Card className="w-[300px]">
+    <div className={responsiveTwoCardGridClassName}>
+      <Card className={rowCardClassName}>
         <CardHeader>
           <CardTitle>Default Card</CardTitle>
           <CardDescription>Standard section spacing.</CardDescription>
@@ -131,7 +138,7 @@ export const Sizes: Story = {
           </Button>
         </CardFooter>
       </Card>
-      <Card className="w-[300px]" size="sm">
+      <Card className={rowCardClassName} size="sm">
         <CardHeader>
           <CardTitle>Small Card</CardTitle>
           <CardDescription>Compact section spacing.</CardDescription>
@@ -154,7 +161,7 @@ export const Sizes: Story = {
 export const WithAction: Story = {
   name: 'With action',
   render: () => (
-    <Card className="w-[360px]">
+    <Card className={singleCardClassName}>
       <CardHeader>
         <CardTitle>Environment status</CardTitle>
         <CardDescription>nebari-default-env is ready.</CardDescription>
@@ -187,19 +194,19 @@ export const WithAction: Story = {
 export const HeaderExamples: Story = {
   name: 'Header examples',
   render: () => (
-    <div className="grid gap-4 sm:grid-cols-3">
-      <Card className="w-[260px]">
+    <div className={responsiveThreeCardGridClassName}>
+      <Card className={rowCardClassName}>
         <CardHeader>
           <CardTitle>Title only</CardTitle>
         </CardHeader>
       </Card>
-      <Card className="w-[260px]">
+      <Card className={rowCardClassName}>
         <CardHeader>
           <CardTitle>With description</CardTitle>
           <CardDescription>Use supporting copy for context.</CardDescription>
         </CardHeader>
       </Card>
-      <Card className="w-[260px]">
+      <Card className={rowCardClassName}>
         <CardHeader className="border-b">
           <CardTitle>With action</CardTitle>
           <CardDescription>Action aligns to the top-right.</CardDescription>
@@ -220,8 +227,8 @@ export const HeaderExamples: Story = {
 export const FooterExamples: Story = {
   name: 'Footer examples',
   render: () => (
-    <div className="grid gap-4 sm:grid-cols-3">
-      <Card className="w-[260px]">
+    <div className={responsiveThreeCardGridClassName}>
+      <Card className={rowCardClassName}>
         <CardHeader>
           <CardTitle>Single action</CardTitle>
           <CardDescription>Primary command aligned left.</CardDescription>
@@ -230,7 +237,7 @@ export const FooterExamples: Story = {
           <Button size="sm">Create</Button>
         </CardFooter>
       </Card>
-      <Card className="w-[260px]">
+      <Card className={rowCardClassName}>
         <CardHeader>
           <CardTitle>Action pair</CardTitle>
           <CardDescription>Cancel and confirm side by side.</CardDescription>
@@ -242,7 +249,7 @@ export const FooterExamples: Story = {
           <Button size="sm">Confirm</Button>
         </CardFooter>
       </Card>
-      <Card className="w-[260px]">
+      <Card className={rowCardClassName}>
         <CardHeader>
           <CardTitle>Separated footer</CardTitle>
           <CardDescription>
@@ -263,11 +270,20 @@ export const FooterExamples: Story = {
 export const CustomSpacing: Story = {
   name: 'Custom spacing',
   render: () => (
-    <div className="grid gap-4 sm:grid-cols-3">
+    <div className={responsiveThreeCardGridClassName}>
       {[
-        { className: 'w-[220px] [--card-spacing:--spacing(4)]', label: '16px' },
-        { className: 'w-[220px] [--card-spacing:--spacing(5)]', label: '20px' },
-        { className: 'w-[220px] [--card-spacing:--spacing(6)]', label: '24px' },
+        {
+          className: 'w-full min-w-0 [--card-spacing:--spacing(4)]',
+          label: '16px',
+        },
+        {
+          className: 'w-full min-w-0 [--card-spacing:--spacing(5)]',
+          label: '20px',
+        },
+        {
+          className: 'w-full min-w-0 [--card-spacing:--spacing(6)]',
+          label: '24px',
+        },
       ].map((card) => (
         <Card className={card.className} key={card.label}>
           <CardHeader>
@@ -288,7 +304,7 @@ export const CustomSpacing: Story = {
 export const EdgeToEdgeContent: Story = {
   name: 'Edge-to-edge content',
   render: () => (
-    <Card className="w-[360px]">
+    <Card className={singleCardClassName}>
       <div className="flex aspect-video items-end bg-secondary p-(--card-spacing)">
         <Badge>
           <CalendarDays />

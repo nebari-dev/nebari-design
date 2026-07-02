@@ -3,7 +3,7 @@ import type * as React from 'react';
 import { cn } from '@/lib/utils';
 
 const cardVariants = cva(
-  'group/card flex flex-col overflow-hidden rounded-md border border-border bg-card text-card-foreground text-sm shadow-xs has-[>img:first-child]:pt-0 *:[img:first-child]:rounded-t-md *:[img:last-child]:rounded-b-md',
+  'group/card flex min-w-0 flex-col overflow-hidden rounded-md border border-border bg-card text-card-foreground text-sm shadow-xs has-[>img:first-child]:pt-0 *:[img:first-child]:rounded-t-md *:[img:last-child]:rounded-b-md',
   {
     variants: {
       size: {
