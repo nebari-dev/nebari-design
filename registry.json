@@ -154,10 +154,24 @@
       "title": "Alert",
       "description": "Inline status message with default, success, warning, and destructive variants, composed of Alert, AlertTitle, AlertDescription, and AlertAction.",
       "dependencies": ["class-variance-authority", "lucide-react"],
-      "registryDependencies": ["utils"],
+      "registryDependencies": ["utils", "theme"],
       "files": [
         {
           "path": "registry/nebari/ui/alert.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "sidebar",
+      "type": "registry:ui",
+      "title": "Sidebar",
+      "description": "Collapsible app-shell sidebar with provider-managed state and composable navigation parts.",
+      "dependencies": ["class-variance-authority", "lucide-react"],
+      "registryDependencies": ["utils", "theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/sidebar.tsx",
           "type": "registry:ui"
         }
       ]
