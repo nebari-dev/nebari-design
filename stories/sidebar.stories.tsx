@@ -17,12 +17,11 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarHeader,
+  SidebarHeaderBrand,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarTrigger,
-  useSidebar,
 } from '@/ui/sidebar';
 
 const meta = {
@@ -49,46 +48,15 @@ function SidebarExample({
   defaultCollapsed?: boolean;
 }) {
   function SidebarLayout() {
-    const { state } = useSidebar();
-    const collapsed = state === 'collapsed';
-
     return (
       <Sidebar>
-        {collapsed ? (
-          <SidebarHeader>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton variant="ghost">
-                  <SidebarTrigger className="text-foreground" />
-                  <span data-slot="sidebar-menu-label">Expand sidebar</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarHeader>
-        ) : (
-          <SidebarHeader>
-            <SidebarMenuButton size="account" variant="default">
-              <span className="inline-flex size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <Ship className="size-4" />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span
-                  className="block truncate text-sm leading-5 font-medium"
-                  data-slot="sidebar-menu-label"
-                >
-                  Menu Item
-                </span>
-                <span
-                  className="block truncate text-xs leading-4 text-muted-foreground"
-                  data-slot="sidebar-menu-description"
-                >
-                  Enterprise
-                </span>
-              </span>
-              <SidebarTrigger className="text-foreground" />
-            </SidebarMenuButton>
-          </SidebarHeader>
-        )}
+        <SidebarHeader>
+          <SidebarHeaderBrand
+            description="Enterprise"
+            icon={<Ship className="size-4" />}
+            title="Menu Item"
+          />
+        </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupLabel>Group title</SidebarGroupLabel>
@@ -117,12 +85,10 @@ function SidebarExample({
                   >
                     Models
                   </span>
-                  <span
-                    className="shrink-0 text-muted-foreground"
+                  <SidebarCollapseIcon
+                    className="shrink-0"
                     data-slot="sidebar-menu-trailing"
-                  >
-                    &gt;
-                  </span>
+                  />
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -134,12 +100,10 @@ function SidebarExample({
                   >
                     Documentation
                   </span>
-                  <span
-                    className="shrink-0 text-muted-foreground"
+                  <SidebarCollapseIcon
+                    className="shrink-0"
                     data-slot="sidebar-menu-trailing"
-                  >
-                    &gt;
-                  </span>
+                  />
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -151,12 +115,10 @@ function SidebarExample({
                   >
                     Design
                   </span>
-                  <span
-                    className="shrink-0 text-muted-foreground"
+                  <SidebarCollapseIcon
+                    className="shrink-0"
                     data-slot="sidebar-menu-trailing"
-                  >
-                    &gt;
-                  </span>
+                  />
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -173,12 +135,10 @@ function SidebarExample({
                   >
                     Design
                   </span>
-                  <span
-                    className="shrink-0 text-muted-foreground"
+                  <SidebarCollapseIcon
+                    className="shrink-0"
                     data-slot="sidebar-menu-trailing"
-                  >
-                    &gt;
-                  </span>
+                  />
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -190,12 +150,10 @@ function SidebarExample({
                   >
                     Travel
                   </span>
-                  <span
-                    className="shrink-0 text-muted-foreground"
+                  <SidebarCollapseIcon
+                    className="shrink-0"
                     data-slot="sidebar-menu-trailing"
-                  >
-                    &gt;
-                  </span>
+                  />
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -207,12 +165,10 @@ function SidebarExample({
                   >
                     Sales
                   </span>
-                  <span
-                    className="shrink-0 text-muted-foreground"
+                  <SidebarCollapseIcon
+                    className="shrink-0"
                     data-slot="sidebar-menu-trailing"
-                  >
-                    &gt;
-                  </span>
+                  />
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -224,12 +180,10 @@ function SidebarExample({
                   >
                     Engineering
                   </span>
-                  <span
-                    className="shrink-0 text-muted-foreground"
+                  <SidebarCollapseIcon
+                    className="shrink-0"
                     data-slot="sidebar-menu-trailing"
-                  >
-                    &gt;
-                  </span>
+                  />
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

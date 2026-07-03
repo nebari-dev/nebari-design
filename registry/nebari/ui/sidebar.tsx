@@ -142,7 +142,7 @@ function Sidebar({
     <aside
       className={cn(
         sidebarVariants({ variant }),
-        resolvedState === 'collapsed' ? 'w-12' : 'w-64',
+        resolvedState === 'collapsed' ? 'w-[72px]' : 'w-64',
         className,
       )}
       data-slot="sidebar"
@@ -250,6 +250,73 @@ function SidebarHeader({
       data-state={resolvedState}
       {...props}
     />
+  );
+}
+
+type SidebarHeaderBrandProps = SidebarSectionProps & {
+  icon?: ReactNode;
+  title?: ReactNode;
+  description?: ReactNode;
+  triggerClassName?: string;
+};
+
+function SidebarHeaderBrand({
+  className,
+  collapsed,
+  description,
+  icon,
+  state,
+  title,
+  triggerClassName,
+  ...props
+}: SidebarHeaderBrandProps) {
+  const { state: contextState } = useSidebar();
+  const resolvedState = resolveSidebarState({ collapsed, state }, contextState);
+
+  return (
+    <div
+      className={cn(
+        'flex w-full items-center gap-2 rounded-lg px-2 py-2',
+        className,
+      )}
+      data-slot="sidebar-header-brand"
+      data-state={resolvedState}
+      {...props}
+    >
+      {icon && (
+        <span
+          className="inline-flex size-8 min-w-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground"
+          data-slot="sidebar-header-brand-icon"
+        >
+          {icon}
+        </span>
+      )}
+      {(title || description) && (
+        <span
+          className="min-w-0 flex-1 data-[state=collapsed]:sr-only"
+          data-slot="sidebar-header-brand-text"
+          data-state={resolvedState}
+        >
+          {title && (
+            <span
+              className="block truncate text-sm leading-5 font-medium"
+              data-slot="sidebar-menu-label"
+            >
+              {title}
+            </span>
+          )}
+          {description && (
+            <span
+              className="block truncate text-xs leading-4 text-muted-foreground"
+              data-slot="sidebar-menu-description"
+            >
+              {description}
+            </span>
+          )}
+        </span>
+      )}
+      <SidebarTrigger className={cn('text-foreground', triggerClassName)} />
+    </div>
   );
 }
 
@@ -607,6 +674,7 @@ export {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarHeader,
+  SidebarHeaderBrand,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
