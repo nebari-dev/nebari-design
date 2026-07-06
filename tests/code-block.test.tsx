@@ -77,6 +77,69 @@ describe('CodeBlock', () => {
     expect(root).not.toHaveAttribute('data-dark');
   });
 
+  it('keeps long lines unwrapped and scrolls the body horizontally', () => {
+    render(
+      <CodeBlock code={snippet}>
+        <CodeBlockBody />
+      </CodeBlock>,
+    );
+
+    const line = screen.getByText(/const answer = 42;/);
+    // `whitespace-pre` prevents soft-wrapping; the body's `overflow-x-auto`
+    // provides the sideways scroll. jsdom has no layout engine, so actual
+    // scrolling is verified visually in the Horizontal scroll story.
+    expect(line).toHaveClass('whitespace-pre');
+    const body = line.closest('[data-slot=code-block-body]');
+    expect(body).toHaveClass('overflow-x-auto');
+    // The scroll container must be reachable by keyboard to be scrollable.
+    expect(body).toHaveAttribute('tabindex', '0');
+    expect(body).toBe(screen.getByRole('region', { name: 'Code' }));
+  });
+
+  it('gives the root a minimum width floor', () => {
+    render(
+      <CodeBlock code={snippet}>
+        <CodeBlockBody />
+      </CodeBlock>,
+    );
+
+    const root = screen
+      .getByText(/const answer = 42;/)
+      .closest('[data-slot=code-block]');
+    expect(root).toHaveClass('min-w-40');
+  });
+
+  it('caps the body height in whole lines when maxLines is set', () => {
+    render(
+      <CodeBlock code={snippet}>
+        <CodeBlockBody maxLines={2} />
+      </CodeBlock>,
+    );
+
+    const body = screen
+      .getByText(/const answer = 42;/)
+      .closest('[data-slot=code-block-body]') as HTMLElement;
+    expect(body).toHaveAttribute('data-max-lines', '2');
+    expect(body).toHaveClass('overflow-y-auto');
+    // The line count feeds the `lh`-based max-height calc as a custom property.
+    expect(body.style.getPropertyValue('--code-block-max-lines')).toBe('2');
+  });
+
+  it('does not cap the body height by default', () => {
+    render(
+      <CodeBlock code={snippet}>
+        <CodeBlockBody />
+      </CodeBlock>,
+    );
+
+    const body = screen
+      .getByText(/const answer = 42;/)
+      .closest('[data-slot=code-block-body]') as HTMLElement;
+    expect(body).not.toHaveAttribute('data-max-lines');
+    expect(body).not.toHaveClass('overflow-y-auto');
+    expect(body.style.getPropertyValue('--code-block-max-lines')).toBe('');
+  });
+
   it('renders the header slot', () => {
     render(
       <CodeBlock code={snippet}>

@@ -75,7 +75,11 @@ function CodeBlock({
           // this subtree, so the block can be dark on an otherwise light page.
           dark && 'dark',
           // `relative` anchors the floating copy button to this root.
-          'relative overflow-hidden rounded-md border border-border bg-card font-mono text-sm text-foreground',
+          // `overflow-hidden` also zeroes the automatic min-width in flex/grid
+          // parents, so a narrow layout squeezes the block (and the body
+          // scrolls) instead of the longest line blowing out the page.
+          // `min-w-40` is the floor below which the frame stops being usable.
+          'relative min-w-40 overflow-hidden rounded-md border border-border bg-card font-mono text-sm text-foreground',
           className,
         )}
         {...props}
@@ -104,23 +108,70 @@ function CodeBlockHeader({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+type CodeBlockBodyProps = React.ComponentProps<'section'> & {
+  /**
+   * Cap the body at this many whole code lines; longer snippets scroll
+   * vertically. The cap is measured in lines (via the CSS `lh` unit) rather
+   * than a fixed height, so the block always crops at a line boundary instead
+   * of slicing a line in half.
+   */
+  maxLines?: number;
+};
+
 /**
- * Renders the snippet from context inside a scrollable `pre`/`code`. When the
- * root's `showLineNumbers` is set, a right-aligned gutter is rendered per line;
+ * Renders the snippet from context inside a scrollable `pre`/`code`. Lines
+ * never soft-wrap — overflow scrolls horizontally instead. When the root's
+ * `showLineNumbers` is set, a right-aligned gutter is rendered per line;
  * the gutter is `aria-hidden` and non-selectable so copied or selected text
  * stays free of line numbers.
  */
-function CodeBlockBody({ className, ...props }: React.ComponentProps<'div'>) {
+function CodeBlockBody({
+  className,
+  style,
+  maxLines,
+  ...props
+}: CodeBlockBodyProps) {
   const { code, showLineNumbers } = useCodeBlockContext('CodeBlockBody');
   const lines = code.split('\n');
 
   return (
-    <div
+    // A labelled `section` names the focus stop for screen readers; the label
+    // is overridable via the props spread below.
+    <section
       data-slot="code-block-body"
-      className={cn('overflow-x-auto', className)}
+      data-max-lines={maxLines}
+      aria-label="Code"
+      // The body is a scroll container, so keyboard users must be able to
+      // focus it to scroll (axe: scrollable-region-focusable).
+      // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrollable region must be keyboard-focusable
+      tabIndex={0}
+      className={cn(
+        // `leading-relaxed` lives here (not on the `pre`) so this element's
+        // `1lh` equals exactly one rendered code line for the max-height calc
+        // below; the `pre` and every line span inherit the same line-height.
+        // The ring is inset because the root's `overflow-hidden` would clip
+        // an outer one.
+        'overflow-x-auto leading-relaxed outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
+        // The 1rem term mirrors the `pre`'s top padding (`py-4`) — the only
+        // padding on screen at the initial scroll position. The bottom padding
+        // scrolls with the content, so counting it too would leave a padding's
+        // worth of the next line peeking in. Because the paddings are equal,
+        // exactly `maxLines` whole lines are visible at both scroll ends.
+        maxLines != null &&
+          'max-h-[calc(1rem+var(--code-block-max-lines)*1lh)] overflow-y-auto',
+        className,
+      )}
+      style={
+        maxLines != null
+          ? ({
+              '--code-block-max-lines': maxLines,
+              ...style,
+            } as React.CSSProperties)
+          : style
+      }
       {...props}
     >
-      <pre className="py-4 leading-relaxed">
+      <pre className="py-4">
         {showLineNumbers ? (
           // One grid for the whole snippet — not one per line — so the `auto`
           // gutter column sizes to the widest line number and the code column
@@ -145,7 +196,7 @@ function CodeBlockBody({ className, ...props }: React.ComponentProps<'div'>) {
           </code>
         )}
       </pre>
-    </div>
+    </section>
   );
 }
 
@@ -237,7 +288,7 @@ function CodeBlockCopyButton({
   );
 }
 
-export type { CodeBlockCopyButtonProps, CodeBlockProps };
+export type { CodeBlockBodyProps, CodeBlockCopyButtonProps, CodeBlockProps };
 export {
   CodeBlock,
   CodeBlockBody,

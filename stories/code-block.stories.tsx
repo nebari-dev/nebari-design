@@ -18,6 +18,11 @@ export function Example() {
   );
 }`;
 
+const manyLinesSnippet = Array.from(
+  { length: 24 },
+  (_, i) => `console.log('processing step ${i + 1} of 24');`,
+).join('\n');
+
 const meta = {
   title: 'Components/Code Block',
   component: CodeBlock,
@@ -121,12 +126,38 @@ export const WithLineNumbers: Story = {
     },
   },
   render: (args) => (
-    <CodeBlock {...args} className="w-[34rem]">
+    <CodeBlock {...args}>
       <CodeBlockHeader>
         <span>example.tsx</span>
         <CodeBlockCopyButton />
       </CodeBlockHeader>
       <CodeBlockBody />
+    </CodeBlock>
+  ),
+};
+
+export const MaxLines: Story = {
+  name: 'Max lines',
+  args: {
+    code: manyLinesSnippet,
+    showLineNumbers: true,
+    showCopyButton: false,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The body’s `maxLines` prop caps the height in whole code lines (via the CSS `lh` unit), so the block always crops at a line boundary — never through the middle of a line — and scrolls vertically for the rest.',
+      },
+    },
+  },
+  render: (args) => (
+    <CodeBlock {...args}>
+      <CodeBlockHeader>
+        <span>steps.ts — 24 lines, capped at 8</span>
+        <CodeBlockCopyButton />
+      </CodeBlockHeader>
+      <CodeBlockBody maxLines={8} />
     </CodeBlock>
   ),
 };
@@ -148,7 +179,7 @@ export const Dark: Story = {
     },
   },
   render: (args) => (
-    <CodeBlock {...args} className="w-[34rem]">
+    <CodeBlock {...args}>
       <CodeBlockHeader>
         <span>example.tsx</span>
         <CodeBlockCopyButton />
