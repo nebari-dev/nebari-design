@@ -150,6 +150,7 @@
 
   --background: var(--zinc-50);
   --foreground: var(--zinc-950);
+  --scrim: rgba(0, 0, 0, 0.5);
 
   --card: var(--white);
   --card-foreground: var(--zinc-950);
@@ -218,6 +219,7 @@
 .dark {
   --background: var(--zinc-950);
   --foreground: var(--zinc-50);
+  --scrim: rgba(0, 0, 0, 0.6);
 
   --card: var(--zinc-900);
   --card-foreground: var(--zinc-50);
@@ -315,6 +317,7 @@
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-scrim: var(--scrim);
 
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
