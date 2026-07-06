@@ -1,4 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { CopyIcon, Trash2Icon } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { Button } from '@/ui/button';
 import {
   Table,
   TableBody,
@@ -10,262 +13,217 @@ import {
   TableRow,
 } from '@/ui/table';
 
-type Environment = {
-  name: string;
-  owner: string;
-  resources: string;
-  status: string;
-  updated: string;
-};
-
-const tableDocsDescription =
-  'Nebari table primitives for building semantic data tables with responsive horizontal scrolling, captions, headers, body rows, footers, and empty states.';
-
 const environments = [
   {
     name: 'Data Science',
+    status: 'Running',
     owner: 'Ada Lovelace',
     resources: '4 CPUs / 16 GB',
-    status: 'Running',
-    updated: '3 minutes ago',
   },
   {
     name: 'Geospatial Analysis',
+    status: 'Stopped',
     owner: 'Grace Hopper',
     resources: '2 CPUs / 8 GB',
-    status: 'Stopped',
-    updated: '2 hours ago',
   },
   {
     name: 'Model Training',
+    status: 'Starting',
     owner: 'Katherine Johnson',
     resources: '8 CPUs / 32 GB',
-    status: 'Starting',
-    updated: 'Yesterday',
   },
-] satisfies Environment[];
+];
 
-function totalCpuCount(rows: Environment[]) {
-  return rows.reduce((total, environment) => {
-    const cpuMatch = environment.resources.match(/^(\d+) CPUs/);
-    return total + (cpuMatch == null ? 0 : Number(cpuMatch[1]));
-  }, 0);
+type TableStoryArgs = {
+  caption: string;
+  empty: boolean;
+  showActions: boolean;
+  showFooter: boolean;
+};
+
+const tableStoryDefaults = {
+  caption: '',
+  empty: false,
+  showActions: false,
+  showFooter: false,
+} satisfies TableStoryArgs;
+
+function TableFrame({ children }: { children: ReactNode }) {
+  return <div className="w-[44rem] max-w-[calc(100vw-3rem)]">{children}</div>;
 }
 
-function totalMemoryCount(rows: Environment[]) {
-  return rows.reduce((total, environment) => {
-    const memoryMatch = environment.resources.match(/\/ (\d+) GB$/);
-    return total + (memoryMatch == null ? 0 : Number(memoryMatch[1]));
-  }, 0);
+function EnvironmentHeader({ actions = false }: { actions?: boolean }) {
+  return (
+    <TableHeader>
+      <TableRow>
+        <TableHead className="w-[100px]" scope="col">
+          Environment
+        </TableHead>
+        <TableHead scope="col">Status</TableHead>
+        <TableHead scope="col">Owner</TableHead>
+        <TableHead className="text-right" scope="col">
+          Resources
+        </TableHead>
+        {actions ? (
+          <TableHead className="w-[104px] text-right" scope="col">
+            Actions
+          </TableHead>
+        ) : null}
+      </TableRow>
+    </TableHeader>
+  );
 }
 
-function EnvironmentRows({ rows }: { rows: Environment[] }) {
+function EnvironmentRows({ actions = false }: { actions?: boolean }) {
   return (
     <TableBody>
-      {rows.map((environment) => (
+      {environments.map((environment) => (
         <TableRow key={environment.name}>
           <TableCell className="font-medium">{environment.name}</TableCell>
-          <TableCell>
-            <span className="inline-flex items-center gap-2">
-              <span
-                aria-hidden="true"
-                className="size-2 rounded-full bg-primary"
-              />
-              {environment.status}
-            </span>
-          </TableCell>
+          <TableCell>{environment.status}</TableCell>
           <TableCell>{environment.owner}</TableCell>
-          <TableCell className="text-muted-foreground">
-            {environment.updated}
-          </TableCell>
           <TableCell className="text-right">{environment.resources}</TableCell>
+          {actions ? (
+            <TableCell>
+              <div className="flex items-center justify-end gap-2">
+                <Button
+                  aria-label={`Copy ${environment.name}`}
+                  size="icon-sm"
+                  variant="ghost"
+                >
+                  <CopyIcon className="size-4" />
+                </Button>
+                <Button
+                  aria-label={`Delete ${environment.name}`}
+                  size="icon-sm"
+                  variant="ghost"
+                >
+                  <Trash2Icon className="size-4" />
+                </Button>
+              </div>
+            </TableCell>
+          ) : null}
         </TableRow>
       ))}
     </TableBody>
   );
 }
 
-function EnvironmentFooter({ rows }: { rows: Environment[] }) {
-  return (
-    <TableFooter>
-      <TableRow>
-        <TableCell className="font-medium" colSpan={4}>
-          Total allocated
-        </TableCell>
-        <TableCell className="text-right">
-          {totalCpuCount(rows)} CPUs / {totalMemoryCount(rows)} GB
-        </TableCell>
-      </TableRow>
-    </TableFooter>
-  );
-}
+function EnvironmentTable({
+  caption,
+  empty,
+  showActions,
+  showFooter,
+}: TableStoryArgs) {
+  const columnCount = showActions ? 5 : 4;
 
-function StaticEnvironmentsTable() {
   return (
     <Table aria-label="Nebari environments">
-      <TableCaption className="sr-only">
-        Nebari environments and their current status
-      </TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead scope="col">Environment</TableHead>
-          <TableHead scope="col">Status</TableHead>
-          <TableHead scope="col">Owner</TableHead>
-          <TableHead scope="col">Last updated</TableHead>
-          <TableHead className="text-right" scope="col">
-            Resources
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-      <EnvironmentRows rows={environments} />
-    </Table>
-  );
-}
-
-function DefaultEnvironmentsTable() {
-  return (
-    <Table aria-label="Environment resource allocation">
-      <TableCaption>
-        Environment resource allocation across active Nebari workspaces.
-      </TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead scope="col">Environment</TableHead>
-          <TableHead scope="col">Status</TableHead>
-          <TableHead scope="col">Owner</TableHead>
-          <TableHead scope="col">Last updated</TableHead>
-          <TableHead className="text-right" scope="col">
-            Resources
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-      <EnvironmentRows rows={environments} />
-      <EnvironmentFooter rows={environments} />
-    </Table>
-  );
-}
-
-function EmptyEnvironmentsTable() {
-  return (
-    <Table aria-label="Environment search results">
-      <TableCaption>No environments match the current filters.</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead scope="col">Environment</TableHead>
-          <TableHead scope="col">Status</TableHead>
-          <TableHead scope="col">Owner</TableHead>
-          <TableHead scope="col">Last updated</TableHead>
-          <TableHead className="text-right" scope="col">
-            Resources
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        <TableRow className="hover:bg-transparent">
-          <TableCell
-            className="h-24 text-center text-muted-foreground"
-            colSpan={5}
-          >
-            No environments found.
-          </TableCell>
-        </TableRow>
-      </TableBody>
+      {caption === '' ? null : <TableCaption>{caption}</TableCaption>}
+      <EnvironmentHeader actions={showActions} />
+      {empty ? (
+        <TableBody>
+          <TableRow className="hover:bg-transparent">
+            <TableCell
+              className="h-24 text-center text-muted-foreground"
+              colSpan={columnCount}
+            >
+              No environments found.
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      ) : (
+        <EnvironmentRows actions={showActions} />
+      )}
+      {showFooter && !empty ? (
+        <TableFooter>
+          <TableRow>
+            <TableCell colSpan={3}>Total allocated</TableCell>
+            <TableCell className="text-right">14 CPUs / 56 GB</TableCell>
+            {showActions ? <TableCell /> : null}
+          </TableRow>
+        </TableFooter>
+      ) : null}
     </Table>
   );
 }
 
 const meta = {
   title: 'Components/Table',
-  component: Table,
   parameters: {
     layout: 'centered',
-    controls: { disable: true },
     docs: {
       description: {
-        component: tableDocsDescription,
+        component:
+          'A responsive table primitive for semantic tabular data with captions, headers, rows, and optional footers.',
       },
     },
   },
-} satisfies Meta<typeof Table>;
+  args: tableStoryDefaults,
+  argTypes: {
+    caption: {
+      control: 'text',
+      description:
+        'Optional visible `TableCaption` text. Leave empty to omit the caption.',
+    },
+    empty: {
+      control: 'boolean',
+      description: 'Shows the table empty state instead of data rows.',
+    },
+    showActions: {
+      control: 'boolean',
+      description: 'Adds a copy/delete action column.',
+    },
+    showFooter: {
+      control: 'boolean',
+      description: 'Adds a summary footer row.',
+    },
+  },
+} satisfies Meta<TableStoryArgs>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: () => (
-    <div className="w-[56rem] max-w-[calc(100vw-3rem)]">
-      <DefaultEnvironmentsTable />
-    </div>
-  ),
-};
-
-export const Header: Story = {
-  render: () => (
-    <div className="w-[44rem] max-w-[calc(100vw-3rem)]">
-      <Table>
-        <TableHeader>
-          <TableRow className="border-b-0">
-            <TableHead scope="col">Environment</TableHead>
-            <TableHead scope="col">Status</TableHead>
-            <TableHead scope="col">Owner</TableHead>
-            <TableHead className="text-right" scope="col">
-              Resources
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-      </Table>
-    </div>
+  render: (args) => (
+    <TableFrame>
+      <EnvironmentTable {...tableStoryDefaults} {...args} />
+    </TableFrame>
   ),
 };
 
 export const WithFooter: Story = {
   name: 'With footer',
-  render: () => (
-    <div className="w-[56rem] max-w-[calc(100vw-3rem)]">
-      <Table aria-label="Environment totals">
-        <TableCaption className="sr-only">
-          Nebari environments with total allocated resources
-        </TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead scope="col">Environment</TableHead>
-            <TableHead scope="col">Status</TableHead>
-            <TableHead scope="col">Owner</TableHead>
-            <TableHead scope="col">Last updated</TableHead>
-            <TableHead className="text-right" scope="col">
-              Resources
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <EnvironmentRows rows={environments} />
-        <EnvironmentFooter rows={environments} />
-      </Table>
-    </div>
+  args: {
+    showFooter: true,
+  },
+  render: (args) => (
+    <TableFrame>
+      <EnvironmentTable {...tableStoryDefaults} {...args} />
+    </TableFrame>
+  ),
+};
+
+export const Actions: Story = {
+  args: {
+    showActions: true,
+  },
+  render: (args) => (
+    <TableFrame>
+      <EnvironmentTable {...tableStoryDefaults} {...args} />
+    </TableFrame>
   ),
 };
 
 export const EmptyState: Story = {
   name: 'Empty state',
-  render: () => (
-    <div className="w-[56rem] max-w-[calc(100vw-3rem)]">
-      <EmptyEnvironmentsTable />
-    </div>
-  ),
-};
-
-export const ExamplePage: Story = {
-  name: 'Example page',
-  render: () => (
-    <main className="w-[56rem] max-w-[calc(100vw-3rem)] space-y-6 rounded-lg bg-background p-6">
-      <header className="space-y-1">
-        <h2 className="font-semibold text-foreground text-xl">Environments</h2>
-        <p className="text-muted-foreground text-sm">
-          Manage shared development and data science environments.
-        </p>
-      </header>
-
-      <StaticEnvironmentsTable />
-    </main>
+  args: {
+    empty: true,
+  },
+  render: (args) => (
+    <TableFrame>
+      <EnvironmentTable {...tableStoryDefaults} {...args} />
+    </TableFrame>
   ),
 };

@@ -86,9 +86,11 @@ describe('Table', () => {
     });
 
     expect(table).toHaveAttribute('data-slot', 'table');
+    expect(table).toHaveClass('bg-card');
     expect(scrollContainer).toHaveAttribute('data-slot', 'table-container');
     expect(scrollContainer).toHaveAttribute('tabindex', '0');
     expect(scrollContainer).toHaveClass(
+      'bg-card',
       'overflow-x-auto',
       'focus-visible:ring-2',
     );
@@ -96,9 +98,9 @@ describe('Table', () => {
       table.querySelector('[data-slot="table-header"]'),
     ).toBeInTheDocument();
     expect(table.querySelector('[data-slot="table-body"]')).toBeInTheDocument();
-    expect(
-      table.querySelector('[data-slot="table-footer"]'),
-    ).toBeInTheDocument();
+    expect(table.querySelector('[data-slot="table-footer"]')).toHaveClass(
+      'bg-card',
+    );
     expect(screen.getByText('Environment status')).toHaveAttribute(
       'data-slot',
       'table-caption',
@@ -109,7 +111,8 @@ describe('Table', () => {
     render(<TestTable />);
 
     expect(screen.getByRole('columnheader', { name: 'Name' })).toHaveClass(
-      'text-xs',
+      'text-sm',
+      'leading-5',
       'font-medium',
       'text-foreground',
     );
@@ -155,6 +158,8 @@ describe('Table', () => {
       'hover:underline',
       'focus-visible:ring-2',
       'focus-visible:ring-ring',
+      'text-sm',
+      'leading-5',
     );
 
     await user.click(sortButton);
