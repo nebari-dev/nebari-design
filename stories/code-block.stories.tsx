@@ -100,7 +100,7 @@ export const WithHeader: Story = {
     },
   },
   render: (args) => (
-    <CodeBlock {...args} className="w-[28rem]">
+    <CodeBlock {...args} className="min-w-[28rem]">
       <CodeBlockHeader>
         <span>Terminal</span>
         <CodeBlockCopyButton />

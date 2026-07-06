@@ -75,11 +75,16 @@ function CodeBlock({
           // this subtree, so the block can be dark on an otherwise light page.
           dark && 'dark',
           // `relative` anchors the floating copy button to this root.
+          // `w-[clamp(...)]` makes the block grow with the viewport between a
+          // 20rem floor and a 48rem ceiling, so typical-length lines fit
+          // without a horizontal scrollbar; only genuinely long lines fall
+          // back to the body's `overflow-x-auto`. Override via `className` for
+          // a fixed (`w-[28rem]`) or fluid (`w-full`) width.
           // `overflow-hidden` also zeroes the automatic min-width in flex/grid
           // parents, so a narrow layout squeezes the block (and the body
           // scrolls) instead of the longest line blowing out the page.
           // `min-w-40` is the floor below which the frame stops being usable.
-          'relative min-w-40 overflow-hidden rounded-md border border-border bg-card font-mono text-sm text-foreground',
+          'relative w-[clamp(20rem,80vw,48rem)] min-w-40 overflow-hidden rounded-md border border-border bg-card font-mono text-sm text-foreground',
           className,
         )}
         {...props}
