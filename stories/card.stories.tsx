@@ -69,6 +69,10 @@ const responsiveTwoCardGridClassName =
   'grid w-[min(calc(100vw-3rem),42rem)] grid-cols-[repeat(auto-fit,minmax(min(100%,16rem),1fr))] gap-4';
 const responsiveThreeCardGridClassName =
   'grid w-[min(calc(100vw-3rem),56rem)] grid-cols-[repeat(auto-fit,minmax(min(100%,16rem),1fr))] gap-4';
+const transparentMediaImage =
+  'data:image/svg+xml,' +
+  '%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 9"%3E' +
+  '%3C/svg%3E';
 
 export const Default: Story = {
   render: ({ showFooter, showHeader, ...args }) => (
@@ -305,17 +309,22 @@ export const EdgeToEdgeContent: Story = {
   name: 'Edge-to-edge content',
   render: () => (
     <Card className={singleCardClassName}>
-      <div className="flex aspect-video items-end bg-secondary p-(--card-spacing)">
-        <Badge>
-          <CalendarDays />
-          Featured
-        </Badge>
-      </div>
+      <img
+        alt=""
+        className="aspect-video w-full bg-secondary object-cover"
+        src={transparentMediaImage}
+      />
       <CardHeader>
         <CardTitle>Design systems meetup</CardTitle>
         <CardDescription>
           Practical patterns for component APIs and documentation.
         </CardDescription>
+        <CardAction>
+          <Badge>
+            <CalendarDays />
+            Featured
+          </Badge>
+        </CardAction>
       </CardHeader>
       <CardFooter>
         <Button size="sm" variant="outline">
