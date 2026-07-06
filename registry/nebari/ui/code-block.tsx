@@ -15,6 +15,12 @@ interface CodeBlockContextValue {
   code: string;
   /** Whether the body renders a line-number gutter. */
   showLineNumbers: boolean;
+  /**
+   * Whether the root renders a floating copy button over the body. The body
+   * reads this to reserve top-right clearance so code can't slide under it on
+   * a narrow, header-less block.
+   */
+  hasFloatingCopyButton: boolean;
 }
 
 const CodeBlockContext = createContext<CodeBlockContextValue | null>(null);
@@ -66,7 +72,9 @@ function CodeBlock({
   ...props
 }: CodeBlockProps) {
   return (
-    <CodeBlockContext.Provider value={{ code, showLineNumbers }}>
+    <CodeBlockContext.Provider
+      value={{ code, showLineNumbers, hasFloatingCopyButton: showCopyButton }}
+    >
       <div
         data-slot="code-block"
         data-dark={dark || undefined}
@@ -136,8 +144,15 @@ function CodeBlockBody({
   maxLines,
   ...props
 }: CodeBlockBodyProps) {
-  const { code, showLineNumbers } = useCodeBlockContext('CodeBlockBody');
+  const { code, showLineNumbers, hasFloatingCopyButton } =
+    useCodeBlockContext('CodeBlockBody');
   const lines = code.split('\n');
+
+  // Reserve right-edge clearance for the floating copy button (`right-3` +
+  // `size-7`) so a long line can't render under it on a narrow, header-less
+  // block. `pr-12` (3rem) clears the button's 2.5rem footprint with room to
+  // spare; it overrides the `px-4` right padding via tailwind-merge.
+  const copyButtonClearance = hasFloatingCopyButton ? 'pr-12' : undefined;
 
   return (
     // A labelled `section` names the focus stop for screen readers; the label
@@ -181,7 +196,12 @@ function CodeBlockBody({
           // One grid for the whole snippet — not one per line — so the `auto`
           // gutter column sizes to the widest line number and the code column
           // stays put when the count crosses 9→10, 99→100, and so on.
-          <code className="grid grid-cols-[auto_1fr] gap-x-4 px-4">
+          <code
+            className={cn(
+              'grid grid-cols-[auto_1fr] gap-x-4 px-4',
+              copyButtonClearance,
+            )}
+          >
             {lines.map((line, index) => (
               // biome-ignore lint/suspicious/noArrayIndexKey: source lines have no stable id and never reorder
               <Fragment key={index}>
@@ -197,7 +217,9 @@ function CodeBlockBody({
           </code>
         ) : (
           <code className="grid">
-            <span className="whitespace-pre px-4">{code}</span>
+            <span className={cn('whitespace-pre px-4', copyButtonClearance)}>
+              {code}
+            </span>
           </code>
         )}
       </pre>

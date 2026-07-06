@@ -285,6 +285,41 @@ describe('CodeBlock', () => {
     );
   });
 
+  it('reserves right-edge clearance in the body for the floating copy button', () => {
+    // With a floating button over a header-less block, the code must not slide
+    // under it on a narrow screen; the body reserves right padding to prevent
+    // the overlap.
+    render(
+      <CodeBlock code={snippet}>
+        <CodeBlockBody />
+      </CodeBlock>,
+    );
+
+    expect(screen.getByText(/const answer = 42;/)).toHaveClass('pr-12');
+  });
+
+  it('reserves clearance on the numbered code grid too', () => {
+    render(
+      <CodeBlock code={snippet} showLineNumbers>
+        <CodeBlockBody />
+      </CodeBlock>,
+    );
+
+    expect(screen.getByText('const answer = 42;').closest('code')).toHaveClass(
+      'pr-12',
+    );
+  });
+
+  it('does not reserve copy-button clearance when there is no floating button', () => {
+    render(
+      <CodeBlock code={snippet} showCopyButton={false}>
+        <CodeBlockBody />
+      </CodeBlock>,
+    );
+
+    expect(screen.getByText(/const answer = 42;/)).not.toHaveClass('pr-12');
+  });
+
   it('throws when a slot is used outside CodeBlock', () => {
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
     expect(() => render(<CodeBlockBody />)).toThrow(
