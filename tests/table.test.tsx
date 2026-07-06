@@ -94,9 +94,9 @@ describe('Table', () => {
       'overflow-x-auto',
       'focus-visible:ring-2',
     );
-    expect(
-      table.querySelector('[data-slot="table-header"]'),
-    ).toBeInTheDocument();
+    expect(table.querySelector('[data-slot="table-header"]')).toHaveClass(
+      'bg-muted',
+    );
     expect(table.querySelector('[data-slot="table-body"]')).toBeInTheDocument();
     expect(table.querySelector('[data-slot="table-footer"]')).toHaveClass(
       'bg-card',
