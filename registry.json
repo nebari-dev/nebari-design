@@ -191,6 +191,20 @@
       ]
     },
     {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog",
+      "description": "Modal dialog with overlay, close control, header, footer, title, and description parts, built on Base UI's Dialog.",
+      "dependencies": ["@base-ui-components/react", "lucide-react"],
+      "registryDependencies": ["utils", "button", "theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/dialog.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "tabs",
       "type": "registry:ui",
       "title": "Tabs",
@@ -270,6 +284,7 @@
         "light": {
           "background": "oklch(97.91% 0 0)",
           "foreground": "oklch(26.94% 0.0037 286.15)",
+          "scrim": "rgba(0, 0, 0, 0.5)",
           "card": "oklch(100% 0 0)",
           "card-foreground": "oklch(26.94% 0.0037 286.15)",
           "popover": "oklch(100% 0 0)",
@@ -311,6 +326,7 @@
         "dark": {
           "background": "oklch(26.94% 0.0037 286.15)",
           "foreground": "oklch(97.91% 0 0)",
+          "scrim": "rgba(0, 0, 0, 0.6)",
           "card": "oklch(33.01% 0.0052 286.11)",
           "card-foreground": "oklch(97.91% 0 0)",
           "popover": "oklch(26.94% 0.0037 286.15)",
