@@ -18,6 +18,9 @@ updates:
     ignore:
       - dependency-name: '@storybook/*'
       - dependency-name: 'storybook'
+      # Stay on @types/node 24.x to match the Node 24 runtime target.
+      - dependency-name: '@types/node'
+        versions: ['>=25']
 
   - package-ecosystem: "github-actions"
     directory: "/"
