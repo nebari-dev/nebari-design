@@ -11,8 +11,10 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
+# Dependabot only edits package.json (it has no bun.lock support), so on
+# Dependabot PRs we regenerate bun.lock and push it back to the branch.
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   check:
@@ -20,6 +22,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          # Check out the PR branch tip (not the detached merge ref) so the
+          # bun.lock sync step below can push back to it. Empty on push events,
+          # where checkout falls back to the triggering ref.
+          ref: ${{ github.head_ref }}
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
@@ -27,7 +34,28 @@ jobs:
           bun-version: latest
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: |
+          if [ "${{ github.actor }}" = "dependabot[bot]" ]; then
+            # Dependabot bumps package.json but leaves bun.lock stale, so a
+            # frozen install would fail. Regenerate the lockfile instead.
+            echo "Dependabot PR: regenerating bun.lock to match package.json"
+            bun install
+          else
+            bun install --frozen-lockfile
+          fi
+
+      - name: Sync bun.lock (Dependabot only)
+        if: github.actor == 'dependabot[bot]'
+        run: |
+          if git diff --quiet -- bun.lock; then
+            echo "bun.lock already in sync — nothing to commit"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add bun.lock
+            git commit -m "chore(deps): sync bun.lock with package.json"
+            git push
+          fi
 
       - name: Biome (format + lint + imports)
         run: bun run ci
