@@ -1,0 +1,31 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "08:00"
+      timezone: "US/Eastern"
+    groups:
+      # Group all patch and minor updates into a single PR
+      patch-and-minor:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
+    # Major updates are not grouped, so each opens its own PR
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "08:00"
+      timezone: "US/Eastern"
+    groups:
+      # Group all GitHub Actions updates into a single PR
+      github-actions:
+        applies-to: version-updates
+        patterns:
+          - "*"
