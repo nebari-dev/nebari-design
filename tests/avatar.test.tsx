@@ -45,7 +45,7 @@ describe('Avatar', () => {
     expect(screen.getByText('AL')).toHaveClass(
       'bg-muted',
       'text-muted-foreground-strong',
-      'pt-px',
+      'place-items-center',
       'leading-none',
     );
   });

@@ -103,7 +103,7 @@ function AvatarFallback({ className, ...props }: AvatarFallbackProps) {
       data-slot="avatar-fallback"
       className={(state) =>
         cn(
-          'flex size-full items-center justify-center rounded-full bg-muted pt-px text-muted-foreground-strong leading-none',
+          'grid size-full place-items-center rounded-full bg-muted text-muted-foreground-strong leading-none',
           typeof className === 'function' ? className(state) : className,
         )
       }
