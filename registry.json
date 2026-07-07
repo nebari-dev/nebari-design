@@ -226,6 +226,24 @@
       ]
     },
     {
+      "name": "drawer",
+      "type": "registry:ui",
+      "title": "Drawer",
+      "description": "Edge-anchored panel for secondary tasks, contextual detail, or short forms, with right-side and bottom-sheet variants built on Base UI Drawer.",
+      "dependencies": ["@base-ui/react", "lucide-react"],
+      "registryDependencies": [
+        "@nebari/utils",
+        "@nebari/button",
+        "@nebari/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/nebari/ui/drawer.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "tabs",
       "type": "registry:ui",
       "title": "Tabs",
