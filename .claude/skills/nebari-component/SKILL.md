@@ -144,7 +144,7 @@ Add an item to the `items` array:
   "title": "Button",
   "description": "Button with variant and size options, composable via Base UI's render prop.",
   "dependencies": ["@base-ui-components/react", "class-variance-authority"],
-  "registryDependencies": ["utils"],
+  "registryDependencies": ["@nebari/utils"],
   "files": [
     {
       "path": "registry/nebari/ui/button.tsx",
@@ -165,13 +165,17 @@ Add an item to the `items` array:
 **`registryDependencies`** = other items the component needs from a registry.
 
 - Any component that calls `cn()` imports `@/lib/utils`, so it **must** list
-  `"utils"`.
-- Reference items in *this* registry by bare name (`"utils"`, `"theme"`); reference
-  the upstream shadcn registry by URL or `@scope/name`.
-- If the component relies on tokens that aren't guaranteed present, list `"theme"`
-  too. **Any component that uses motion tokens (`--duration-*`, `--ease-*`,
-  `--animate-*`) must list `"theme"` in `registryDependencies`** so `shadcn add`
-  installs those variables automatically.
+  `"@nebari/utils"`.
+- **Reference items in *this* registry by their `@nebari/<name>` namespace, not
+  by bare name** (`"@nebari/utils"`, `"@nebari/theme"`); reference the upstream
+  shadcn registry by URL or `@scope/name`. A bare `"theme"` makes the shadcn CLI
+  resolve against the default registry's `styles/<style>/theme.json` — a 404 that
+  aborts `shadcn add` for consumers — whereas `"@nebari/theme"` resolves through
+  the `@nebari` registry the consumer already has configured.
+- If the component relies on tokens that aren't guaranteed present, list
+  `"@nebari/theme"` too. **Any component that uses motion tokens (`--duration-*`,
+  `--ease-*`, `--animate-*`) must list `"@nebari/theme"` in `registryDependencies`**
+  so `shadcn add` installs those variables automatically.
 
 ## Motion
 
@@ -280,10 +284,10 @@ For panels that slide in from an edge (drawer, sheet), swap `translate-y-1` for
 ### `registry.json` reminder
 
 A component that references motion tokens (`--duration-*`, `--ease-*`,
-`--animate-*`) must list `"theme"` in `registryDependencies`:
+`--animate-*`) must list `"@nebari/theme"` in `registryDependencies`:
 
 ```json
-"registryDependencies": ["utils", "theme"]
+"registryDependencies": ["@nebari/utils", "@nebari/theme"]
 ```
 
 ## Step 3 — the story

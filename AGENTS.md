@@ -107,8 +107,12 @@ rules that are easy to get wrong:
   **not** list `react`/`react-dom`, `tailwindcss`, or `clsx`/`tailwind-merge`
   (those belong to the `utils` item).
 - `registryDependencies` = other registry items. Anything that calls `cn()` must
-  list `"utils"`; if it depends on tokens that may be absent, also list
-  `"theme"`. Reference in-repo items by bare name.
+  list `"@nebari/utils"`; if it depends on tokens that may be absent, also list
+  `"@nebari/theme"`. **Reference in-repo items by their `@nebari/<name>`
+  namespace, not by bare name** — the shadcn CLI resolves a bare `"theme"`
+  against the default registry's `styles/<style>/theme.json` (a 404 that aborts
+  `shadcn add` for consumers), whereas `"@nebari/theme"` resolves through the
+  `@nebari` registry the consumer already has configured.
 
 ## Styling &amp; theming
 
