@@ -259,7 +259,7 @@
       "title": "Code Block",
       "description": "Formatted, monospaced code snippet with an optional language/filename header, a copy-to-clipboard button, and optional line numbers. Composed of CodeBlock, CodeBlockHeader, CodeBlockBody, and CodeBlockCopyButton.",
       "dependencies": ["class-variance-authority", "lucide-react"],
-      "registryDependencies": ["utils", "theme"],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
       "files": [
         {
           "path": "registry/nebari/ui/code-block.tsx",
