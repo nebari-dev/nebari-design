@@ -23,6 +23,8 @@ const manyLinesSnippet = Array.from(
   (_, i) => `console.log('processing step ${i + 1} of 24');`,
 ).join('\n');
 
+const longLineSnippet = `export const config = { retries: 3, timeout: 30000, endpoint: 'https://api.example.com/v1/resource', headers: { 'x-api-key': 'REPLACE_ME' } };`;
+
 const meta = {
   title: 'Components/Code Block',
   component: CodeBlock,
@@ -78,6 +80,24 @@ export const Basic: Story = {
       description: {
         story:
           'A header-less snippet with a floating copy button. Copy is the most-expected action, so the button sits in the top-right corner over the body even without a header bar.',
+      },
+    },
+  },
+  render: (args) => (
+    <CodeBlock {...args} className="w-[28rem]">
+      <CodeBlockBody />
+    </CodeBlock>
+  ),
+};
+
+export const HorizontalScroll: Story = {
+  name: 'Horizontal scroll',
+  args: { code: longLineSnippet },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A header-less block whose single line is wider than the frame, so the body scrolls horizontally. The floating copy button stays opaque (`bg-card`), so the code passes behind it and the icon remains legible at any scroll position.',
       },
     },
   },

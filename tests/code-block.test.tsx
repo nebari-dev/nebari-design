@@ -285,6 +285,23 @@ describe('CodeBlock', () => {
     );
   });
 
+  it('gives the floating copy button an opaque background so overflowing code stays behind it', () => {
+    // A long line scrolls horizontally *behind* the floating button; without an
+    // opaque fill the icon would mix with the moving code and be hard to see.
+    render(
+      <CodeBlock code={snippet}>
+        <CodeBlockBody />
+      </CodeBlock>,
+    );
+
+    expect(screen.getByRole('button', { name: 'Copy code' })).toHaveClass(
+      'bg-card',
+    );
+    expect(codeBlockCopyButtonVariants({ floating: true })).toContain(
+      'bg-card',
+    );
+  });
+
   it('reserves right-edge clearance in the body for the floating copy button', () => {
     // With a floating button over a header-less block, the code must not slide
     // under it on a narrow screen; the body reserves right padding to prevent

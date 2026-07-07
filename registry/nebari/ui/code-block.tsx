@@ -149,9 +149,11 @@ function CodeBlockBody({
   const lines = code.split('\n');
 
   // Reserve right-edge clearance for the floating copy button (`right-3` +
-  // `size-7`) so a long line can't render under it on a narrow, header-less
-  // block. `pr-12` (3rem) clears the button's 2.5rem footprint with room to
-  // spare; it overrides the `px-4` right padding via tailwind-merge.
+  // `size-7`) so line-end content can't tuck under it when the line fits.
+  // `pr-12` (3rem) clears the button's 2.5rem footprint with room to spare; it
+  // overrides the `px-4` right padding via tailwind-merge. A line long enough
+  // to overflow instead scrolls horizontally *behind* the button, whose opaque
+  // `bg-card` keeps it legible over the moving text.
   const copyButtonClearance = hasFloatingCopyButton ? 'pr-12' : undefined;
 
   return (
@@ -238,8 +240,12 @@ const codeBlockCopyButtonVariants = cva(
       // Overlay the button in a header-less block. It pins to the top-right,
       // offset to sit level with the first code line, and works at any block
       // height (a header-less snippet keeps its copy affordance without a bar).
+      // `bg-card` (matching the frame) makes it opaque so a long line that
+      // overflows and scrolls horizontally passes *behind* it — the icon stays
+      // legible instead of mixing with the code beneath. `shadow-sm` lifts it
+      // off that scrolling text.
       floating: {
-        true: 'absolute right-3 top-3',
+        true: 'absolute right-3 top-3 bg-card shadow-sm',
         false: '',
       },
     },
