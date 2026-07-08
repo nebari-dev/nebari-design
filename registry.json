@@ -66,6 +66,20 @@
       ]
     },
     {
+      "name": "slider",
+      "type": "registry:ui",
+      "title": "Slider",
+      "description": "Bounded numeric input with single-value and range behavior, keyboard navigation, and Nebari track and thumb styling.",
+      "dependencies": ["@base-ui-components/react"],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/slider.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "checkbox",
       "type": "registry:ui",
       "title": "Checkbox",
