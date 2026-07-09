@@ -27,6 +27,7 @@ const config: StorybookConfig = {
       ...viteConfig.optimizeDeps,
       include: [
         ...(viteConfig.optimizeDeps?.include ?? []),
+        '@base-ui-components/react/menu',
         'react',
         'react-dom',
         'react-dom/client',
