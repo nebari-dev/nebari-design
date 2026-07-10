@@ -7,3 +7,19 @@
   background-color: var(--card);
   border-color: var(--border);
 }
+
+.dark .docblock-source,
+.dark .docblock-source > div:last-child,
+.dark .docblock-source button {
+  background-color: var(--card);
+  color: var(--card-foreground);
+}
+
+.dark .docblock-source {
+  border-color: var(--border);
+}
+
+.dark .docblock-source pre,
+.dark .docblock-source pre * {
+  color: var(--card-foreground);
+}
