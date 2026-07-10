@@ -8,8 +8,16 @@ type ThemeChannel = {
 export const GLOBALS_UPDATED = 'globalsUpdated';
 
 export function syncPreviewTheme(channel: ThemeChannel, target = document) {
+  let currentTheme: 'light' | 'dark' | undefined;
+
   const setTheme = (theme: unknown) => {
-    target.documentElement.classList.toggle('dark', theme === 'dark');
+    const nextTheme = theme === 'dark' ? 'dark' : 'light';
+    if (nextTheme === currentTheme) {
+      return;
+    }
+
+    currentTheme = nextTheme;
+    target.documentElement.classList.toggle('dark', nextTheme === 'dark');
     target.body.style.backgroundColor = 'var(--background)';
   };
 

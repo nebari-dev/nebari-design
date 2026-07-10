@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { managerThemes } from '../.storybook/manager';
-import { GLOBALS_UPDATED } from '../.storybook/theme';
+import { GLOBALS_UPDATED, syncPreviewTheme } from '../.storybook/theme';
 
 const manager = vi.hoisted(() => {
   const listeners = new Map<string, (payload: unknown) => void>();
@@ -59,6 +59,26 @@ describe('Storybook manager theme', () => {
       appBg: '#262628',
       appContentBg: '#353538',
       colorSecondary: '#b053e2',
+    });
+  });
+
+  it('updates the preview outside story decorators', () => {
+    const listeners = new Map<string, (payload: unknown) => void>();
+    syncPreviewTheme({
+      on: (event, listener) => {
+        listeners.set(event, listener as (payload: unknown) => void);
+      },
+    });
+
+    expect(document.documentElement).not.toHaveClass('dark');
+
+    listeners.get(GLOBALS_UPDATED)?.({
+      globals: { theme: 'dark' },
+    });
+
+    expect(document.documentElement).toHaveClass('dark');
+    expect(document.body).toHaveStyle({
+      backgroundColor: 'var(--background)',
     });
   });
 });
