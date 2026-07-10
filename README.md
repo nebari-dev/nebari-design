@@ -134,7 +134,12 @@ The dev server runs at <http://localhost:6006>. Stories live in the top-level
 registry source, so imports resolve the same way they do in tests and builds.
 
 The preview loads the Nebari theme tokens and webfonts, enables autodocs for
-every component, and includes a toolbar switcher for light and dark themes.
+every component, and includes a toolbar switcher for light and dark themes. The
+custom toolbar is retained instead of adding a second addon switch: its `theme`
+global is the single source of truth for both the preview and manager UI.
+`initialGlobals.theme` defaults both contexts to light, and `.storybook/manager.ts`
+maps updates to manager colors aligned with the semantic tokens in
+`registry/nebari/globals.css`. Theme persistence across reloads is not provided.
 The a11y addon runs axe checks in the UI and fails the Storybook Vitest project
 when violations are found.
 
