@@ -10,10 +10,9 @@ const preview: Preview = {
   // Enables an autodocs page (with the "Show code" source snippet) for every
   // component, generated from its stories.
   tags: ['autodocs'],
-  // Toolbar switcher for previewing components in light or dark themes. The
-  // dark token set lives in `registry/nebari/globals.css` under `.dark`, and
-  // the `dark` Tailwind variant targets `.dark *`, so the class is applied to
-  // the preview's root element for every story (canvas and autodocs alike).
+  // This custom toolbar remains the single theme control for both Storybook
+  // contexts: this decorator themes the preview while manager.ts observes the
+  // same global to theme the application chrome.
   globalTypes: {
     theme: {
       description: 'Global theme for components',
