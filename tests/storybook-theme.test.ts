@@ -1,6 +1,6 @@
-import { GLOBALS_UPDATED } from 'storybook/internal/core-events';
 import { describe, expect, it, vi } from 'vitest';
 import { managerThemes } from '../.storybook/manager';
+import { GLOBALS_UPDATED } from '../.storybook/theme';
 
 const manager = vi.hoisted(() => {
   const listeners = new Map<string, (payload: unknown) => void>();

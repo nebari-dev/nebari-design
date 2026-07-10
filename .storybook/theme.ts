@@ -1,11 +1,11 @@
-import { GLOBALS_UPDATED } from 'storybook/internal/core-events';
-
 type ThemeChannel = {
   on: (
     event: string,
     listener: (payload: { globals: Record<string, unknown> }) => void,
   ) => void;
 };
+
+export const GLOBALS_UPDATED = 'globalsUpdated';
 
 export function syncPreviewTheme(channel: ThemeChannel, target = document) {
   const setTheme = (theme: unknown) => {
