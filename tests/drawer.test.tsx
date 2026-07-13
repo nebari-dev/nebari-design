@@ -219,8 +219,8 @@ describe('Drawer', () => {
     await user.tab();
     expect(screen.getByRole('button', { name: 'Save changes' })).toHaveFocus();
 
-    await user.tab();
-    expect(screen.getByRole('button', { name: 'Close' })).toHaveFocus();
+    await user.tab({ shift: true });
+    expect(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus();
     expect(drawer).toContainElement(document.activeElement as HTMLElement);
 
     await user.keyboard('{Escape}');

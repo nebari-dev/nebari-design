@@ -202,8 +202,7 @@ function DrawerContent({
   const swipeAxis =
     swipeDirection === 'down' || swipeDirection === 'up' ? 'y' : 'x';
   const resolvedInitialFocus =
-    initialFocus ??
-    (showCloseButton ? () => closeButtonRef.current : undefined);
+    initialFocus ?? (showCloseButton ? closeButtonRef : undefined);
 
   return (
     <DrawerPortal {...portalProps}>

@@ -214,7 +214,11 @@ export const LongContent: Story = {
             </DrawerDescription>
           </div>
         </DrawerHeader>
-        <DrawerBody className="gap-3">
+        <DrawerBody
+          aria-label="Workspace review details"
+          className="max-h-[min(34rem,calc(100dvh-12rem))] gap-3"
+          tabIndex={0}
+        >
           {LONG_CONTENT_SECTIONS.map(([title, description]) => (
             <section
               className="rounded-md border border-border bg-background p-3"
