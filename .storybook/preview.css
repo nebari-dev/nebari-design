@@ -1,0 +1,85 @@
+.sbdocs-content a:not(.docs-story *) {
+  color: var(--primary);
+  text-decoration-color: currentcolor;
+  text-underline-offset: 0.15em;
+}
+
+.sbdocs-content a:not(.docs-story *):hover {
+  color: var(--primary-hover);
+}
+
+.dark .sbdocs-wrapper {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.dark
+  .sbdocs-content
+  :is(h1, h2, h3, h4, h5, h6, p, li, blockquote):not(.docs-story *) {
+  color: var(--foreground);
+}
+
+.dark .sbdocs-content code:not(pre code, .docs-story *) {
+  background-color: var(--muted);
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+.dark .sbdocs-preview {
+  background-color: var(--card);
+  border-color: var(--border);
+}
+
+.dark .sbdocs-preview > div:first-child:not(.docs-story) {
+  background-color: var(--card);
+  box-shadow: var(--border) 0 -1px 0 0 inset;
+  color: var(--muted-foreground);
+}
+
+.dark .sbdocs-preview > div:first-child:not(.docs-story) :is(a, button) {
+  color: var(--muted-foreground);
+}
+
+.dark .sbdocs-preview-actions button {
+  color: var(--muted-foreground);
+}
+
+.dark .docblock-source,
+.dark .docblock-source > div:last-child,
+.dark .docblock-source button {
+  background-color: var(--card);
+  color: var(--card-foreground);
+}
+
+.dark .docblock-source {
+  border-color: var(--border);
+}
+
+.dark .docblock-source pre,
+.dark .docblock-source pre * {
+  color: var(--card-foreground);
+}
+
+.dark .docblock-argstable {
+  color: var(--card-foreground);
+}
+
+.dark .docblock-argstable .docblock-argstable-head th {
+  color: var(--muted-foreground);
+}
+
+.dark .docblock-argstable .docblock-argstable-body > tr > * {
+  background-color: var(--card);
+  border-color: var(--border);
+  color: var(--card-foreground);
+}
+
+.dark .docblock-argstable :is(button, input, select, textarea) {
+  background-color: var(--background);
+  border-color: var(--input);
+  color: var(--foreground);
+}
+
+.dark button[aria-label="Reset controls"] {
+  color: var(--muted-foreground);
+}
