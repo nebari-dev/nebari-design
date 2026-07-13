@@ -155,18 +155,17 @@ export const PlusButton: Story = {
   ),
 };
 
-export const Group: Story = {
-  name: 'Group',
+export const GroupCount: Story = {
+  name: 'Group count',
   parameters: {
     docs: {
       description: {
-        story:
-          'Avatar groups overlap items horizontally and can end with a count or plus button.',
+        story: 'An avatar group ending with the number of additional people.',
       },
     },
   },
   render: () => (
-    <AvatarGroup>
+    <AvatarGroup aria-label="6 collaborators">
       <Avatar>
         <AvatarFallback>AL</AvatarFallback>
       </Avatar>
@@ -177,6 +176,30 @@ export const Group: Story = {
         <AvatarFallback>KJ</AvatarFallback>
       </Avatar>
       <AvatarGroupCount>+3</AvatarGroupCount>
+    </AvatarGroup>
+  ),
+};
+
+export const GroupWithIcon: Story = {
+  name: 'Group with icon',
+  parameters: {
+    docs: {
+      description: {
+        story: 'An avatar group ending with an interactive add button.',
+      },
+    },
+  },
+  render: () => (
+    <AvatarGroup aria-label="3 collaborators">
+      <Avatar>
+        <AvatarFallback>AL</AvatarFallback>
+      </Avatar>
+      <Avatar>
+        <AvatarFallback>GH</AvatarFallback>
+      </Avatar>
+      <Avatar>
+        <AvatarFallback>KJ</AvatarFallback>
+      </Avatar>
       <AvatarGroupCount
         aria-label="Add teammate"
         render={<button type="button" />}

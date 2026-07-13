@@ -68,14 +68,14 @@ describe('Avatar', () => {
       </AvatarGroup>,
     );
 
-    expect(
-      screen.getByText('AL').closest('[data-slot="avatar-group"]'),
-    ).toHaveClass('-space-x-2');
-    expect(screen.getByText('+2')).toHaveAttribute(
-      'data-slot',
-      'avatar-group-count',
-    );
-    expect(screen.getByText('+2')).toHaveAttribute('data-variant', 'count');
+    const group = screen.getByRole('list', { name: 'Collaborators' });
+    const count = screen.getByText('+2');
+
+    expect(group).toHaveClass('-space-x-2');
+    expect(screen.getAllByRole('listitem')).toHaveLength(2);
+    expect(count).toHaveAttribute('data-slot', 'avatar-group-count');
+    expect(count).toHaveAttribute('data-variant', 'count');
+    expect(count).toHaveAccessibleName('2 additional collaborators');
   });
 
   it('supports an interactive plus button in an avatar group', async () => {
@@ -96,7 +96,11 @@ describe('Avatar', () => {
 
     expect(button).toHaveAttribute('data-slot', 'avatar-group-count');
     expect(button).toHaveAttribute('data-variant', 'button');
-    expect(button).toHaveClass('focus-visible:ring-2');
+    expect(button).toHaveClass(
+      'focus-visible:border-ring',
+      'focus-visible:ring-2',
+      'focus-visible:ring-ring',
+    );
 
     await user.click(button);
     expect(onClick).toHaveBeenCalledOnce();

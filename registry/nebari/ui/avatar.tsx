@@ -1,7 +1,7 @@
 import { Avatar as AvatarPrimitive } from '@base-ui-components/react/avatar';
 import { useRender } from '@base-ui-components/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
-import type * as React from 'react';
+import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 const avatarVariants = cva(
@@ -29,7 +29,7 @@ const avatarGroupCountVariants = cva(
       variant: {
         count: 'bg-muted text-muted-foreground-strong',
         button:
-          'bg-background text-foreground outline-none hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-safe:transition-[color,background-color,border-color,opacity,transform] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] motion-safe:active:scale-[0.97]',
+          'bg-background text-foreground outline-none hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-safe:transition-[color,background-color,border-color,opacity,transform] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] motion-safe:active:scale-[0.97]',
       },
       size: {
         xs: 'size-5 text-xs leading-none [&_svg:not([class*="size-"])]:size-3',
@@ -54,7 +54,7 @@ type AvatarImageProps = AvatarPrimitive.Image.Props;
 
 type AvatarFallbackProps = AvatarPrimitive.Fallback.Props;
 
-type AvatarGroupProps = React.ComponentProps<'div'>;
+type AvatarGroupProps = React.ComponentProps<'ul'>;
 
 type AvatarGroupCountProps = useRender.ComponentProps<'span'> &
   VariantProps<typeof avatarGroupCountVariants>;
@@ -112,17 +112,27 @@ function AvatarFallback({ className, ...props }: AvatarFallbackProps) {
   );
 }
 
-/** Overlapped horizontal list of avatars. */
-function AvatarGroup({ className, ...props }: AvatarGroupProps) {
+/** Overlapped, collectively labelled group of avatars. */
+function AvatarGroup({
+  'aria-label': ariaLabel = 'Collaborators',
+  className,
+  children,
+  ...props
+}: AvatarGroupProps) {
   return (
-    <div
+    <ul
+      aria-label={ariaLabel}
       data-slot="avatar-group"
       className={cn(
-        'flex items-center -space-x-2 *:data-[slot=avatar-group-count]:ring-2 *:data-[slot=avatar-group-count]:ring-background *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background',
+        'm-0 flex list-none items-center -space-x-2 p-0 *:inline-flex [&_[data-slot=avatar-group-count]]:ring-2 [&_[data-slot=avatar-group-count]]:ring-background [&_[data-slot=avatar-group-count]]:focus-visible:ring-ring [&_[data-slot=avatar]]:ring-2 [&_[data-slot=avatar]]:ring-background',
         className,
       )}
       {...props}
-    />
+    >
+      {React.Children.map(children, (child) => (
+        <li>{child}</li>
+      ))}
+    </ul>
   );
 }
 
@@ -131,13 +141,20 @@ function AvatarGroup({ className, ...props }: AvatarGroupProps) {
  * `variant="button"` with `render={<button />}` for an interactive plus item.
  */
 function AvatarGroupCount({
+  'aria-label': ariaLabel,
   className,
+  children,
   size,
   variant,
   ref,
   render = <span />,
   ...props
 }: AvatarGroupCountProps) {
+  const additionalCount =
+    variant !== 'button' && typeof children === 'string'
+      ? children.match(/^\+(\d+)$/)?.[1]
+      : undefined;
+
   return useRender({
     render,
     ref,
@@ -145,7 +162,13 @@ function AvatarGroupCount({
       'data-slot': 'avatar-group-count',
       'data-size': size ?? 'default',
       'data-variant': variant ?? 'count',
+      'aria-label':
+        ariaLabel ??
+        (additionalCount
+          ? `${additionalCount} additional collaborators`
+          : undefined),
       className: cn(avatarGroupCountVariants({ size, variant }), className),
+      children,
       ...props,
     },
   });
