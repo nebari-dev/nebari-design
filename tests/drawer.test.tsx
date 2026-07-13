@@ -73,6 +73,8 @@ describe('Drawer', () => {
       'shadow-lg',
       'data-[swipe-direction=right]:rounded-l-lg',
     );
+    expect(drawer).not.toHaveClass('focus-visible:ring-2');
+    expect(drawer).not.toHaveClass('focus-visible:ring-ring');
     expect(document.querySelector('[data-slot="drawer-overlay"]')).toHaveClass(
       'bg-scrim',
       'motion-safe:transition-[opacity]',
@@ -179,6 +181,15 @@ describe('Drawer', () => {
       'bg-muted',
       'justify-end',
     );
+    expect(document.querySelector('[data-slot="drawer-title"]')).toHaveClass(
+      'text-base',
+      'font-semibold',
+      'leading-5',
+      'tracking-normal',
+    );
+    expect(
+      document.querySelector('[data-slot="drawer-description"]'),
+    ).toHaveClass('text-sm', 'font-normal', 'leading-5', 'tracking-normal');
     expect(screen.getByRole('button', { name: 'Cancel' })).toHaveAttribute(
       'data-slot',
       'drawer-close',
@@ -197,14 +208,19 @@ describe('Drawer', () => {
       name: 'Workspace details',
     });
 
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Close' })).toHaveFocus();
+    });
+    expect(drawer).toContainElement(document.activeElement as HTMLElement);
+
     await user.tab();
     expect(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus();
 
     await user.tab();
     expect(screen.getByRole('button', { name: 'Save changes' })).toHaveFocus();
 
-    await user.tab({ shift: true });
-    expect(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus();
+    await user.tab();
+    expect(screen.getByRole('button', { name: 'Close' })).toHaveFocus();
     expect(drawer).toContainElement(document.activeElement as HTMLElement);
 
     await user.keyboard('{Escape}');

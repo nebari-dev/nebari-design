@@ -1,7 +1,7 @@
 import { Drawer as DrawerPrimitive } from '@base-ui/react/drawer';
 import { XIcon } from 'lucide-react';
 import type * as React from 'react';
-import { createContext, useContext, useMemo } from 'react';
+import { createContext, useContext, useMemo, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/ui/button';
 
@@ -190,6 +190,7 @@ function DrawerContent({
   className,
   children,
   showCloseButton = true,
+  initialFocus,
   portalProps,
   viewportClassName,
   overlayClassName,
@@ -197,8 +198,12 @@ function DrawerContent({
 }: DrawerContentProps) {
   const { hasSnapPoints, modal, showSwipeHandle, side, swipeDirection } =
     useDrawerContext('DrawerContent');
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const swipeAxis =
     swipeDirection === 'down' || swipeDirection === 'up' ? 'y' : 'x';
+  const resolvedInitialFocus =
+    initialFocus ??
+    (showCloseButton ? () => closeButtonRef.current : undefined);
 
   return (
     <DrawerPortal {...portalProps}>
@@ -221,9 +226,10 @@ function DrawerContent({
           data-slot="drawer-content"
           data-swipe-axis={swipeAxis}
           data-snap-points={hasSnapPoints ? '' : undefined}
+          initialFocus={resolvedInitialFocus}
           className={(state) =>
             cn(
-              'group/drawer-popup pointer-events-auto fixed z-50 m-(--drawer-inset,0px) flex min-h-0 transform-[translate3d(var(--translate-x,0px),var(--translate-y,0px),0)_scale(var(--stack-scale))] flex-col overflow-hidden border border-border bg-card text-card-foreground shadow-lg outline-none select-none will-change-transform [--bleed:3rem] [--drawer-content-height:var(--drawer-height,auto)] [--drawer-content-max-height:none] [--drawer-content-width:auto] [--peek:1rem] [--stack-height:var(--drawer-frontmost-height,var(--drawer-height,0px))] [--stack-peek-offset:max(0px,calc((var(--nested-drawers)-var(--stack-progress))*var(--peek)))] [--stack-progress:clamp(0,var(--drawer-swipe-progress),1)] [--stack-scale-base:max(0,calc(1-(var(--nested-drawers)*var(--stack-step))))] [--stack-scale:clamp(0,calc(var(--stack-scale-base)+(var(--stack-step)*var(--stack-progress))),1)] [--stack-shrink:calc(1-var(--stack-scale))] [--stack-step:0.05] [interpolate-size:allow-keywords] after:pointer-events-none after:absolute after:bg-card data-[swipe-axis=x]:inset-y-0 data-[swipe-axis=x]:h-dvh data-[swipe-axis=x]:w-(--drawer-content-width) data-[swipe-axis=x]:max-w-[calc(100vw-var(--drawer-inset,0px)*2)] data-[swipe-axis=x]:[--drawer-content-width:min(25rem,100vw)] data-[swipe-axis=x]:after:inset-y-0 data-[swipe-axis=x]:after:w-(--bleed) data-[swipe-axis=y]:inset-x-0 data-[swipe-axis=y]:max-h-(--drawer-content-max-height) data-[swipe-axis=y]:w-full data-[swipe-axis=y]:[--drawer-content-max-height:calc(100dvh-3rem)] data-[swipe-axis=y]:data-snap-points:h-dvh data-[swipe-axis=y]:after:inset-x-0 data-[swipe-axis=y]:after:h-(--bleed) data-[swipe-direction=down]:bottom-0 data-[swipe-direction=down]:origin-bottom data-[swipe-direction=down]:rounded-t-lg data-[swipe-direction=down]:after:top-full data-[swipe-direction=down]:[--closed-transform:translate3d(0,calc(100%+var(--drawer-inset,0px)+2px),0)] data-[swipe-direction=down]:[--translate-y:calc(var(--drawer-snap-point-offset,0px)+var(--drawer-swipe-movement-y)-var(--stack-peek-offset)-(var(--stack-shrink)*var(--stack-height)))] data-[swipe-direction=left]:left-0 data-[swipe-direction=left]:origin-left data-[swipe-direction=left]:rounded-r-lg data-[swipe-direction=left]:after:right-full data-[swipe-direction=left]:[--closed-transform:translate3d(calc(-100%-var(--drawer-inset,0px)-2px),0,0)] data-[swipe-direction=left]:[--translate-x:calc(var(--drawer-swipe-movement-x)+var(--stack-peek-offset)+(var(--stack-shrink)*100%))] data-[swipe-direction=right]:right-0 data-[swipe-direction=right]:origin-right data-[swipe-direction=right]:rounded-l-lg data-[swipe-direction=right]:after:left-full data-[swipe-direction=right]:[--closed-transform:translate3d(calc(100%+var(--drawer-inset,0px)+2px),0,0)] data-[swipe-direction=right]:[--translate-x:calc(var(--drawer-swipe-movement-x)-var(--stack-peek-offset)-(var(--stack-shrink)*100%))] data-[swipe-direction=up]:top-0 data-[swipe-direction=up]:origin-top data-[swipe-direction=up]:rounded-b-lg data-[swipe-direction=up]:after:bottom-full data-[swipe-direction=up]:[--closed-transform:translate3d(0,calc(-100%-var(--drawer-inset,0px)-2px),0)] data-[swipe-direction=up]:[--translate-y:calc(var(--drawer-snap-point-offset,0px)+var(--drawer-swipe-movement-y)+var(--stack-peek-offset)+(var(--stack-shrink)*var(--stack-height)))] data-[starting-style]:transform-(--closed-transform) data-[ending-style]:transform-(--closed-transform) data-[ending-style]:opacity-[0.9999] data-nested-drawer-open:overflow-hidden data-nested-drawer-open:brightness-95 data-nested-drawer-swiping:motion-safe:duration-0 data-swiping:motion-safe:duration-0 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-safe:transition-[opacity,transform] motion-safe:duration-[--duration-slow] motion-safe:ease-[--ease-emphasized]',
+              'group/drawer-popup pointer-events-auto fixed z-50 m-(--drawer-inset,0px) flex min-h-0 transform-[translate3d(var(--translate-x,0px),var(--translate-y,0px),0)_scale(var(--stack-scale))] flex-col overflow-hidden border border-border bg-card text-card-foreground shadow-lg outline-none select-none will-change-transform [--bleed:3rem] [--drawer-content-height:var(--drawer-height,auto)] [--drawer-content-max-height:none] [--drawer-content-width:auto] [--peek:1rem] [--stack-height:var(--drawer-frontmost-height,var(--drawer-height,0px))] [--stack-peek-offset:max(0px,calc((var(--nested-drawers)-var(--stack-progress))*var(--peek)))] [--stack-progress:clamp(0,var(--drawer-swipe-progress),1)] [--stack-scale-base:max(0,calc(1-(var(--nested-drawers)*var(--stack-step))))] [--stack-scale:clamp(0,calc(var(--stack-scale-base)+(var(--stack-step)*var(--stack-progress))),1)] [--stack-shrink:calc(1-var(--stack-scale))] [--stack-step:0.05] [interpolate-size:allow-keywords] after:pointer-events-none after:absolute after:bg-card data-[swipe-axis=x]:inset-y-0 data-[swipe-axis=x]:h-dvh data-[swipe-axis=x]:w-(--drawer-content-width) data-[swipe-axis=x]:max-w-[calc(100vw-var(--drawer-inset,0px)*2)] data-[swipe-axis=x]:[--drawer-content-width:min(25rem,100vw)] data-[swipe-axis=x]:after:inset-y-0 data-[swipe-axis=x]:after:w-(--bleed) data-[swipe-axis=y]:inset-x-0 data-[swipe-axis=y]:max-h-(--drawer-content-max-height) data-[swipe-axis=y]:w-full data-[swipe-axis=y]:[--drawer-content-max-height:calc(100dvh-3rem)] data-[swipe-axis=y]:data-snap-points:h-dvh data-[swipe-axis=y]:after:inset-x-0 data-[swipe-axis=y]:after:h-(--bleed) data-[swipe-direction=down]:bottom-0 data-[swipe-direction=down]:origin-bottom data-[swipe-direction=down]:rounded-t-lg data-[swipe-direction=down]:after:top-full data-[swipe-direction=down]:[--closed-transform:translate3d(0,calc(100%+var(--drawer-inset,0px)+2px),0)] data-[swipe-direction=down]:[--translate-y:calc(var(--drawer-snap-point-offset,0px)+var(--drawer-swipe-movement-y)-var(--stack-peek-offset)-(var(--stack-shrink)*var(--stack-height)))] data-[swipe-direction=left]:left-0 data-[swipe-direction=left]:origin-left data-[swipe-direction=left]:rounded-r-lg data-[swipe-direction=left]:after:right-full data-[swipe-direction=left]:[--closed-transform:translate3d(calc(-100%-var(--drawer-inset,0px)-2px),0,0)] data-[swipe-direction=left]:[--translate-x:calc(var(--drawer-swipe-movement-x)+var(--stack-peek-offset)+(var(--stack-shrink)*100%))] data-[swipe-direction=right]:right-0 data-[swipe-direction=right]:origin-right data-[swipe-direction=right]:rounded-l-lg data-[swipe-direction=right]:after:left-full data-[swipe-direction=right]:[--closed-transform:translate3d(calc(100%+var(--drawer-inset,0px)+2px),0,0)] data-[swipe-direction=right]:[--translate-x:calc(var(--drawer-swipe-movement-x)-var(--stack-peek-offset)-(var(--stack-shrink)*100%))] data-[swipe-direction=up]:top-0 data-[swipe-direction=up]:origin-top data-[swipe-direction=up]:rounded-b-lg data-[swipe-direction=up]:after:bottom-full data-[swipe-direction=up]:[--closed-transform:translate3d(0,calc(-100%-var(--drawer-inset,0px)-2px),0)] data-[swipe-direction=up]:[--translate-y:calc(var(--drawer-snap-point-offset,0px)+var(--drawer-swipe-movement-y)+var(--stack-peek-offset)+(var(--stack-shrink)*var(--stack-height)))] data-[starting-style]:transform-(--closed-transform) data-[ending-style]:transform-(--closed-transform) data-[ending-style]:opacity-[0.9999] data-nested-drawer-open:overflow-hidden data-nested-drawer-open:brightness-95 data-nested-drawer-swiping:motion-safe:duration-0 data-swiping:motion-safe:duration-0 motion-safe:transition-[opacity,transform] motion-safe:duration-[--duration-slow] motion-safe:ease-[--ease-emphasized]',
               typeof className === 'function' ? className(state) : className,
             )
           }
@@ -234,9 +240,9 @@ function DrawerContent({
             data-slot="drawer-content-inner"
             className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-[inherit] bg-card select-text group-data-swiping/drawer-popup:select-none"
           >
-            {children}
             {showCloseButton && (
               <DrawerClose
+                ref={closeButtonRef}
                 render={
                   <Button
                     className="absolute top-4 right-4 z-10"
@@ -249,6 +255,7 @@ function DrawerContent({
                 <span className="sr-only">Close</span>
               </DrawerClose>
             )}
+            {children}
           </DrawerPrimitive.Content>
         </DrawerPrimitive.Popup>
       </DrawerPrimitive.Viewport>
@@ -305,7 +312,7 @@ function DrawerTitle({ className, ...props }: DrawerPrimitive.Title.Props) {
       data-slot="drawer-title"
       className={(state) =>
         cn(
-          'font-semibold text-base text-foreground leading-5',
+          'font-semibold text-base text-foreground leading-5 tracking-normal',
           typeof className === 'function' ? className(state) : className,
         )
       }
@@ -324,7 +331,7 @@ function DrawerDescription({
       data-slot="drawer-description"
       className={(state) =>
         cn(
-          'text-muted-foreground text-sm leading-5',
+          'font-normal text-muted-foreground text-sm leading-5 tracking-normal',
           typeof className === 'function' ? className(state) : className,
         )
       }

@@ -61,10 +61,58 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+const LONG_CONTENT_SECTIONS = [
+  [
+    'Runtime',
+    'Python 3.12 with shared CUDA libraries and team-managed package mirrors.',
+  ],
+  [
+    'Resource profile',
+    '4 CPU cores, 16 GiB memory, and access to the shared workspace volume.',
+  ],
+  [
+    'Network access',
+    'Outbound package installation is restricted to approved repositories.',
+  ],
+  [
+    'Collaboration',
+    'Owners can invite maintainers, reviewers, and temporary project guests.',
+  ],
+  [
+    'Data policy',
+    'Workspace exports are logged and retained according to project settings.',
+  ],
+  ['Backups', 'Snapshots run every 6 hours and are retained for 14 days.'],
+  [
+    'Idle shutdown',
+    'Inactive sessions pause after 4 hours and can be resumed from history.',
+  ],
+  [
+    'Rebuild policy',
+    'Base image updates require an owner approval before scheduled rebuilds.',
+  ],
+  [
+    'Audit trail',
+    'Configuration changes are attributed to the actor and linked request.',
+  ],
+  [
+    'Secrets',
+    'Environment variables are injected at runtime and hidden from logs.',
+  ],
+  [
+    'Storage',
+    'Project data is mounted read-write, with archive storage mounted read-only.',
+  ],
+  [
+    'Notifications',
+    'Owners receive email updates when policy checks require action.',
+  ],
+];
+
 function drawerProps({
   showSwipeHandle,
-  side,
-}: Pick<DrawerStoryArgs, 'showSwipeHandle' | 'side'>) {
+  side = 'right',
+}: Partial<Pick<DrawerStoryArgs, 'showSwipeHandle' | 'side'>>) {
   return {
     side,
     ...(showSwipeHandle === undefined ? {} : { showSwipeHandle }),
@@ -144,6 +192,66 @@ export const BottomSheet: Story = {
       title="Filter results"
     />
   ),
+};
+
+export const LongContent: Story = {
+  name: 'Long content',
+  render: ({
+    showCloseButton = true,
+    showSwipeHandle,
+    side = 'right',
+  }: Partial<DrawerStoryArgs>) => (
+    <Drawer {...drawerProps({ showSwipeHandle, side })}>
+      <DrawerTrigger render={<Button variant="outline" />}>
+        Review workspace
+      </DrawerTrigger>
+      <DrawerContent showCloseButton={showCloseButton}>
+        <DrawerHeader>
+          <div className="min-w-0 flex-1">
+            <DrawerTitle>Workspace review</DrawerTitle>
+            <DrawerDescription>
+              Confirm runtime, access, and policy details
+            </DrawerDescription>
+          </div>
+        </DrawerHeader>
+        <DrawerBody className="gap-3">
+          {LONG_CONTENT_SECTIONS.map(([title, description]) => (
+            <section
+              className="rounded-md border border-border bg-background p-3"
+              key={title}
+            >
+              <h3 className="font-medium text-foreground text-sm leading-5">
+                {title}
+              </h3>
+              <p className="mt-1 text-muted-foreground text-sm leading-5">
+                {description}
+              </p>
+            </section>
+          ))}
+        </DrawerBody>
+        <DrawerFooter>
+          <DrawerClose render={<Button variant="outline" />}>
+            Cancel
+          </DrawerClose>
+          <Button>Approve</Button>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const page = within(canvasElement.ownerDocument.body);
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Review workspace' }),
+    );
+
+    const drawer = await page.findByRole('dialog', {
+      name: 'Workspace review',
+    });
+    await expect(drawer).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Approve' })).toBeVisible();
+  },
 };
 
 export const NestedDrawer: Story = {
