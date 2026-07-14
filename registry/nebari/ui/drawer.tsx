@@ -8,6 +8,8 @@ import { Button } from '@/ui/button';
 type DrawerSwipeDirection = NonNullable<
   DrawerPrimitive.Root.Props['swipeDirection']
 >;
+
+/** Visual viewport edge from which the drawer enters and exits. */
 type DrawerSide = 'top' | 'right' | 'bottom' | 'left';
 
 type DrawerContextValue = {
@@ -18,6 +20,7 @@ type DrawerContextValue = {
   swipeDirection: DrawerSwipeDirection;
 };
 
+/** Props for the drawer root, including Nebari's visual `side` abstraction. */
 type DrawerProps = Omit<DrawerPrimitive.Root.Props, 'swipeDirection'> & {
   /**
    * Visual edge the drawer opens from. `right` matches the desktop side-sheet
@@ -36,10 +39,17 @@ type DrawerProps = Omit<DrawerPrimitive.Root.Props, 'swipeDirection'> & {
   showSwipeHandle?: boolean;
 };
 
+/** Props accepted by {@link DrawerTrigger}. */
 type DrawerTriggerProps = DrawerPrimitive.Trigger.Props;
+/** Props accepted by {@link DrawerClose}. */
 type DrawerCloseProps = DrawerPrimitive.Close.Props;
+/** Props accepted by {@link DrawerPortal}. */
 type DrawerPortalProps = DrawerPrimitive.Portal.Props;
+/** Props accepted by {@link DrawerOverlay}. */
 type DrawerOverlayProps = DrawerPrimitive.Backdrop.Props;
+/** Props accepted by {@link DrawerSwipeHandle}. */
+type DrawerSwipeHandleProps = React.ComponentProps<'div'>;
+/** Props accepted by {@link DrawerContent}. */
 type DrawerContentProps = DrawerPrimitive.Popup.Props & {
   /** Renders the default top-right close button. */
   showCloseButton?: boolean;
@@ -155,7 +165,7 @@ function DrawerOverlay({ className, ...props }: DrawerOverlayProps) {
       data-slot="drawer-overlay"
       className={(state) =>
         cn(
-          'fixed inset-0 z-50 min-h-dvh bg-scrim opacity-[max(var(--drawer-overlay-min-opacity,0),calc(1-var(--drawer-swipe-progress)))] select-none data-[starting-style]:opacity-0 data-[ending-style]:pointer-events-none data-[ending-style]:opacity-0 data-snap-points:[--drawer-overlay-min-opacity:0.5] motion-safe:transition-[opacity] motion-safe:duration-[--duration-base] motion-safe:ease-[--ease-standard] data-swiping:motion-safe:duration-0 supports-[-webkit-touch-callout:none]:absolute',
+          'fixed inset-0 z-50 min-h-dvh bg-scrim opacity-[max(var(--drawer-overlay-min-opacity,0),calc(1-var(--drawer-swipe-progress)))] select-none data-[starting-style]:opacity-0 data-[ending-style]:pointer-events-none data-[ending-style]:opacity-0 data-[ending-style]:motion-safe:duration-[calc(var(--drawer-swipe-strength)*var(--duration-base))] data-snap-points:[--drawer-overlay-min-opacity:0.5] motion-safe:transition-[opacity] motion-safe:duration-[var(--duration-base)] motion-safe:ease-[var(--ease-standard)] data-swiping:motion-safe:duration-0 data-[ending-style]:data-swiping:motion-safe:duration-[calc(var(--drawer-swipe-strength)*var(--duration-base))] supports-[-webkit-touch-callout:none]:absolute',
           typeof className === 'function' ? className(state) : className,
         )
       }
@@ -165,10 +175,7 @@ function DrawerOverlay({ className, ...props }: DrawerOverlayProps) {
 }
 
 /** Decorative grab handle for bottom drawers. */
-function DrawerSwipeHandle({
-  className,
-  ...props
-}: React.ComponentProps<'div'>) {
+function DrawerSwipeHandle({ className, ...props }: DrawerSwipeHandleProps) {
   return (
     <div
       aria-hidden="true"
@@ -184,7 +191,9 @@ function DrawerSwipeHandle({
 
 /**
  * Portaled drawer surface with the default overlay, viewport, swipe handle, and
- * optional top-right close button.
+ * optional top-right close button. The popup slides in and out from its
+ * configured edge using tokenized transform transitions that compose with Base
+ * UI's swipe and nested-drawer transform variables.
  */
 function DrawerContent({
   className,
@@ -228,7 +237,7 @@ function DrawerContent({
           initialFocus={resolvedInitialFocus}
           className={(state) =>
             cn(
-              'group/drawer-popup pointer-events-auto fixed z-50 m-(--drawer-inset,0px) flex min-h-0 transform-[translate3d(var(--translate-x,0px),var(--translate-y,0px),0)_scale(var(--stack-scale))] flex-col overflow-hidden border border-border bg-card text-card-foreground shadow-lg outline-none select-none will-change-transform [--bleed:3rem] [--drawer-content-height:var(--drawer-height,auto)] [--drawer-content-max-height:none] [--drawer-content-width:auto] [--peek:1rem] [--stack-height:var(--drawer-frontmost-height,var(--drawer-height,0px))] [--stack-peek-offset:max(0px,calc((var(--nested-drawers)-var(--stack-progress))*var(--peek)))] [--stack-progress:clamp(0,var(--drawer-swipe-progress),1)] [--stack-scale-base:max(0,calc(1-(var(--nested-drawers)*var(--stack-step))))] [--stack-scale:clamp(0,calc(var(--stack-scale-base)+(var(--stack-step)*var(--stack-progress))),1)] [--stack-shrink:calc(1-var(--stack-scale))] [--stack-step:0.05] [interpolate-size:allow-keywords] after:pointer-events-none after:absolute after:bg-card data-[swipe-axis=x]:inset-y-0 data-[swipe-axis=x]:h-dvh data-[swipe-axis=x]:w-(--drawer-content-width) data-[swipe-axis=x]:max-w-[calc(100vw-var(--drawer-inset,0px)*2)] data-[swipe-axis=x]:[--drawer-content-width:min(25rem,100vw)] data-[swipe-axis=x]:after:inset-y-0 data-[swipe-axis=x]:after:w-(--bleed) data-[swipe-axis=y]:inset-x-0 data-[swipe-axis=y]:max-h-(--drawer-content-max-height) data-[swipe-axis=y]:w-full data-[swipe-axis=y]:[--drawer-content-max-height:calc(100dvh-3rem)] data-[swipe-axis=y]:data-snap-points:h-dvh data-[swipe-axis=y]:after:inset-x-0 data-[swipe-axis=y]:after:h-(--bleed) data-[swipe-direction=down]:bottom-0 data-[swipe-direction=down]:origin-bottom data-[swipe-direction=down]:rounded-t-lg data-[swipe-direction=down]:after:top-full data-[swipe-direction=down]:[--closed-transform:translate3d(0,calc(100%+var(--drawer-inset,0px)+2px),0)] data-[swipe-direction=down]:[--translate-y:calc(var(--drawer-snap-point-offset,0px)+var(--drawer-swipe-movement-y)-var(--stack-peek-offset)-(var(--stack-shrink)*var(--stack-height)))] data-[swipe-direction=left]:left-0 data-[swipe-direction=left]:origin-left data-[swipe-direction=left]:rounded-r-lg data-[swipe-direction=left]:after:right-full data-[swipe-direction=left]:[--closed-transform:translate3d(calc(-100%-var(--drawer-inset,0px)-2px),0,0)] data-[swipe-direction=left]:[--translate-x:calc(var(--drawer-swipe-movement-x)+var(--stack-peek-offset)+(var(--stack-shrink)*100%))] data-[swipe-direction=right]:right-0 data-[swipe-direction=right]:origin-right data-[swipe-direction=right]:rounded-l-lg data-[swipe-direction=right]:after:left-full data-[swipe-direction=right]:[--closed-transform:translate3d(calc(100%+var(--drawer-inset,0px)+2px),0,0)] data-[swipe-direction=right]:[--translate-x:calc(var(--drawer-swipe-movement-x)-var(--stack-peek-offset)-(var(--stack-shrink)*100%))] data-[swipe-direction=up]:top-0 data-[swipe-direction=up]:origin-top data-[swipe-direction=up]:rounded-b-lg data-[swipe-direction=up]:after:bottom-full data-[swipe-direction=up]:[--closed-transform:translate3d(0,calc(-100%-var(--drawer-inset,0px)-2px),0)] data-[swipe-direction=up]:[--translate-y:calc(var(--drawer-snap-point-offset,0px)+var(--drawer-swipe-movement-y)+var(--stack-peek-offset)+(var(--stack-shrink)*var(--stack-height)))] data-[starting-style]:transform-(--closed-transform) data-[ending-style]:transform-(--closed-transform) data-[ending-style]:opacity-[0.9999] data-nested-drawer-open:overflow-hidden data-nested-drawer-open:brightness-95 data-nested-drawer-swiping:motion-safe:duration-0 data-swiping:motion-safe:duration-0 motion-safe:transition-[opacity,transform] motion-safe:duration-[--duration-slow] motion-safe:ease-[--ease-emphasized]',
+              'group/drawer-popup pointer-events-auto fixed z-50 m-(--drawer-inset,0px) flex min-h-0 transform-[translate3d(var(--translate-x,0px),var(--translate-y,0px),0)_scale(var(--stack-scale))] flex-col overflow-hidden border border-border bg-card text-card-foreground opacity-100 shadow-lg outline-none select-none will-change-transform [--bleed:3rem] [--drawer-content-height:var(--drawer-height,auto)] [--drawer-content-max-height:none] [--drawer-content-width:auto] [--peek:1rem] [--stack-height:var(--drawer-frontmost-height,var(--drawer-height,0px))] [--stack-peek-offset:max(0px,calc((var(--nested-drawers)-var(--stack-progress))*var(--peek)))] [--stack-progress:clamp(0,var(--drawer-swipe-progress),1)] [--stack-scale-base:max(0,calc(1-(var(--nested-drawers)*var(--stack-step))))] [--stack-scale:clamp(0,calc(var(--stack-scale-base)+(var(--stack-step)*var(--stack-progress))),1)] [--stack-shrink:calc(1-var(--stack-scale))] [--stack-step:0.05] [interpolate-size:allow-keywords] after:pointer-events-none after:absolute after:bg-card data-[swipe-axis=x]:inset-y-0 data-[swipe-axis=x]:h-dvh data-[swipe-axis=x]:w-(--drawer-content-width) data-[swipe-axis=x]:max-w-[calc(100vw-var(--drawer-inset,0px)*2)] data-[swipe-axis=x]:[--drawer-content-width:min(25rem,100vw)] data-[swipe-axis=x]:after:inset-y-0 data-[swipe-axis=x]:after:w-(--bleed) data-[swipe-axis=y]:inset-x-0 data-[swipe-axis=y]:max-h-(--drawer-content-max-height) data-[swipe-axis=y]:w-full data-[swipe-axis=y]:[--drawer-content-max-height:calc(100dvh-3rem)] data-[swipe-axis=y]:data-snap-points:h-dvh data-[swipe-axis=y]:after:inset-x-0 data-[swipe-axis=y]:after:h-(--bleed) data-[swipe-direction=down]:bottom-0 data-[swipe-direction=down]:origin-bottom data-[swipe-direction=down]:rounded-t-lg data-[swipe-direction=down]:after:top-full data-[swipe-direction=down]:[--closed-transform:translate3d(0,calc(100%_+_var(--drawer-inset,0px)_+_2px),0)] data-[swipe-direction=down]:[--translate-y:calc(var(--drawer-snap-point-offset,0px)+var(--drawer-swipe-movement-y)-var(--stack-peek-offset)-(var(--stack-shrink)*var(--stack-height)))] data-[swipe-direction=left]:left-0 data-[swipe-direction=left]:origin-left data-[swipe-direction=left]:rounded-r-lg data-[swipe-direction=left]:after:right-full data-[swipe-direction=left]:[--closed-transform:translate3d(calc(-100%_-_var(--drawer-inset,0px)_-_2px),0,0)] data-[swipe-direction=left]:[--translate-x:calc(var(--drawer-swipe-movement-x)+var(--stack-peek-offset)+(var(--stack-shrink)*100%))] data-[swipe-direction=right]:right-0 data-[swipe-direction=right]:origin-right data-[swipe-direction=right]:rounded-l-lg data-[swipe-direction=right]:after:left-full data-[swipe-direction=right]:[--closed-transform:translate3d(calc(100%_+_var(--drawer-inset,0px)_+_2px),0,0)] data-[swipe-direction=right]:[--translate-x:calc(var(--drawer-swipe-movement-x)-var(--stack-peek-offset)-(var(--stack-shrink)*100%))] data-[swipe-direction=up]:top-0 data-[swipe-direction=up]:origin-top data-[swipe-direction=up]:rounded-b-lg data-[swipe-direction=up]:after:bottom-full data-[swipe-direction=up]:[--closed-transform:translate3d(0,calc(-100%_-_var(--drawer-inset,0px)_-_2px),0)] data-[swipe-direction=up]:[--translate-y:calc(var(--drawer-snap-point-offset,0px)+var(--drawer-swipe-movement-y)+var(--stack-peek-offset)+(var(--stack-shrink)*var(--stack-height)))] data-[starting-style]:transform-(--closed-transform) data-[starting-style]:opacity-0 data-[ending-style]:transform-(--closed-transform) data-[ending-style]:opacity-0 data-[ending-style]:motion-safe:duration-[calc(var(--drawer-swipe-strength)*var(--duration-slow))] data-nested-drawer-open:overflow-hidden data-nested-drawer-open:brightness-95 data-nested-drawer-swiping:motion-safe:duration-0 data-swiping:motion-safe:duration-0 data-[ending-style]:data-nested-drawer-swiping:motion-safe:duration-[calc(var(--drawer-swipe-strength)*var(--duration-slow))] data-[ending-style]:data-swiping:motion-safe:duration-[calc(var(--drawer-swipe-strength)*var(--duration-slow))] motion-safe:transition-[opacity,transform] motion-safe:duration-[var(--duration-slow)] motion-safe:ease-[var(--ease-emphasized)]',
               typeof className === 'function' ? className(state) : className,
             )
           }
@@ -346,6 +355,7 @@ export type {
   DrawerPortalProps,
   DrawerProps,
   DrawerSide,
+  DrawerSwipeHandleProps,
   DrawerTriggerProps,
 };
 export {

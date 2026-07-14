@@ -72,6 +72,16 @@ describe('Drawer', () => {
       'bg-card',
       'shadow-lg',
       'data-[swipe-direction=right]:rounded-l-lg',
+      'data-[swipe-direction=right]:[--closed-transform:translate3d(calc(100%_+_var(--drawer-inset,0px)_+_2px),0,0)]',
+      'data-[starting-style]:transform-(--closed-transform)',
+      'data-[ending-style]:transform-(--closed-transform)',
+    );
+    // CSS timing and lifecycle states require layout and are verified by the
+    // Default Storybook interaction in real Chromium.
+    expect(drawer).toHaveClass('motion-safe:transition-[opacity,transform]');
+    expect(drawer).toHaveClass(
+      'motion-safe:duration-[var(--duration-slow)]',
+      'motion-safe:ease-[var(--ease-emphasized)]',
     );
     expect(drawer).not.toHaveClass('focus-visible:ring-2');
     expect(drawer).not.toHaveClass('focus-visible:ring-ring');
@@ -137,6 +147,7 @@ describe('Drawer', () => {
     expect(drawer).toHaveAttribute('data-swipe-axis', 'y');
     expect(drawer).toHaveClass(
       'data-[swipe-direction=down]:rounded-t-lg',
+      'data-[swipe-direction=down]:[--closed-transform:translate3d(0,calc(100%_+_var(--drawer-inset,0px)_+_2px),0)]',
       'data-[swipe-axis=y]:w-full',
     );
     expect(drawer).not.toHaveClass('data-[swipe-axis=y]:max-w-[30rem]');
@@ -158,6 +169,7 @@ describe('Drawer', () => {
     expect(drawer).toHaveAttribute('data-swipe-axis', 'y');
     expect(drawer).toHaveClass(
       'data-[swipe-direction=up]:rounded-b-lg',
+      'data-[swipe-direction=up]:[--closed-transform:translate3d(0,calc(-100%_-_var(--drawer-inset,0px)_-_2px),0)]',
       'data-[swipe-axis=y]:w-full',
     );
     expect(drawer).not.toHaveClass('data-[swipe-axis=y]:max-w-[30rem]');

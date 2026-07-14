@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { Button } from '@/ui/button';
 import {
   Drawer,
@@ -127,6 +127,17 @@ function PlaceholderBody({ children }: { children: React.ReactNode }) {
   );
 }
 
+async function expectDrawerOpen(drawer: HTMLElement) {
+  await waitFor(
+    () =>
+      expect(drawer).toHaveStyle({
+        opacity: '1',
+      }),
+    { timeout: 1000 },
+  );
+  await expect(drawer).toBeVisible();
+}
+
 function DrawerExample({
   action = 'Save changes',
   description = 'A short description of what this panel contains.',
@@ -175,7 +186,27 @@ export const Default: Story = {
     await userEvent.click(canvas.getByRole('button', { name: 'Open Drawer' }));
 
     const drawer = await page.findByRole('dialog', { name: 'Panel title' });
-    await expect(drawer).toBeVisible();
+    await expectDrawerOpen(drawer);
+    await expect(drawer).toHaveStyle({
+      transitionDuration: '0.35s',
+      transitionProperty: 'opacity, transform',
+    });
+
+    await userEvent.click(page.getByRole('button', { name: 'Close' }));
+    await waitFor(() => expect(drawer).toHaveAttribute('data-ending-style'));
+    await expect(drawer).toHaveStyle({ transitionDuration: '0.35s' });
+    await waitFor(
+      () =>
+        expect(
+          page.queryByRole('dialog', { name: 'Panel title' }),
+        ).not.toBeInTheDocument(),
+      { timeout: 1000 },
+    );
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Open Drawer' }));
+    await expectDrawerOpen(
+      await page.findByRole('dialog', { name: 'Panel title' }),
+    );
   },
 };
 
@@ -205,7 +236,10 @@ export const LongContent: Story = {
       <DrawerTrigger render={<Button variant="outline" />}>
         Review workspace
       </DrawerTrigger>
-      <DrawerContent showCloseButton={showCloseButton}>
+      <DrawerContent
+        className="h-dvh max-h-dvh"
+        showCloseButton={showCloseButton}
+      >
         <DrawerHeader>
           <div className="min-w-0 flex-1">
             <DrawerTitle>Workspace review</DrawerTitle>
@@ -216,22 +250,24 @@ export const LongContent: Story = {
         </DrawerHeader>
         <DrawerBody
           aria-label="Workspace review details"
-          className="max-h-[min(34rem,calc(100dvh-12rem))] gap-3"
+          className="gap-3"
           tabIndex={0}
         >
-          {LONG_CONTENT_SECTIONS.map(([title, description]) => (
-            <section
-              className="rounded-md border border-border bg-background p-3"
-              key={title}
-            >
-              <h3 className="font-medium text-foreground text-sm leading-5">
-                {title}
-              </h3>
-              <p className="mt-1 text-muted-foreground text-sm leading-5">
-                {description}
-              </p>
-            </section>
-          ))}
+          <div className="flex min-h-full flex-col gap-3">
+            {LONG_CONTENT_SECTIONS.map(([title, description]) => (
+              <section
+                className="rounded-md border border-border bg-background p-3"
+                key={title}
+              >
+                <h3 className="font-medium text-foreground text-sm leading-5">
+                  {title}
+                </h3>
+                <p className="mt-1 text-muted-foreground text-sm leading-5">
+                  {description}
+                </p>
+              </section>
+            ))}
+          </div>
         </DrawerBody>
         <DrawerFooter>
           <DrawerClose render={<Button variant="outline" />}>
@@ -253,7 +289,7 @@ export const LongContent: Story = {
     const drawer = await page.findByRole('dialog', {
       name: 'Workspace review',
     });
-    await expect(drawer).toBeVisible();
+    await expectDrawerOpen(drawer);
     await expect(page.getByRole('button', { name: 'Approve' })).toBeVisible();
   },
 };
@@ -386,20 +422,20 @@ export const NestedDrawer: Story = {
     await userEvent.click(
       canvas.getByRole('button', { name: 'Environment settings' }),
     );
-    await expect(
+    await expectDrawerOpen(
       await page.findByRole('dialog', { name: 'Environment settings' }),
-    ).toBeVisible();
+    );
 
     await userEvent.click(
       page.getByRole('button', { name: 'Advanced settings' }),
     );
-    await expect(
+    await expectDrawerOpen(
       await page.findByRole('dialog', { name: 'Advanced settings' }),
-    ).toBeVisible();
+    );
 
     await userEvent.click(page.getByRole('button', { name: 'Rebuild policy' }));
-    await expect(
+    await expectDrawerOpen(
       await page.findByRole('dialog', { name: 'Rebuild policy' }),
-    ).toBeVisible();
+    );
   },
 };
