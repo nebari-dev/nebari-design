@@ -26,7 +26,7 @@ const dropdownMenuItemVariants = cva(
 );
 
 const dropdownMenuTriggerVariants = cva(
-  'inline-flex h-8 items-center justify-center rounded-md px-2.5 py-1.5 text-sm font-medium text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 motion-safe:transition-[color,background-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]',
+  'inline-flex h-8 items-center justify-center rounded-md px-2.5 py-1.5 text-sm font-medium text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 motion-safe:transition-[color,background-color,transform] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] motion-safe:active:scale-[0.97]',
   {
     variants: {
       variant: {
@@ -46,6 +46,8 @@ type DropdownMenuTriggerProps = MenuPrimitive.Trigger.Props &
     showExpandIcon?: boolean;
     expandIcon?: React.ReactNode;
   };
+
+type DropdownMenuProps = MenuPrimitive.Root.Props;
 
 type DropdownMenuContentProps = MenuPrimitive.Popup.Props &
   Pick<
@@ -75,10 +77,11 @@ interface DropdownMenuSubmenuProps
 
 const DropdownMenuPortal = MenuPrimitive.Portal;
 
+/** Groups menu open state and sub-parts for trigger/content composition. */
 function DropdownMenu({
   children,
   ...props
-}: Omit<MenuPrimitive.Root.Props, 'children'> & {
+}: Omit<DropdownMenuProps, 'children'> & {
   children?: React.ReactNode;
 }) {
   return (
@@ -88,6 +91,7 @@ function DropdownMenu({
   );
 }
 
+/** Trigger element that opens the menu, with optional text-only styling and icon. */
 function DropdownMenuTrigger({
   className,
   children,
@@ -121,6 +125,7 @@ function DropdownMenuTrigger({
   );
 }
 
+/** Groups related menu items under a shared label and semantics. */
 function DropdownMenuGroup({ className, ...props }: MenuPrimitive.Group.Props) {
   return (
     <MenuPrimitive.Group
@@ -131,6 +136,7 @@ function DropdownMenuGroup({ className, ...props }: MenuPrimitive.Group.Props) {
   );
 }
 
+/** Portaled popup surface positioned against the trigger. */
 function DropdownMenuContent({
   className,
   children,
@@ -162,6 +168,7 @@ function DropdownMenuContent({
   );
 }
 
+/** Standard actionable menu item with optional destructive emphasis. */
 function DropdownMenuItem({
   className,
   children,
@@ -180,6 +187,7 @@ function DropdownMenuItem({
   );
 }
 
+/** Visual divider between menu groups. */
 function DropdownMenuSeparator({
   className,
   ...props
@@ -193,6 +201,7 @@ function DropdownMenuSeparator({
   );
 }
 
+/** Non-interactive uppercase label for a grouped section. */
 function DropdownMenuGroupLabel({
   className,
   ...props
@@ -209,6 +218,7 @@ function DropdownMenuGroupLabel({
   );
 }
 
+/** Groups mutually-exclusive radio items within a menu. */
 function DropdownMenuRadioGroup({
   className,
   ...props
@@ -222,6 +232,7 @@ function DropdownMenuRadioGroup({
   );
 }
 
+/** Toggleable menu item with trailing check indicator. */
 function DropdownMenuCheckboxItem({
   className,
   children,
@@ -246,6 +257,7 @@ function DropdownMenuCheckboxItem({
   );
 }
 
+/** Single selectable item inside a `DropdownMenuRadioGroup`. */
 function DropdownMenuRadioItem({
   className,
   children,
@@ -270,6 +282,7 @@ function DropdownMenuRadioItem({
   );
 }
 
+/** Nested submenu with its own popup and right-chevron trigger. */
 function DropdownMenuSubmenu({
   children,
   contentClassName,
@@ -309,6 +322,7 @@ export type {
   DropdownMenuCheckboxItemProps,
   DropdownMenuContentProps,
   DropdownMenuItemProps,
+  DropdownMenuProps,
   DropdownMenuRadioItemProps,
   DropdownMenuSubmenuProps,
   DropdownMenuTriggerProps,
