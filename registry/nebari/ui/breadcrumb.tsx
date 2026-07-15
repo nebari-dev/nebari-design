@@ -14,10 +14,7 @@ type BreadcrumbItemProps = ComponentProps<'li'>;
 type BreadcrumbLinkProps = useRender.ComponentProps<'a'>;
 type BreadcrumbPageProps = ComponentProps<'span'>;
 type BreadcrumbSeparatorProps = Omit<ComponentProps<'li'>, 'children'>;
-type BreadcrumbEllipsisProps = Omit<
-  useRender.ComponentProps<'button'>,
-  'children'
->;
+type BreadcrumbEllipsisProps = Omit<Menu.Trigger.Props, 'children'>;
 type BreadcrumbDropdownProps = Menu.Root.Props;
 type BreadcrumbDropdownTriggerProps = Menu.Trigger.Props;
 type BreadcrumbDropdownContentProps = Menu.Popup.Props &
@@ -41,15 +38,17 @@ function Breadcrumb({ className, ...props }: BreadcrumbProps) {
 }
 
 /**
- * Ordered list wrapper for breadcrumb items and separators. The list wraps at
- * small widths so long paths remain readable instead of overflowing the page.
+ * Ordered list wrapper for breadcrumb items and separators. The list stays on
+ * one line by default so consumers can explicitly collapse omitted segments
+ * into a {@link BreadcrumbDropdown}. Pass `flex-wrap whitespace-normal` through
+ * `className` only when wrapping is the intended overflow behavior.
  */
 function BreadcrumbList({ className, ...props }: BreadcrumbListProps) {
   return (
     <ol
       data-slot="breadcrumb-list"
       className={cn(
-        'flex min-w-0 flex-wrap items-center gap-1.5 break-words text-muted-foreground text-sm leading-5 sm:gap-2.5',
+        'flex min-w-0 flex-nowrap items-center gap-1.5 whitespace-nowrap text-muted-foreground text-sm leading-5 sm:gap-2.5',
         className,
       )}
       {...props}
@@ -135,39 +134,31 @@ function BreadcrumbSeparator({
 }
 
 /**
- * Focusable control for omitted middle segments in a long breadcrumb trail.
- * Compose it inside `BreadcrumbItem`; it can be used directly as a button or as
- * a Base UI Menu trigger via `render`.
+ * Menu trigger for omitted middle segments in a collapsed breadcrumb trail.
+ * Compose it inside {@link BreadcrumbDropdown} with a matching
+ * {@link BreadcrumbDropdownContent} menu of hidden ancestor links.
  */
 function BreadcrumbEllipsis({
   'aria-label': ariaLabel = 'Show more breadcrumbs',
   className,
-  ref,
-  render,
   type = 'button',
   ...props
 }: BreadcrumbEllipsisProps) {
-  return useRender({
-    defaultTagName: 'button',
-    render,
-    ref,
-    props: {
-      ...props,
-      'aria-label': ariaLabel,
-      'data-slot': 'breadcrumb-ellipsis',
-      type,
-      className: cn(
+  return (
+    <Menu.Trigger
+      aria-label={ariaLabel}
+      data-slot="breadcrumb-ellipsis"
+      type={type}
+      className={cn(
         'flex size-5 items-center justify-center rounded-[4px] text-muted-foreground outline-none hover:text-foreground focus-visible:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-safe:transition-[color,box-shadow] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] [&>svg]:size-4 [&>svg]:shrink-0',
         className,
-      ),
-      children: (
-        <>
-          <MoreHorizontalIcon aria-hidden="true" />
-          <span className="sr-only">More breadcrumbs</span>
-        </>
-      ),
-    },
-  });
+      )}
+      {...props}
+    >
+      <MoreHorizontalIcon aria-hidden="true" />
+      <span className="sr-only">More breadcrumbs</span>
+    </Menu.Trigger>
+  );
 }
 
 /**
@@ -187,14 +178,17 @@ function BreadcrumbDropdown({
  * marks itself as the current page, and appends the design caret.
  */
 function BreadcrumbDropdownTrigger({
+  'aria-current': ariaCurrent = 'page',
   className,
   children,
+  type = 'button',
   ...props
 }: BreadcrumbDropdownTriggerProps) {
   return (
     <Menu.Trigger
-      aria-current="page"
+      aria-current={ariaCurrent}
       data-slot="breadcrumb-dropdown-trigger"
+      type={type}
       className={cn(
         'inline-flex items-center gap-1 rounded-[4px] font-normal text-foreground outline-none underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background data-[popup-open]:text-foreground motion-safe:transition-[color,box-shadow] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] [&_svg]:size-3.5 [&_svg]:shrink-0',
         className,
@@ -254,7 +248,7 @@ function BreadcrumbDropdownItem({
     <Menu.Item
       data-slot="breadcrumb-dropdown-item"
       className={cn(
-        'flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+        'flex cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
         className,
       )}
       {...props}

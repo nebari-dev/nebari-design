@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
   Breadcrumb,
   BreadcrumbDropdown,
@@ -67,15 +67,29 @@ describe('Breadcrumb', () => {
     );
   });
 
-  it('applies Nebari layout and text classes to the list', () => {
-    render(<BreadcrumbList>Trail</BreadcrumbList>);
+  it('keeps the list on one line by default and permits explicit wrapping', () => {
+    const { rerender } = render(<BreadcrumbList>Trail</BreadcrumbList>);
 
     expect(screen.getByRole('list')).toHaveClass(
       'flex',
-      'flex-wrap',
-      'break-words',
+      'flex-nowrap',
+      'whitespace-nowrap',
       'text-muted-foreground',
       'text-sm',
+    );
+
+    rerender(
+      <BreadcrumbList className="flex-wrap whitespace-normal">
+        Trail
+      </BreadcrumbList>,
+    );
+    expect(screen.getByRole('list')).toHaveClass(
+      'flex-wrap',
+      'whitespace-normal',
+    );
+    expect(screen.getByRole('list')).not.toHaveClass(
+      'flex-nowrap',
+      'whitespace-nowrap',
     );
   });
 
@@ -120,10 +134,18 @@ describe('Breadcrumb', () => {
     expect(separator?.querySelector('svg')).toBeInTheDocument();
   });
 
-  it('renders an accessible, focusable collapsed-path ellipsis button', async () => {
-    const onClick = vi.fn();
+  it('opens hidden ancestor links from the collapsed-path ellipsis', async () => {
     const user = userEvent.setup();
-    render(<BreadcrumbEllipsis onClick={onClick} />);
+    render(
+      <BreadcrumbDropdown>
+        <BreadcrumbEllipsis />
+        <BreadcrumbDropdownContent>
+          <BreadcrumbDropdownItem render={<a href="/design-system" />}>
+            Design system
+          </BreadcrumbDropdownItem>
+        </BreadcrumbDropdownContent>
+      </BreadcrumbDropdown>,
+    );
 
     const ellipsis = screen.getByRole('button', {
       name: 'Show more breadcrumbs',
@@ -138,7 +160,11 @@ describe('Breadcrumb', () => {
     );
 
     await user.click(ellipsis);
-    expect(onClick).toHaveBeenCalledOnce();
+    const hiddenAncestor = await screen.findByRole('menuitem', {
+      name: 'Design system',
+    });
+    expect(ellipsis).toHaveAttribute('aria-expanded', 'true');
+    expect(hiddenAncestor).toHaveAttribute('href', '/design-system');
   });
 
   it('renders a dropdown breadcrumb for the current route and previous links', async () => {
@@ -168,6 +194,7 @@ describe('Breadcrumb', () => {
     const components = await screen.findByText('Components');
     expect(home.closest('[data-slot="breadcrumb-dropdown-item"]')).toHaveClass(
       'hover:bg-accent',
+      'cursor-pointer',
     );
     expect(components.closest('a')).toHaveAttribute('href', '/components');
   });
