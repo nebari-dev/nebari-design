@@ -27,7 +27,6 @@ const config: StorybookConfig = {
       ...viteConfig.optimizeDeps,
       include: [
         ...(viteConfig.optimizeDeps?.include ?? []),
-        '@base-ui-components/react/avatar',
         'react',
         'react-dom',
         'react-dom/client',
