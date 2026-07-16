@@ -208,20 +208,6 @@
       ]
     },
     {
-      "name": "avatar",
-      "type": "registry:ui",
-      "title": "Avatar",
-      "description": "User avatar with image and initials fallback, size variants, avatar groups, and count or add-button group items.",
-      "dependencies": ["@base-ui-components/react", "class-variance-authority"],
-      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
-      "files": [
-        {
-          "path": "registry/nebari/ui/avatar.tsx",
-          "type": "registry:ui"
-        }
-      ]
-    },
-    {
       "name": "card",
       "type": "registry:ui",
       "title": "Card",
