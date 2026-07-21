@@ -24,9 +24,10 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           # Check out the PR branch tip (not the detached merge ref) so the
-          # bun.lock sync step below can push back to it. Empty on push events,
-          # where checkout falls back to the triggering ref.
-          ref: ${{ github.head_ref }}
+          # bun.lock sync step below can push back to it. For fork PRs, fetch
+          # from the head repository instead of looking for the branch upstream.
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
