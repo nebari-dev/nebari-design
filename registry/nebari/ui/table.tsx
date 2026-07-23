@@ -79,7 +79,7 @@ function TableHeader({ className, ...props }: React.ComponentProps<'thead'>) {
   return (
     <thead
       data-slot="table-header"
-      className={cn('bg-muted', className)}
+      className={cn('bg-background', className)}
       {...props}
     />
   );
@@ -139,7 +139,7 @@ function TableHead({
       data-slot="table-head"
       tabIndex={isInteractive ? undefined : tabIndex}
       className={cn(
-        'relative h-10 text-left align-middle font-medium text-foreground text-sm leading-5 tracking-normal whitespace-nowrap [&:has([role=checkbox])]:pr-0',
+        'relative h-10 bg-background text-left align-middle font-medium text-foreground text-sm leading-5 tracking-normal whitespace-nowrap [&:has([role=checkbox])]:pr-0',
         isInteractive ? 'p-0' : 'px-4',
         className,
       )}

@@ -95,8 +95,11 @@ describe('Table', () => {
       'focus-visible:ring-2',
     );
     expect(table.querySelector('[data-slot="table-header"]')).toHaveClass(
-      'bg-muted',
+      'bg-background',
     );
+    for (const header of screen.getAllByRole('columnheader')) {
+      expect(header).toHaveClass('bg-background');
+    }
     expect(table.querySelector('[data-slot="table-body"]')).toBeInTheDocument();
     expect(table.querySelector('[data-slot="table-footer"]')).toHaveClass(
       'bg-card',
@@ -111,6 +114,7 @@ describe('Table', () => {
     render(<TestTable />);
 
     expect(screen.getByRole('columnheader', { name: 'Name' })).toHaveClass(
+      'bg-background',
       'text-sm',
       'leading-5',
       'font-medium',
