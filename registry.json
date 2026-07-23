@@ -66,6 +66,20 @@
       ]
     },
     {
+      "name": "slider",
+      "type": "registry:ui",
+      "title": "Slider",
+      "description": "Bounded numeric input with single-value and range behavior, keyboard navigation, and Nebari track and thumb styling.",
+      "dependencies": ["@base-ui-components/react"],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/slider.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "checkbox",
       "type": "registry:ui",
       "title": "Checkbox",
@@ -267,6 +281,20 @@
       "files": [
         {
           "path": "registry/nebari/ui/navigation-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "title": "Tooltip",
+      "description": "Compact supplemental information shown on hover or keyboard focus, with anchored positioning and optional arrow. Touch devices don't trigger tooltips so critical information shouldn't live only in a tooltip.",
+      "dependencies": ["@base-ui-components/react"],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/tooltip.tsx",
           "type": "registry:ui"
         }
       ]
