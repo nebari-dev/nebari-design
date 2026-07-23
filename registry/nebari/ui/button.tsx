@@ -1,4 +1,4 @@
-import { useRender } from '@base-ui-components/react/use-render';
+import { useRender } from '@base-ui/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Children, isValidElement, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
