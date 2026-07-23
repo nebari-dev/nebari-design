@@ -185,7 +185,7 @@ export const NavItemVariants: Story = {
       <NavigationMenu aria-label="More navigation">
         <NavigationMenuList>
           <NavigationMenuItem value="more">
-            <NavigationMenuTrigger className="h-10 px-2.5 hover:underline data-[popup-open]:bg-muted data-[popup-open]:text-foreground">
+            <NavigationMenuTrigger>
               <Settings />
               With dropdown
             </NavigationMenuTrigger>
@@ -260,7 +260,6 @@ export const CompleteNavbar: CompleteNavbarStory = {
             <NavigationMenuList>
               <NavigationMenuItem value="projects">
                 <NavigationMenuTrigger
-                  className="h-10 px-2.5 hover:underline data-[popup-open]:bg-muted data-[popup-open]:text-foreground"
                   data-active={activeItem === 'Projects' ? 'true' : undefined}
                 >
                   Projects

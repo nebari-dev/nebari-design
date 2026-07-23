@@ -200,9 +200,9 @@ describe('NavigationMenu', () => {
 
     const link = await screen.findByRole('link', { name: 'Workspaces' });
     expect(link).toHaveAttribute('href', '/workspaces');
-    expect(link.closest('[data-slot="navigation-menu-content"]')).toHaveClass(
-      'motion-safe:transition-[opacity,transform]',
-    );
+    const content = link.closest('[data-slot="navigation-menu-content"]');
+    expect(content).toHaveClass('motion-safe:transition-[opacity,transform]');
+    expect(content?.className).not.toContain('focus:ring-0');
     expect(link.closest('[data-slot="navigation-menu-popup"]')).toHaveAttribute(
       'data-slot',
       'navigation-menu-popup',
@@ -229,18 +229,23 @@ describe('NavigationMenu', () => {
   });
 
   it('exposes style helpers for external composition', () => {
-    expect(navButtonVariants()).toContain('h-10');
-    expect(navButtonVariants()).toContain('rounded-md');
-    expect(navButtonVariants()).toContain(
-      'data-[active=true]:after:bg-primary',
-    );
-    expect(navButtonVariants()).toContain('data-[disabled=true]:bg-muted/50');
-    expect(navigationMenuTriggerStyle()).toContain('h-9');
-    expect(navigationMenuTriggerStyle()).toContain('hover:bg-accent');
-    expect(navigationMenuTriggerStyle()).toContain(
-      'motion-safe:duration-[--duration-fast]',
-    );
+    const navButtonClasses = navButtonVariants();
+    const triggerClasses = navigationMenuTriggerStyle();
+
+    expect(navButtonClasses).toContain('h-10');
+    expect(navButtonClasses).toContain('rounded-md');
+    expect(navButtonClasses).toContain('focus-visible:ring-2');
+    expect(navButtonClasses).not.toContain('ring-offset');
+    expect(navButtonClasses).toContain('data-[active=true]:after:bg-primary');
+    expect(navButtonClasses).toContain('data-[disabled=true]:bg-muted/50');
+    for (const className of navButtonClasses.split(' ')) {
+      expect(triggerClasses).toContain(className);
+    }
+    expect(triggerClasses).toContain('data-[popup-open]:bg-muted');
+    expect(triggerClasses).toContain('motion-safe:duration-[--duration-fast]');
     expect(navigationMenuLinkStyle()).toContain('data-active:bg-accent');
+    expect(navigationMenuLinkStyle()).toContain('focus-visible:ring-2');
+    expect(navigationMenuLinkStyle()).not.toContain('ring-offset');
     expect(navigationMenuLinkStyle()).toContain(
       'motion-safe:transition-[color,background-color,border-color,opacity,transform]',
     );

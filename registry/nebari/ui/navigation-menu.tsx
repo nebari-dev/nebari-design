@@ -34,7 +34,7 @@ type MenuBarActionsProps = ComponentProps<'div'>;
  * Shared styles for application-level navigation buttons in a menu bar.
  */
 const navButtonVariants = cva(
-  'relative inline-flex h-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-2.5 font-medium text-foreground text-sm underline-offset-4 outline-none hover:bg-muted hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card data-[active=true]:after:absolute data-[active=true]:after:right-2 data-[active=true]:after:bottom-0 data-[active=true]:after:left-2 data-[active=true]:after:h-0.5 data-[active=true]:after:bg-primary data-[active=true]:after:content-[""] data-[disabled=true]:pointer-events-none data-[disabled=true]:bg-muted/50 data-[disabled=true]:text-muted-foreground data-[disabled=true]:opacity-60 data-[disabled=true]:no-underline motion-safe:transition-[color,background-color,border-color,opacity,transform] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] motion-safe:active:scale-[0.97] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*="size-"])]:size-4',
+  'relative inline-flex h-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-2.5 font-medium text-foreground text-sm underline-offset-4 outline-none hover:bg-muted hover:underline focus-visible:ring-2 focus-visible:ring-ring data-[active=true]:after:absolute data-[active=true]:after:right-2 data-[active=true]:after:bottom-0 data-[active=true]:after:left-2 data-[active=true]:after:h-0.5 data-[active=true]:after:bg-primary data-[active=true]:after:content-[""] data-[disabled=true]:pointer-events-none data-[disabled=true]:bg-muted/50 data-[disabled=true]:text-muted-foreground data-[disabled=true]:opacity-60 data-[disabled=true]:no-underline motion-safe:transition-[color,background-color,border-color,opacity,transform] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] motion-safe:active:scale-[0.97] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*="size-"])]:size-4',
 );
 
 /**
@@ -121,7 +121,7 @@ function MenuBarBrand({ className, ...props }: MenuBarBrandProps) {
     <a
       data-slot="menu-bar-brand"
       className={cn(
-        'inline-flex shrink-0 items-center gap-2 rounded-md font-bold text-2xl text-foreground tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card',
+        'inline-flex shrink-0 items-center gap-2 rounded-md font-bold text-2xl text-foreground tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-ring',
         className,
       )}
       {...props}
@@ -157,17 +157,19 @@ function MenuBarActions({ className, ...props }: MenuBarActionsProps) {
 }
 
 /**
- * Shared trigger styles for top-level menu buttons.
+ * Shared trigger styles for top-level menu buttons. Triggers reuse the
+ * NavButton foundation and add only popup-state behavior; the component appends
+ * the dropdown icon.
  */
 const navigationMenuTriggerStyle = cva(
-  'group/navigation-menu-trigger inline-flex h-9 w-max items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 py-2 font-medium text-foreground text-sm underline-offset-4 outline-none hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background data-[popup-open]:bg-accent data-[popup-open]:text-accent-foreground data-[pressed]:bg-accent disabled:pointer-events-none disabled:opacity-50 motion-safe:transition-[color,background-color,border-color,opacity,transform] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] motion-safe:active:scale-[0.97] [&_svg]:pointer-events-none [&_svg]:shrink-0',
+  `${navButtonVariants()} group/navigation-menu-trigger w-max data-[popup-open]:bg-muted data-[pressed]:bg-muted disabled:pointer-events-none disabled:opacity-50`,
 );
 
 /**
  * Shared link styles for direct navigation links and popup menu links.
  */
 const navigationMenuLinkStyle = cva(
-  "flex items-start gap-2 rounded-md p-2 text-left text-foreground text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background data-active:bg-accent data-active:text-accent-foreground data-[active]:bg-accent data-[active]:text-accent-foreground motion-safe:transition-[color,background-color,border-color,opacity,transform] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] motion-safe:active:scale-[0.99] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "flex items-start gap-2 rounded-md p-2 text-left text-foreground text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring data-active:bg-accent data-active:text-accent-foreground data-[active]:bg-accent data-[active]:text-accent-foreground motion-safe:transition-[color,background-color,border-color,opacity,transform] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] motion-safe:active:scale-[0.99] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
 );
 
 /**
@@ -289,7 +291,7 @@ function NavigationMenuContent({
     <NavigationMenuPrimitive.Content
       data-slot="navigation-menu-content"
       className={cn(
-        'h-full w-auto p-2 data-[starting-style]:opacity-0 data-[ending-style]:opacity-0 data-[activation-direction=left]:data-[starting-style]:-translate-x-2 data-[activation-direction=right]:data-[starting-style]:translate-x-2 data-[activation-direction=left]:data-[ending-style]:translate-x-2 data-[activation-direction=right]:data-[ending-style]:-translate-x-2 motion-safe:transition-[opacity,transform] motion-safe:duration-[--duration-base] motion-safe:ease-[--ease-emphasized] **:data-[slot=navigation-menu-link]:focus:ring-0 **:data-[slot=navigation-menu-link]:focus:outline-none',
+        'h-full w-auto p-2 data-[starting-style]:opacity-0 data-[ending-style]:opacity-0 data-[activation-direction=left]:data-[starting-style]:-translate-x-2 data-[activation-direction=right]:data-[starting-style]:translate-x-2 data-[activation-direction=left]:data-[ending-style]:translate-x-2 data-[activation-direction=right]:data-[ending-style]:-translate-x-2 motion-safe:transition-[opacity,transform] motion-safe:duration-[--duration-base] motion-safe:ease-[--ease-emphasized]',
         className,
       )}
       {...props}
