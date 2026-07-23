@@ -70,7 +70,7 @@
       "type": "registry:ui",
       "title": "Slider",
       "description": "Bounded numeric input with single-value and range behavior, keyboard navigation, and Nebari track and thumb styling.",
-      "dependencies": ["@base-ui-components/react"],
+      "dependencies": ["@base-ui/react"],
       "registryDependencies": ["@nebari/utils", "@nebari/theme"],
       "files": [
         {
