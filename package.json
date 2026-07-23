@@ -25,7 +25,7 @@
     "build:pages": "bun run build:storybook && bun run build:registry"
   },
   "dependencies": {
-    "@base-ui-components/react": "1.0.0-rc.0",
+    "@base-ui/react": "^1.6.0",
     "@fontsource-variable/geist": "^5.2.9",
     "@fontsource/ibm-plex-mono": "^5.2.7",
     "class-variance-authority": "^0.7.1",
@@ -37,10 +37,10 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.2",
-    "@storybook/addon-a11y": "10.4.4",
-    "@storybook/addon-docs": "10.4.4",
-    "@storybook/addon-vitest": "10.4.4",
-    "@storybook/react-vite": "^10.4.4",
+    "@storybook/addon-a11y": "10.5.0",
+    "@storybook/addon-docs": "10.5.0",
+    "@storybook/addon-vitest": "10.5.0",
+    "@storybook/react-vite": "^10.5.0",
     "@tailwindcss/vite": "^4.1.13",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -55,7 +55,7 @@
     "jsdom": "^29.1.1",
     "playwright": "1.61.1",
     "shadcn": "^4.10.0",
-    "storybook": "^10.4.4",
+    "storybook": "^10.5.0",
     "tailwindcss": "^4.1.13",
     "typescript": "^6.0.3",
     "vite": "^8.0.16",

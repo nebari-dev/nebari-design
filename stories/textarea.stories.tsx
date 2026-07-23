@@ -1,4 +1,4 @@
-import { Field as FieldPrimitive } from '@base-ui-components/react/field';
+import { Field as FieldPrimitive } from '@base-ui/react/field';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/ui/field';
 import { Textarea } from '@/ui/textarea';
