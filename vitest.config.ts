@@ -6,6 +6,7 @@ import { playwright } from '@vitest/browser-playwright';
 import { defineConfig } from 'vitest/config';
 
 const alias = { '@': resolve(__dirname, './registry/nebari') };
+const testIconGallery = process.env.NEBARI_TEST_ICON_GALLERY === 'true';
 
 export default defineConfig({
   resolve: { alias },
@@ -49,10 +50,26 @@ export default defineConfig({
       // a11y addon failing the run on axe violations (preview `a11y.test`).
       {
         plugins: [
-          storybookTest({ configDir: resolve(__dirname, '.storybook') }),
+          storybookTest({
+            configDir: resolve(__dirname, '.storybook'),
+            tags: testIconGallery
+              ? {
+                  include: ['icons-gallery'],
+                  exclude: [],
+                  skip: [],
+                }
+              : {
+                  include: ['test'],
+                  exclude: ['icons-gallery'],
+                  skip: [],
+                },
+          }),
         ],
         test: {
           name: 'storybook',
+          // The full Lucide gallery intentionally gets a larger local-only
+          // budget; ordinary CI stories retain the default 15-second limit.
+          testTimeout: testIconGallery ? 60_000 : 15_000,
           browser: {
             enabled: true,
             headless: true,

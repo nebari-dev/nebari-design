@@ -18,6 +18,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:icons": "NEBARI_TEST_ICON_GALLERY=true vitest run --project=storybook",
     "storybook": "storybook dev -p 6006",
     "test:storybook": "vitest run --project=storybook",
     "build:storybook": "storybook build -o public",

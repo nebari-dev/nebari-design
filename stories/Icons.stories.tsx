@@ -83,6 +83,10 @@ function Gallery() {
 
 export const AllIcons: Story = {
   name: 'Gallery',
+  // The complete catalog is expensive to render and axe-scan on shared CI
+  // runners. The default Storybook project excludes this tag; run it locally
+  // with `bun run test:icons`.
+  tags: ['icons-gallery'],
   parameters: {
     docs: {
       description: {
