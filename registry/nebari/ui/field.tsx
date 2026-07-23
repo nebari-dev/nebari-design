@@ -1,4 +1,4 @@
-import { Field as FieldPrimitive } from '@base-ui-components/react/field';
+import { Field as FieldPrimitive } from '@base-ui/react/field';
 import type { ComponentProps } from 'react';
 import { cn } from '@/lib/utils';
 

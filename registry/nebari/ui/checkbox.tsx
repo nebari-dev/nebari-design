@@ -1,5 +1,5 @@
-import { Checkbox as CheckboxPrimitive } from '@base-ui-components/react/checkbox';
-import { CheckboxGroup as CheckboxGroupPrimitive } from '@base-ui-components/react/checkbox-group';
+import { Checkbox as CheckboxPrimitive } from '@base-ui/react/checkbox';
+import { CheckboxGroup as CheckboxGroupPrimitive } from '@base-ui/react/checkbox-group';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { CheckIcon, MinusIcon } from 'lucide-react';
 import { type ReactNode, useId } from 'react';

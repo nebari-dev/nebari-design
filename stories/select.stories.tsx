@@ -162,7 +162,9 @@ export const Default: Story = {
     await userEvent.click(trigger);
 
     const listbox = await page.findByRole('listbox');
-    await expect(listbox).toBeVisible();
+    await waitFor(() => {
+      expect(listbox).toBeVisible();
+    });
     await waitFor(() => {
       expect(listbox.getBoundingClientRect().top).toBeCloseTo(
         trigger.getBoundingClientRect().bottom,
