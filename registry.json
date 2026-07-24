@@ -212,7 +212,7 @@
       "type": "registry:ui",
       "title": "Breadcrumb",
       "description": "Hierarchy navigation trail with default, ellipsis-triggered, and current-route dropdown compositions.",
-      "dependencies": ["@base-ui-components/react", "lucide-react"],
+      "dependencies": ["@base-ui/react", "lucide-react"],
       "registryDependencies": ["@nebari/utils", "@nebari/theme"],
       "files": [
         {

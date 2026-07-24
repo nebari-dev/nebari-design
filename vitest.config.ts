@@ -49,14 +49,7 @@ export default defineConfig({
       // a11y addon failing the run on axe violations (preview `a11y.test`).
       {
         plugins: [
-          storybookTest({
-            configDir: resolve(__dirname, '.storybook'),
-            tags: {
-              include: ['test'],
-              exclude: ['icons-gallery'],
-              skip: [],
-            },
-          }),
+          storybookTest({ configDir: resolve(__dirname, '.storybook') }),
         ],
         test: {
           name: 'storybook',

@@ -264,7 +264,6 @@ export const AsLink: Story = {
     },
   },
   render: (args) => (
-    // biome-ignore lint/a11y/useAnchorContent: Button injects children into the rendered anchor.
     <Button {...args} render={<a href="https://nebari.dev" />}>
       Go to nebari.dev
     </Button>

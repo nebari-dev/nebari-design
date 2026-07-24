@@ -1,5 +1,5 @@
-import { Menu } from '@base-ui-components/react/menu';
-import { useRender } from '@base-ui-components/react/use-render';
+import { Menu } from '@base-ui/react/menu';
+import { useRender } from '@base-ui/react/use-render';
 import {
   ChevronDownIcon,
   ChevronRightIcon,
