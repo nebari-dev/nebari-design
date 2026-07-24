@@ -90,7 +90,7 @@ rules that are easy to get wrong:
 - **`cn()` merging.** Always `cn(xVariants({...}), className)` so a caller's
   `className` wins. Import `cn` from `@/lib/utils`.
 - **Composition uses Base UI's `render` prop**, via `useRender` from
-  `@base-ui-components/react/use-render` — this is the project's equivalent of
+  `@base-ui/react/use-render` — this is the project's equivalent of
   Radix `asChild`. Do **not** introduce Radix or an `asChild` API. Give `render`
   a sensible default element and type with `useRender.ComponentProps<'tag'>`.
   Plain styled wrappers with no element-swapping can skip `useRender` and use
@@ -103,7 +103,7 @@ rules that are easy to get wrong:
 ### `registry.json` entry
 
 - `dependencies` = npm packages the component imports (e.g.
-  `@base-ui-components/react`, `class-variance-authority`, `lucide-react`). Do
+  `@base-ui/react`, `class-variance-authority`, `lucide-react`). Do
   **not** list `react`/`react-dom`, `tailwindcss`, or `clsx`/`tailwind-merge`
   (those belong to the `utils` item).
 - `registryDependencies` = other registry items. Anything that calls `cn()` must

@@ -1,4 +1,4 @@
-import { Tooltip as TooltipPrimitive } from '@base-ui-components/react/tooltip';
+import { Tooltip as TooltipPrimitive } from '@base-ui/react/tooltip';
 import { createContext, useContext, useId } from 'react';
 import { cn } from '@/lib/utils';
 
