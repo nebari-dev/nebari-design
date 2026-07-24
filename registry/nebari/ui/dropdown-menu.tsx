@@ -1,4 +1,4 @@
-import { Menu as MenuPrimitive } from '@base-ui-components/react/menu';
+import { Menu as MenuPrimitive } from '@base-ui/react/menu';
 import { cva, type VariantProps } from 'class-variance-authority';
 import {
   CheckIcon,
@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import type * as React from 'react';
 import { cn } from '@/lib/utils';
+import { Button, type ButtonProps } from '@/ui/button';
 
 const dropdownMenuItemVariants = cva(
   'relative flex w-full cursor-default items-center gap-2 rounded-md px-1.5 py-1 text-sm outline-hidden select-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring motion-safe:transition-[color,background-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]',
@@ -26,13 +27,17 @@ const dropdownMenuItemVariants = cva(
 );
 
 const dropdownMenuTriggerVariants = cva(
-  'inline-flex h-8 items-center justify-center rounded-md px-2.5 py-1.5 text-sm font-medium text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 motion-safe:transition-[color,background-color,transform] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] motion-safe:active:scale-[0.97]',
+  'group data-[popup-open]:underline',
   {
     variants: {
       variant: {
         default:
-          'bg-muted hover:bg-accent hover:text-accent-foreground data-[popup-open]:bg-accent data-[popup-open]:text-accent-foreground',
-        text: 'bg-transparent hover:text-accent-foreground data-[popup-open]:text-accent-foreground',
+          'bg-muted text-foreground shadow-none hover:bg-accent hover:text-accent-foreground active:bg-accent active:text-accent-foreground data-[popup-open]:bg-accent data-[popup-open]:text-accent-foreground',
+        destructive: '',
+        outline: '',
+        secondary: '',
+        ghost: '',
+        link: '',
       },
     },
     defaultVariants: {
@@ -42,7 +47,8 @@ const dropdownMenuTriggerVariants = cva(
 );
 
 type DropdownMenuTriggerProps = MenuPrimitive.Trigger.Props &
-  VariantProps<typeof dropdownMenuTriggerVariants> & {
+  Omit<ButtonProps, keyof MenuPrimitive.Trigger.Props | 'size'> & {
+    variant?: NonNullable<ButtonProps['variant']>;
     showExpandIcon?: boolean;
     expandIcon?: React.ReactNode;
   };
@@ -100,12 +106,15 @@ function DropdownMenuTrigger({
   expandIcon,
   ...props
 }: DropdownMenuTriggerProps) {
+  const buttonVariant = variant ?? 'default';
+
   return (
     <MenuPrimitive.Trigger
       data-slot="dropdown-menu-trigger"
-      data-variant={variant ?? 'default'}
+      data-variant={buttonVariant}
+      render={<Button size="default" variant={buttonVariant} />}
       className={cn(
-        dropdownMenuTriggerVariants({ variant }),
+        dropdownMenuTriggerVariants({ variant: buttonVariant }),
         showExpandIcon && 'gap-1.5',
         className,
       )}
@@ -115,7 +124,7 @@ function DropdownMenuTrigger({
       {showExpandIcon && (
         <span
           aria-hidden="true"
-          className="pointer-events-none inline-flex items-center text-muted-foreground"
+          className="pointer-events-none inline-flex items-center"
           data-slot="dropdown-menu-trigger-icon"
         >
           {expandIcon ?? <ChevronsUpDownIcon className="size-4" />}
@@ -309,7 +318,7 @@ function DropdownMenuSubmenu({
         <DropdownMenuContent
           className={contentClassName}
           side="right"
-          sideOffset={6}
+          sideOffset={8}
         >
           {children}
         </DropdownMenuContent>

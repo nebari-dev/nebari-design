@@ -291,7 +291,7 @@
       "title": "Dropdown Menu",
       "description": "Action menu triggered by a button, with grouped items, labels, separators, checkbox/radio items, and nested submenus.",
       "dependencies": [
-        "@base-ui-components/react",
+        "@base-ui/react",
         "class-variance-authority",
         "lucide-react"
       ],

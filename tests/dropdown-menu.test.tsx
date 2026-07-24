@@ -140,10 +140,10 @@ describe('DropdownMenu', () => {
     expect(item).toHaveClass('text-destructive-foreground');
   });
 
-  it('supports a text-only trigger with an optional expand icon', () => {
+  it('supports a ghost trigger with an optional expand icon', () => {
     render(
       <DropdownMenu>
-        <DropdownMenuTrigger showExpandIcon variant="text">
+        <DropdownMenuTrigger showExpandIcon variant="ghost">
           Actions
         </DropdownMenuTrigger>
       </DropdownMenu>,
@@ -154,8 +154,8 @@ describe('DropdownMenu', () => {
       '[data-slot="dropdown-menu-trigger-icon"]',
     );
 
-    expect(trigger).toHaveAttribute('data-variant', 'text');
-    expect(trigger).toHaveClass('bg-transparent');
+    expect(trigger).toHaveAttribute('data-variant', 'ghost');
+    expect(trigger).toHaveClass('hover:bg-accent');
     expect(icon).toBeInTheDocument();
   });
 });

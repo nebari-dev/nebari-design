@@ -8,8 +8,6 @@ import {
   DropdownMenuGroupLabel,
   DropdownMenuItem,
   DropdownMenuPortal,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuSubmenu,
   DropdownMenuTrigger,
@@ -27,6 +25,26 @@ const meta = {
       },
     },
   },
+  args: {
+    children: 'Open',
+    showExpandIcon: false,
+    variant: 'default',
+  },
+  argTypes: {
+    children: {
+      control: 'text',
+      description: 'Visible trigger label.',
+    },
+    showExpandIcon: {
+      control: 'boolean',
+      description: 'Shows trailing expand icon on trigger.',
+    },
+    variant: {
+      control: 'inline-radio',
+      options: ['default', 'destructive', 'outline', 'secondary', 'ghost', 'link'],
+      description: 'Trigger visual style variant.',
+    },
+  },
 } satisfies Meta<typeof DropdownMenuTrigger>;
 
 export default meta;
@@ -34,9 +52,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: () => (
+  render: (args) => (
     <DropdownMenu>
-      <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+      <DropdownMenuTrigger {...args} />
       <DropdownMenuPortal>
         <DropdownMenuContent>
           <DropdownMenuGroup>
@@ -90,34 +108,6 @@ export const WithCheckboxItems: Story = {
   },
 };
 
-export const WithRadioGroup: Story = {
-  render: () => {
-    const [sortBy, setSortBy] = useState('updated');
-
-    return (
-      <DropdownMenu>
-        <DropdownMenuTrigger>Sort</DropdownMenuTrigger>
-        <DropdownMenuPortal>
-          <DropdownMenuContent>
-            <DropdownMenuGroup>
-              <DropdownMenuGroupLabel>Sort by</DropdownMenuGroupLabel>
-              <DropdownMenuRadioGroup onValueChange={setSortBy} value={sortBy}>
-                <DropdownMenuRadioItem value="updated">
-                  Recently updated
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="created">
-                  Recently created
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="name">Name</DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenuPortal>
-      </DropdownMenu>
-    );
-  },
-};
-
 export const WithSubmenu: Story = {
   render: () => (
     <DropdownMenu>
@@ -152,7 +142,7 @@ export const TriggerVariants: Story = {
       </DropdownMenu>
 
       <DropdownMenu>
-        <DropdownMenuTrigger showExpandIcon variant="text">
+        <DropdownMenuTrigger showExpandIcon variant="ghost">
           Open
         </DropdownMenuTrigger>
         <DropdownMenuPortal>
