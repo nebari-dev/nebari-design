@@ -47,7 +47,6 @@ describe('Badge', () => {
   });
 
   it('composes as a different element via the render prop', () => {
-    // biome-ignore lint/a11y/useAnchorContent: Badge injects children into the rendered anchor.
     render(<Badge render={<a href="/tags/new" />}>New</Badge>);
 
     const link = screen.getByRole('link', { name: 'New' });
