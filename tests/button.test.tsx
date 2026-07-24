@@ -52,7 +52,6 @@ describe('Button', () => {
   });
 
   it('composes as a different element via the render prop', () => {
-    // biome-ignore lint/a11y/useAnchorContent: Button injects children into the rendered anchor.
     render(<Button render={<a href="/home" />}>Home</Button>);
 
     const link = screen.getByRole('link', { name: 'Home' });

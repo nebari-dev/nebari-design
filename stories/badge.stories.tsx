@@ -143,7 +143,6 @@ export const AsLink: Story = {
     },
   },
   render: (args) => (
-    // biome-ignore lint/a11y/useAnchorContent: Badge injects children into the rendered anchor.
     <Badge {...args} render={<a href="https://nebari.dev" />}>
       nebari.dev
     </Badge>

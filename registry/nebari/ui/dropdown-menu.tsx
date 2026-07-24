@@ -26,25 +26,22 @@ const dropdownMenuItemVariants = cva(
   },
 );
 
-const dropdownMenuTriggerVariants = cva(
-  'group data-[popup-open]:underline',
-  {
-    variants: {
-      variant: {
-        default:
-          'bg-muted text-foreground shadow-none hover:bg-accent hover:text-accent-foreground active:bg-accent active:text-accent-foreground data-[popup-open]:bg-accent data-[popup-open]:text-accent-foreground',
-        destructive: '',
-        outline: '',
-        secondary: '',
-        ghost: '',
-        link: '',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
+const dropdownMenuTriggerVariants = cva('group data-[popup-open]:underline', {
+  variants: {
+    variant: {
+      default:
+        'bg-muted text-foreground shadow-none hover:bg-accent hover:text-accent-foreground active:bg-accent active:text-accent-foreground data-[popup-open]:bg-accent data-[popup-open]:text-accent-foreground',
+      destructive: '',
+      outline: '',
+      secondary: '',
+      ghost: '',
+      link: '',
     },
   },
-);
+  defaultVariants: {
+    variant: 'default',
+  },
+});
 
 type DropdownMenuTriggerProps = MenuPrimitive.Trigger.Props &
   Omit<ButtonProps, keyof MenuPrimitive.Trigger.Props | 'size'> & {

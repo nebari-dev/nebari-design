@@ -41,7 +41,14 @@ const meta = {
     },
     variant: {
       control: 'inline-radio',
-      options: ['default', 'destructive', 'outline', 'secondary', 'ghost', 'link'],
+      options: [
+        'default',
+        'destructive',
+        'outline',
+        'secondary',
+        'ghost',
+        'link',
+      ],
       description: 'Trigger visual style variant.',
     },
   },
