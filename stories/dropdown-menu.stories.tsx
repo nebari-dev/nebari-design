@@ -40,7 +40,7 @@ const meta = {
       description: 'Shows trailing expand icon on trigger.',
     },
     variant: {
-      control: 'inline-radio',
+      control: 'select',
       options: [
         'default',
         'destructive',

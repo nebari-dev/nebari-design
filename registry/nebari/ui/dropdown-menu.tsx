@@ -1,11 +1,6 @@
 import { Menu as MenuPrimitive } from '@base-ui/react/menu';
 import { cva, type VariantProps } from 'class-variance-authority';
-import {
-  CheckIcon,
-  ChevronRightIcon,
-  ChevronsUpDownIcon,
-  CircleIcon,
-} from 'lucide-react';
+import { CheckIcon, ChevronRightIcon, ChevronsUpDownIcon } from 'lucide-react';
 import type * as React from 'react';
 import { cn } from '@/lib/utils';
 import { Button, type ButtonProps } from '@/ui/button';
@@ -62,9 +57,6 @@ type DropdownMenuItemProps = MenuPrimitive.Item.Props &
   VariantProps<typeof dropdownMenuItemVariants>;
 
 type DropdownMenuCheckboxItemProps = MenuPrimitive.CheckboxItem.Props &
-  VariantProps<typeof dropdownMenuItemVariants>;
-
-type DropdownMenuRadioItemProps = MenuPrimitive.RadioItem.Props &
   VariantProps<typeof dropdownMenuItemVariants>;
 
 interface DropdownMenuSubmenuProps
@@ -224,20 +216,6 @@ function DropdownMenuGroupLabel({
   );
 }
 
-/** Groups mutually-exclusive radio items within a menu. */
-function DropdownMenuRadioGroup({
-  className,
-  ...props
-}: MenuPrimitive.RadioGroup.Props) {
-  return (
-    <MenuPrimitive.RadioGroup
-      data-slot="dropdown-menu-radio-group"
-      className={cn('flex flex-col', className)}
-      {...props}
-    />
-  );
-}
-
 /** Toggleable menu item with trailing check indicator. */
 function DropdownMenuCheckboxItem({
   className,
@@ -260,31 +238,6 @@ function DropdownMenuCheckboxItem({
         <CheckIcon className="size-4" />
       </MenuPrimitive.CheckboxItemIndicator>
     </MenuPrimitive.CheckboxItem>
-  );
-}
-
-/** Single selectable item inside a `DropdownMenuRadioGroup`. */
-function DropdownMenuRadioItem({
-  className,
-  children,
-  variant,
-  ...props
-}: DropdownMenuRadioItemProps) {
-  return (
-    <MenuPrimitive.RadioItem
-      data-slot="dropdown-menu-radio-item"
-      data-variant={variant ?? 'default'}
-      className={cn(dropdownMenuItemVariants({ variant }), 'pr-7', className)}
-      {...props}
-    >
-      <span className="flex flex-1 items-center">{children}</span>
-      <MenuPrimitive.RadioItemIndicator
-        className="pointer-events-none absolute right-1.5 inline-flex size-4 items-center justify-center"
-        data-slot="dropdown-menu-radio-item-indicator"
-      >
-        <CircleIcon className="size-2.5 fill-current" />
-      </MenuPrimitive.RadioItemIndicator>
-    </MenuPrimitive.RadioItem>
   );
 }
 
@@ -329,7 +282,6 @@ export type {
   DropdownMenuContentProps,
   DropdownMenuItemProps,
   DropdownMenuProps,
-  DropdownMenuRadioItemProps,
   DropdownMenuSubmenuProps,
   DropdownMenuTriggerProps,
 };
@@ -341,8 +293,6 @@ export {
   DropdownMenuGroupLabel,
   DropdownMenuItem,
   DropdownMenuPortal,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuSubmenu,
   DropdownMenuTrigger,
