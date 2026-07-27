@@ -103,6 +103,7 @@ describe('ButtonGroup', () => {
       orientation: 'horizontal',
     });
     expect(horizontalClasses).toContain('-ml-px');
+    expect(horizontalClasses).toContain(':not(:has(~[data-slot]))');
     expect(horizontalClasses).toContain('*:focus-visible:z-10');
     expect(buttonGroupVariants({ orientation: 'vertical' })).toContain(
       '-mt-px',

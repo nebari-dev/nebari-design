@@ -56,7 +56,7 @@
       "type": "registry:ui",
       "title": "Button Group",
       "description": "Groups related actions into horizontal or vertical segmented controls with shared borders and unified outer corners.",
-      "dependencies": ["@base-ui-components/react", "class-variance-authority"],
+      "dependencies": ["@base-ui/react", "class-variance-authority"],
       "registryDependencies": [
         "@nebari/button",
         "@nebari/utils",

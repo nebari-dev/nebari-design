@@ -10,15 +10,17 @@ import {
   Rocket,
   Underline,
 } from 'lucide-react';
-import {
-  type KeyboardEvent,
-  type ReactNode,
-  useId,
-  useRef,
-  useState,
-} from 'react';
+import type { ReactNode } from 'react';
+import { expect, userEvent, within } from 'storybook/test';
 import { Button } from '@/ui/button';
 import { ButtonGroup } from '@/ui/button-group';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuTrigger,
+} from '@/ui/dropdown-menu';
 
 type SplitButtonProps = {
   groupLabel: string;
@@ -28,7 +30,7 @@ type SplitButtonProps = {
   options: string[];
 };
 
-/** Accessible split action with a keyboard-navigable menu. */
+/** Split action composed from Button Group and Dropdown Menu. */
 function SplitButton({
   groupLabel,
   icon,
@@ -36,113 +38,34 @@ function SplitButton({
   menuLabel,
   options,
 }: SplitButtonProps) {
-  const menuId = useId();
-  const [open, setOpen] = useState(false);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
-
-  const openAndFocus = (index: number) => {
-    setOpen(true);
-    window.setTimeout(() => itemRefs.current[index]?.focus(), 0);
-  };
-
-  const handleMenuKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    const currentIndex = itemRefs.current.indexOf(
-      document.activeElement as HTMLButtonElement,
-    );
-
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      setOpen(false);
-      triggerRef.current?.focus();
-      return;
-    }
-
-    if (event.key === 'Tab') {
-      setOpen(false);
-      return;
-    }
-
-    const nextIndex =
-      event.key === 'ArrowDown'
-        ? (currentIndex + 1) % options.length
-        : event.key === 'ArrowUp'
-          ? (currentIndex - 1 + options.length) % options.length
-          : event.key === 'Home'
-            ? 0
-            : event.key === 'End'
-              ? options.length - 1
-              : null;
-
-    if (nextIndex !== null) {
-      event.preventDefault();
-      itemRefs.current[nextIndex]?.focus();
-    }
-  };
-
   return (
-    <div className="relative w-fit">
+    <DropdownMenu>
       <ButtonGroup aria-label={groupLabel}>
         <Button variant="outline">
           {icon}
           {label}
         </Button>
-        <Button
-          ref={triggerRef}
-          aria-controls={menuId}
-          aria-expanded={open}
-          aria-haspopup="menu"
+        <DropdownMenuTrigger
           aria-label={menuLabel}
-          size="icon"
+          className="size-8 px-0"
           title={menuLabel}
           variant="outline"
-          onClick={() => {
-            if (open) {
-              setOpen(false);
-            } else {
-              openAndFocus(0);
-            }
-          }}
-          onKeyDown={(event) => {
-            if (event.key === 'ArrowDown') {
-              event.preventDefault();
-              openAndFocus(0);
-            } else if (event.key === 'ArrowUp') {
-              event.preventDefault();
-              openAndFocus(options.length - 1);
-            }
-          }}
         >
           <ChevronDown />
-        </Button>
+        </DropdownMenuTrigger>
       </ButtonGroup>
-      {open ? (
-        <div
+      <DropdownMenuPortal>
+        <DropdownMenuContent
           aria-label={`${label} options`}
-          className="absolute top-full right-0 z-20 mt-1 grid min-w-48 rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md"
-          id={menuId}
-          role="menu"
-          onKeyDown={handleMenuKeyDown}
+          align="end"
+          className="min-w-48"
         >
-          {options.map((option, index) => (
-            <Button
-              key={option}
-              ref={(node) => {
-                itemRefs.current[index] = node;
-              }}
-              className="w-full justify-start"
-              role="menuitem"
-              size="sm"
-              tabIndex={index === 0 ? 0 : -1}
-              variant="ghost"
-              onClick={() => setOpen(false)}
-            >
-              {option}
-            </Button>
+          {options.map((option) => (
+            <DropdownMenuItem key={option}>{option}</DropdownMenuItem>
           ))}
-        </div>
-      ) : null}
-    </div>
+        </DropdownMenuContent>
+      </DropdownMenuPortal>
+    </DropdownMenu>
   );
 }
 
@@ -206,6 +129,35 @@ export const Default: Story = {
       </div>
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const page = within(canvasElement.ownerDocument.body);
+    const trigger = canvas.getByRole('button', {
+      name: 'More button actions',
+    });
+    const restingRadius = getComputedStyle(trigger).borderTopRightRadius;
+    await expect(restingRadius).not.toBe('0px');
+
+    trigger.focus();
+    await userEvent.keyboard('{ArrowDown}');
+
+    const firstItem = await page.findByRole('menuitem', {
+      name: 'First action',
+    });
+    const secondItem = page.getByRole('menuitem', {
+      name: 'Second action',
+    });
+
+    await expect(firstItem).toHaveFocus();
+    await expect(getComputedStyle(trigger).borderTopRightRadius).toBe(
+      restingRadius,
+    );
+    await userEvent.keyboard('{ArrowDown}');
+    await expect(secondItem).toHaveFocus();
+    await userEvent.keyboard('{Escape}');
+    await expect(trigger).toHaveFocus();
+    await expect(page.queryByRole('menu')).not.toBeInTheDocument();
+  },
 };
 
 export const FigmaExamples: Story = {

@@ -1,4 +1,4 @@
-import { useRender } from '@base-ui-components/react/use-render';
+import { useRender } from '@base-ui/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type * as React from 'react';
 import { cn } from '@/lib/utils';
@@ -9,9 +9,9 @@ const buttonGroupVariants = cva(
     variants: {
       orientation: {
         horizontal:
-          'flex-row [&>[data-slot]]:rounded-r-none [&>[data-slot]:not(:first-child)]:rounded-l-none [&>[data-slot]:last-child]:rounded-r-md [&>[data-slot]+[data-slot]]:-ml-px',
+          'flex-row [&>[data-slot]]:rounded-r-none [&>[data-slot]~[data-slot]]:-ml-px [&>[data-slot]~[data-slot]]:rounded-l-none [&>[data-slot]:not(:has(~[data-slot]))]:rounded-r-md',
         vertical:
-          'flex-col [&>[data-slot]]:rounded-b-none [&>[data-slot]:not(:first-child)]:rounded-t-none [&>[data-slot]:last-child]:rounded-b-md [&>[data-slot]+[data-slot]]:-mt-px',
+          'flex-col [&>[data-slot]]:rounded-b-none [&>[data-slot]~[data-slot]]:-mt-px [&>[data-slot]~[data-slot]]:rounded-t-none [&>[data-slot]:not(:has(~[data-slot]))]:rounded-b-md',
       },
     },
     defaultVariants: {
