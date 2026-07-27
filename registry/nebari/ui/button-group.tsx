@@ -3,6 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import type * as React from 'react';
 import { cn } from '@/lib/utils';
 
+/** Returns the layout and shared-seam classes for a Button Group. */
 const buttonGroupVariants = cva(
   'm-0 flex min-w-0 w-fit items-stretch border-0 p-0 *:focus-visible:relative *:focus-visible:z-10 has-[>[data-slot=button-group]]:gap-2 [&>input]:flex-1',
   {
@@ -20,8 +21,15 @@ const buttonGroupVariants = cva(
   },
 );
 
-type ButtonGroupProps = React.ComponentProps<'fieldset'> &
-  VariantProps<typeof buttonGroupVariants>;
+/** Props for the {@link ButtonGroup} segmented-control container. */
+type ButtonGroupProps = React.ComponentProps<'fieldset'> & {
+  /**
+   * Controls whether the grouped controls are joined horizontally or
+   * vertically.
+   * @default 'horizontal'
+   */
+  orientation?: VariantProps<typeof buttonGroupVariants>['orientation'];
+};
 
 /**
  * Groups closely related actions into one segmented control with shared seams
@@ -43,6 +51,10 @@ function ButtonGroup({
   );
 }
 
+/**
+ * Props for {@link ButtonGroupText}, including Base UI's polymorphic `render`
+ * prop.
+ */
 type ButtonGroupTextProps = useRender.ComponentProps<'div'>;
 
 /**
@@ -69,7 +81,12 @@ function ButtonGroupText({
   });
 }
 
+/** Props for the semantic {@link ButtonGroupSeparator} divider. */
 type ButtonGroupSeparatorProps = React.ComponentProps<'hr'> & {
+  /**
+   * Sets the separator's semantic direction and corresponding dimensions.
+   * @default 'vertical'
+   */
   orientation?: 'horizontal' | 'vertical';
 };
 
