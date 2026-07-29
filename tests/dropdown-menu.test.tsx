@@ -138,6 +138,7 @@ describe('DropdownMenu', () => {
     expect(item).toHaveAttribute('data-slot', 'dropdown-menu-item');
     expect(item).toHaveAttribute('data-variant', 'destructive');
     expect(item).toHaveClass('text-destructive-foreground');
+    expect(item).toHaveClass('rounded-[calc(var(--radius-md)-var(--spacing))]');
   });
 
   it('supports a ghost trigger with an optional expand icon', () => {
