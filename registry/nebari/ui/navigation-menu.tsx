@@ -1,5 +1,5 @@
-import { NavigationMenu as NavigationMenuPrimitive } from '@base-ui-components/react/navigation-menu';
-import { useRender } from '@base-ui-components/react/use-render';
+import { NavigationMenu as NavigationMenuPrimitive } from '@base-ui/react/navigation-menu';
+import { useRender } from '@base-ui/react/use-render';
 import { cva } from 'class-variance-authority';
 import { ChevronDownIcon } from 'lucide-react';
 import type { ComponentProps, MouseEvent, ReactNode } from 'react';
@@ -8,12 +8,20 @@ import { cn } from '@/lib/utils';
 type NavigationMenuProps = NavigationMenuPrimitive.Root.Props &
   Pick<
     NavigationMenuPrimitive.Positioner.Props,
-    'align' | 'alignOffset' | 'side' | 'sideOffset'
+    | 'align'
+    | 'alignOffset'
+    | 'collisionAvoidance'
+    | 'positionMethod'
+    | 'side'
+    | 'sideOffset'
   >;
 
 type NavigationMenuContentProps = NavigationMenuPrimitive.Content.Props;
 type NavigationMenuPositionerProps = NavigationMenuPrimitive.Positioner.Props;
-type NavigationMenuTriggerProps = NavigationMenuPrimitive.Trigger.Props;
+type NavigationMenuTriggerProps = NavigationMenuPrimitive.Trigger.Props & {
+  /** Marks the trigger as the current page or section. */
+  active?: boolean;
+};
 type NavigationMenuLinkProps = NavigationMenuPrimitive.Link.Props;
 type NavButtonProps = useRender.ComponentProps<'button'> & {
   /** Marks the item as the current page or section. */
@@ -30,11 +38,17 @@ type MenuBarBrandProps = ComponentProps<'a'>;
 type MenuBarNavProps = ComponentProps<'nav'>;
 type MenuBarActionsProps = ComponentProps<'div'>;
 
+const navigationMenuCollisionAvoidance = {
+  align: 'shift',
+  fallbackAxisSide: 'none',
+  side: 'flip',
+} as const;
+
 /**
  * Shared styles for application-level navigation buttons in a menu bar.
  */
 const navButtonVariants = cva(
-  'relative inline-flex h-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-2.5 font-medium text-foreground text-sm underline-offset-4 outline-none hover:bg-muted hover:underline focus-visible:ring-2 focus-visible:ring-ring data-[active=true]:after:absolute data-[active=true]:after:right-2 data-[active=true]:after:bottom-0 data-[active=true]:after:left-2 data-[active=true]:after:h-0.5 data-[active=true]:after:bg-primary data-[active=true]:after:content-[""] data-[disabled=true]:pointer-events-none data-[disabled=true]:bg-muted/50 data-[disabled=true]:text-muted-foreground data-[disabled=true]:opacity-60 data-[disabled=true]:no-underline motion-safe:transition-[color,background-color,border-color,opacity,transform] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] motion-safe:active:scale-[0.97] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*="size-"])]:size-4',
+  'relative inline-flex h-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-2.5 font-medium text-foreground text-sm underline-offset-4 outline-none hover:bg-muted hover:underline focus-visible:ring-2 focus-visible:ring-ring data-[active=true]:after:absolute data-[active=true]:after:right-2 data-[active=true]:after:bottom-0 data-[active=true]:after:left-2 data-[active=true]:after:h-0.5 data-[active=true]:after:bg-primary data-[active=true]:after:content-[""] data-[disabled]:pointer-events-none data-[disabled]:bg-muted/50 data-[disabled]:text-muted-foreground data-[disabled]:no-underline motion-safe:transition-[color,background-color,border-color,opacity,transform] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] motion-safe:active:scale-[0.97] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*="size-"])]:size-4',
 );
 
 /**
@@ -42,7 +56,7 @@ const navButtonVariants = cva(
  * leading icon, icon-only actions with an `aria-label`, active underline,
  * optional trailing chevron, disabled state, and Base UI's `render` prop for
  * router links. Active items represent the current page, prevent redundant
- * activation, and are removed from sequential keyboard navigation by default.
+ * activation while remaining in sequential keyboard navigation.
  */
 function NavButton({
   active = false,
@@ -90,7 +104,7 @@ function NavButton({
       'data-slot': 'nav-button',
       disabled: disabled || undefined,
       onClick: handleClick,
-      tabIndex: disabled || active ? -1 : tabIndex,
+      tabIndex: disabled ? -1 : tabIndex,
     },
   });
 }
@@ -162,7 +176,7 @@ function MenuBarActions({ className, ...props }: MenuBarActionsProps) {
  * the dropdown icon.
  */
 const navigationMenuTriggerStyle = cva(
-  `${navButtonVariants()} group/navigation-menu-trigger w-max data-[popup-open]:bg-muted data-[pressed]:bg-muted disabled:pointer-events-none disabled:opacity-50`,
+  `${navButtonVariants()} group/navigation-menu-trigger w-max data-[popup-open]:bg-muted data-[pressed]:bg-muted disabled:pointer-events-none`,
 );
 
 /**
@@ -181,6 +195,8 @@ function NavigationMenu({
   alignOffset = 0,
   children,
   className,
+  collisionAvoidance = navigationMenuCollisionAvoidance,
+  positionMethod = 'absolute',
   side = 'bottom',
   sideOffset = 8,
   ...props
@@ -198,6 +214,8 @@ function NavigationMenu({
       <NavigationMenuPositioner
         align={align}
         alignOffset={alignOffset}
+        collisionAvoidance={collisionAvoidance}
+        positionMethod={positionMethod}
         side={side}
         sideOffset={sideOffset}
       />
@@ -255,15 +273,18 @@ function NavigationMenuItem({
  * `data-popup-open` state and rotates only when motion is allowed.
  */
 function NavigationMenuTrigger({
+  active = false,
   children,
   className,
   ...props
 }: NavigationMenuTriggerProps) {
   return (
     <NavigationMenuPrimitive.Trigger
-      data-slot="navigation-menu-trigger"
-      className={cn(navigationMenuTriggerStyle(), className)}
       {...props}
+      aria-current={active ? 'page' : undefined}
+      data-slot="navigation-menu-trigger"
+      data-active={active ? 'true' : undefined}
+      className={cn(navigationMenuTriggerStyle(), className)}
     >
       {children}
       <NavigationMenuPrimitive.Icon
@@ -321,7 +342,7 @@ function NavigationMenuPositioner({
         alignOffset={alignOffset}
         data-slot="navigation-menu-positioner"
         className={cn(
-          'isolate z-50 max-w-(--available-width) data-[instant]:transition-none',
+          'isolate z-50 h-(--positioner-height) w-(--positioner-width) max-w-(--available-width) data-[instant]:transition-none data-[instant]:[&_[data-slot=navigation-menu-popup]]:transition-none',
           className,
         )}
         {...props}

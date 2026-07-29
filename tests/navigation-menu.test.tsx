@@ -90,9 +90,8 @@ describe('NavigationMenu', () => {
       'aria-current',
       'page',
     );
-    expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute(
       'tabindex',
-      '-1',
     );
     expect(screen.getByText('Account').closest('div')).toHaveAttribute(
       'data-slot',
@@ -119,7 +118,7 @@ describe('NavigationMenu', () => {
     expect(onClick).not.toHaveBeenCalled();
   });
 
-  it('skips active nav buttons in tab order and prevents redundant activation', async () => {
+  it('keeps active nav buttons in the tab order and prevents redundant activation', async () => {
     const onClick = vi.fn();
     const user = userEvent.setup();
 
@@ -131,10 +130,63 @@ describe('NavigationMenu', () => {
 
     const link = screen.getByRole('link', { name: 'Current' });
     expect(link).toHaveAttribute('aria-current', 'page');
-    expect(link).toHaveAttribute('tabindex', '-1');
+    expect(link).not.toHaveAttribute('tabindex');
 
     await user.click(link);
     expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it('keeps active links and dropdown triggers in sequential tab order', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MenuBar>
+        <MenuBarNav aria-label="Primary">
+          <NavButton active render={renderNavLink('/dashboard')}>
+            Dashboard
+          </NavButton>
+          <NavigationMenu aria-label="Projects">
+            <NavigationMenuList>
+              <NavigationMenuItem value="projects">
+                <NavigationMenuTrigger active>Projects</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <NavigationMenuLink href="/projects/active">
+                    Active projects
+                  </NavigationMenuLink>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+          <NavButton render={renderNavLink('/reports')}>Reports</NavButton>
+        </MenuBarNav>
+      </MenuBar>,
+    );
+
+    await user.tab();
+    expect(screen.getByRole('link', { name: 'Dashboard' })).toHaveFocus();
+
+    await user.tab();
+    expect(screen.getByRole('button', { name: /Projects/ })).toHaveFocus();
+
+    await user.tab();
+    expect(screen.getByRole('link', { name: 'Reports' })).toHaveFocus();
+  });
+
+  it('opens dropdown navigation and reaches its links with the keyboard', async () => {
+    const user = userEvent.setup();
+    render(<TestNavigationMenu />);
+
+    const trigger = screen.getByRole('button', { name: /Platform/ });
+    trigger.focus();
+    await user.keyboard('{Enter}');
+
+    const firstLink = await screen.findByRole('link', {
+      name: 'Workspaces',
+    });
+    expect(firstLink).toHaveFocus();
+
+    await user.tab();
+    expect(screen.getByRole('link', { name: 'Environments' })).toHaveFocus();
   });
 
   it('composes nav buttons with the render prop', () => {
@@ -190,6 +242,22 @@ describe('NavigationMenu', () => {
     );
   });
 
+  it('announces active dropdown triggers as the current page', () => {
+    render(
+      <NavigationMenu aria-label="Main">
+        <NavigationMenuList>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger active>Projects</NavigationMenuTrigger>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>,
+    );
+
+    const trigger = screen.getByRole('button', { name: /Projects/ });
+    expect(trigger).toHaveAttribute('aria-current', 'page');
+    expect(trigger).toHaveAttribute('data-active', 'true');
+  });
+
   it('opens popup content when a trigger is pressed', async () => {
     const user = userEvent.setup();
     render(<TestNavigationMenu />);
@@ -237,11 +305,13 @@ describe('NavigationMenu', () => {
     expect(navButtonClasses).toContain('focus-visible:ring-2');
     expect(navButtonClasses).not.toContain('ring-offset');
     expect(navButtonClasses).toContain('data-[active=true]:after:bg-primary');
-    expect(navButtonClasses).toContain('data-[disabled=true]:bg-muted/50');
+    expect(navButtonClasses).toContain('data-[disabled]:bg-muted/50');
+    expect(navButtonClasses).not.toContain('data-[disabled]:opacity-60');
     for (const className of navButtonClasses.split(' ')) {
       expect(triggerClasses).toContain(className);
     }
     expect(triggerClasses).toContain('data-[popup-open]:bg-muted');
+    expect(triggerClasses).not.toContain('disabled:opacity-50');
     expect(triggerClasses).toContain('motion-safe:duration-[--duration-fast]');
     expect(navigationMenuLinkStyle()).toContain('data-active:bg-accent');
     expect(navigationMenuLinkStyle()).toContain('focus-visible:ring-2');
@@ -277,6 +347,11 @@ describe('NavigationMenu', () => {
     expect(screen.getByRole('button', { name: /Platform/ })).toHaveAttribute(
       'data-popup-open',
     );
+    expect(
+      screen
+        .getByRole('link', { name: 'Workspaces' })
+        .closest('[data-slot="navigation-menu-positioner"]'),
+    ).toHaveStyle({ position: 'absolute' });
   });
 
   // CSS transitions and anchored geometry are not fully testable in jsdom;

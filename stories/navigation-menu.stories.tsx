@@ -11,6 +11,14 @@ import {
   User,
 } from 'lucide-react';
 import type { HTMLAttributes } from 'react';
+import { expect, userEvent, within } from 'storybook/test';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuTrigger,
+} from '@/ui/dropdown-menu';
 import {
   MenuBar,
   MenuBarActions,
@@ -23,6 +31,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuLinkStyle,
+  navigationMenuTriggerStyle,
 } from '@/ui/navigation-menu';
 
 const meta = {
@@ -71,32 +80,34 @@ function AvatarIcon() {
 
 function SettingsMenu() {
   return (
-    <NavigationMenu aria-label="Settings navigation">
-      <NavigationMenuList>
-        <NavigationMenuItem value="settings">
-          <NavigationMenuTrigger>
-            <Settings />
-            Settings
-          </NavigationMenuTrigger>
-          <NavigationMenuContent className="w-56">
-            <div className="grid gap-1">
-              <button type="button" className={navigationMenuLinkStyle()}>
-                <Sun />
-                Light mode
-              </button>
-              <button type="button" className={navigationMenuLinkStyle()}>
-                <Moon />
-                Dark mode
-              </button>
-              <NavigationMenuLink href="/about">
-                <Info />
-                About
-              </NavigationMenuLink>
-            </div>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        className={navigationMenuTriggerStyle()}
+        variant="ghost"
+      >
+        <Settings />
+        Settings
+      </DropdownMenuTrigger>
+      <DropdownMenuPortal>
+        <DropdownMenuContent className="w-56 p-2 shadow-lg">
+          <DropdownMenuItem className={navigationMenuLinkStyle()}>
+            <Sun />
+            Light mode
+          </DropdownMenuItem>
+          <DropdownMenuItem className={navigationMenuLinkStyle()}>
+            <Moon />
+            Dark mode
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={navigationMenuLinkStyle()}
+            render={<a href="/about" />}
+          >
+            <Info />
+            About
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenuPortal>
+    </DropdownMenu>
   );
 }
 
@@ -154,11 +165,26 @@ export const SettingsDropdown: Story = {
     docs: {
       description: {
         story:
-          'A settings trigger with dropdown links. Click the trigger in Storybook to open the menu.',
+          'A settings action menu with roving focus. Open it and use the arrow keys to move between items.',
       },
     },
   },
   render: () => <SettingsMenu />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const page = within(canvasElement.ownerDocument.body);
+
+    await userEvent.click(canvas.getByRole('button', { name: /Settings/ }));
+    await userEvent.keyboard('{ArrowDown}');
+    await expect(
+      page.getByRole('menuitem', { name: 'Light mode' }),
+    ).toHaveAttribute('data-highlighted', '');
+
+    await userEvent.keyboard('{ArrowDown}');
+    await expect(
+      page.getByRole('menuitem', { name: 'Dark mode' }),
+    ).toHaveAttribute('data-highlighted', '');
+  },
 };
 
 export const NavItemVariants: Story = {
@@ -189,7 +215,7 @@ export const NavItemVariants: Story = {
               <Settings />
               With dropdown
             </NavigationMenuTrigger>
-            <NavigationMenuContent className="w-48">
+            <NavigationMenuContent className="w-56">
               <div className="grid gap-1">
                 <NavigationMenuLink href="/preferences">
                   Preferences
@@ -259,9 +285,7 @@ export const CompleteNavbar: CompleteNavbarStory = {
           <NavigationMenu aria-label="Projects navigation">
             <NavigationMenuList>
               <NavigationMenuItem value="projects">
-                <NavigationMenuTrigger
-                  data-active={activeItem === 'Projects' ? 'true' : undefined}
-                >
+                <NavigationMenuTrigger active={activeItem === 'Projects'}>
                   Projects
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="w-56">

@@ -305,7 +305,7 @@
       "title": "Navigation Menu",
       "description": "Application navigation bar with NavButton items, brand/actions slots, and optional Base UI popup navigation parts.",
       "dependencies": [
-        "@base-ui-components/react",
+        "@base-ui/react",
         "class-variance-authority",
         "lucide-react"
       ],
