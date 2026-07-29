@@ -208,6 +208,20 @@
       ]
     },
     {
+      "name": "breadcrumb",
+      "type": "registry:ui",
+      "title": "Breadcrumb",
+      "description": "Hierarchy navigation trail with default, ellipsis-triggered, and current-route dropdown compositions.",
+      "dependencies": ["@base-ui/react", "lucide-react"],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/breadcrumb.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "card",
       "type": "registry:ui",
       "title": "Card",
