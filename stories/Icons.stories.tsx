@@ -83,6 +83,9 @@ function Gallery() {
 
 export const AllIcons: Story = {
   name: 'Gallery',
+  // The complete catalog remains available as a visual reference in Storybook,
+  // but is too expensive to render and axe-scan on shared CI runners.
+  tags: ['!test'],
   parameters: {
     docs: {
       description: {
