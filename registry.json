@@ -35,7 +35,7 @@
       "title": "Button",
       "description": "Button with variants, sizes, a loading state, and polymorphic render-prop composition.",
       "dependencies": [
-        "@base-ui-components/react",
+        "@base-ui/react",
         "class-variance-authority",
         "lucide-react"
       ],
@@ -56,7 +56,7 @@
       "type": "registry:ui",
       "title": "Switch",
       "description": "Toggle a single setting on or off with immediate effect, built on Base UI's Switch.",
-      "dependencies": ["@base-ui-components/react"],
+      "dependencies": ["@base-ui/react"],
       "registryDependencies": ["@nebari/utils", "@nebari/theme"],
       "files": [
         {
@@ -70,7 +70,7 @@
       "type": "registry:ui",
       "title": "Slider",
       "description": "Bounded numeric input with single-value and range behavior, keyboard navigation, and Nebari track and thumb styling.",
-      "dependencies": ["@base-ui-components/react"],
+      "dependencies": ["@base-ui/react"],
       "registryDependencies": ["@nebari/utils", "@nebari/theme"],
       "files": [
         {
@@ -85,7 +85,7 @@
       "title": "Checkbox",
       "description": "Labeled checkbox with default and boxed variants, checked, unchecked, and indeterminate states, validation feedback, and Base UI behavior.",
       "dependencies": [
-        "@base-ui-components/react",
+        "@base-ui/react",
         "class-variance-authority",
         "lucide-react"
       ],
@@ -102,7 +102,7 @@
       "type": "registry:ui",
       "title": "Radio Group",
       "description": "Mutually exclusive radio group with default and boxed item variants, stable selected targets, and group-level validation feedback.",
-      "dependencies": ["@base-ui-components/react", "class-variance-authority"],
+      "dependencies": ["@base-ui/react", "class-variance-authority"],
       "registryDependencies": ["@nebari/utils", "@nebari/theme"],
       "files": [
         {
@@ -116,7 +116,7 @@
       "type": "registry:ui",
       "title": "Field",
       "description": "Groups a control with its label, description, and validation message, wiring accessible-name and description associations automatically. Built on Base UI's Field.",
-      "dependencies": ["@base-ui-components/react"],
+      "dependencies": ["@base-ui/react"],
       "registryDependencies": ["@nebari/utils"],
       "files": [
         {
@@ -130,7 +130,7 @@
       "type": "registry:ui",
       "title": "Input",
       "description": "Single-line text-entry field with hover, focus, disabled, and invalid states, built on Base UI's Input and auto-wired to Field.",
-      "dependencies": ["@base-ui-components/react", "lucide-react"],
+      "dependencies": ["@base-ui/react", "lucide-react"],
       "registryDependencies": ["@nebari/utils", "@nebari/theme"],
       "files": [
         {
@@ -198,11 +198,25 @@
       "type": "registry:ui",
       "title": "Badge",
       "description": "Small status/label chip with variants, composable via Base UI's render prop.",
-      "dependencies": ["@base-ui-components/react", "class-variance-authority"],
+      "dependencies": ["@base-ui/react", "class-variance-authority"],
       "registryDependencies": ["@nebari/utils"],
       "files": [
         {
           "path": "registry/nebari/ui/badge.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "breadcrumb",
+      "type": "registry:ui",
+      "title": "Breadcrumb",
+      "description": "Hierarchy navigation trail with default, ellipsis-triggered, and current-route dropdown compositions.",
+      "dependencies": ["@base-ui/react", "lucide-react"],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/breadcrumb.tsx",
           "type": "registry:ui"
         }
       ]
@@ -226,7 +240,7 @@
       "type": "registry:ui",
       "title": "Dialog",
       "description": "Modal dialog with overlay, close control, header, footer, title, and description parts, built on Base UI's Dialog.",
-      "dependencies": ["@base-ui-components/react", "lucide-react"],
+      "dependencies": ["@base-ui/react", "lucide-react"],
       "registryDependencies": [
         "@nebari/utils",
         "@nebari/button",
@@ -240,11 +254,29 @@
       ]
     },
     {
+      "name": "drawer",
+      "type": "registry:ui",
+      "title": "Drawer",
+      "description": "Edge-anchored panel for secondary tasks, contextual detail, or short forms, with right-side and bottom-sheet variants built on Base UI Drawer.",
+      "dependencies": ["@base-ui/react", "lucide-react"],
+      "registryDependencies": [
+        "@nebari/utils",
+        "@nebari/button",
+        "@nebari/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/nebari/ui/drawer.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "tabs",
       "type": "registry:ui",
       "title": "Tabs",
       "description": "Tabs for switching between related panels, with pill and underline variants built on Base UI.",
-      "dependencies": ["@base-ui-components/react", "class-variance-authority"],
+      "dependencies": ["@base-ui/react", "class-variance-authority"],
       "registryDependencies": ["@nebari/utils"],
       "files": [
         {
@@ -258,7 +290,7 @@
       "type": "registry:ui",
       "title": "Select",
       "description": "Accessible standard-size select menu with grouped labels, separators, validation states, and anchored popup positioning.",
-      "dependencies": ["@base-ui-components/react", "lucide-react"],
+      "dependencies": ["@base-ui/react", "lucide-react"],
       "registryDependencies": ["@nebari/utils", "@nebari/theme"],
       "files": [
         {
@@ -286,11 +318,29 @@
       ]
     },
     {
+      "name": "dropdown-menu",
+      "type": "registry:ui",
+      "title": "Dropdown Menu",
+      "description": "Action menu triggered by a button, with grouped items, labels, separators, checkbox items, and nested submenus.",
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/dropdown-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "tooltip",
       "type": "registry:ui",
       "title": "Tooltip",
       "description": "Compact supplemental information shown on hover or keyboard focus, with anchored positioning and optional arrow. Touch devices don't trigger tooltips so critical information shouldn't live only in a tooltip.",
-      "dependencies": ["@base-ui-components/react"],
+      "dependencies": ["@base-ui/react"],
       "registryDependencies": ["@nebari/utils", "@nebari/theme"],
       "files": [
         {
