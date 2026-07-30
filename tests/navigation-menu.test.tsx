@@ -1,70 +1,30 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import type { HTMLAttributes } from 'react';
 import { describe, expect, it, vi } from 'vitest';
+import { DropdownMenuItem } from '@/ui/dropdown-menu';
 import {
   MenuBar,
   MenuBarActions,
   MenuBarBrand,
   MenuBarNav,
-  NavButton,
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navButtonVariants,
-  navigationMenuLinkStyle,
-  navigationMenuTriggerStyle,
+  NavDropdownMenu,
+  NavLink,
+  navLinkVariants,
 } from '@/ui/navigation-menu';
 
-function renderNavLink(href: string) {
-  return (props: HTMLAttributes<HTMLAnchorElement>) => (
-    <a href={href} {...props}>
-      {props.children}
-    </a>
-  );
-}
-
-function TestNavigationMenu() {
-  return (
-    <NavigationMenu aria-label="Main" delay={0}>
-      <NavigationMenuList>
-        <NavigationMenuItem value="platform">
-          <NavigationMenuTrigger>Platform</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <NavigationMenuLink href="/workspaces">
-              Workspaces
-            </NavigationMenuLink>
-            <NavigationMenuLink href="/environments">
-              Environments
-            </NavigationMenuLink>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink active href="/docs">
-            Docs
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
-  );
-}
-
 describe('NavigationMenu', () => {
-  it('renders a full menu bar with brand, nav, actions, and active nav button', () => {
+  it('renders a full menu bar with anchor-first navigation links', () => {
     render(
       <MenuBar>
         <MenuBarBrand href="/">App</MenuBarBrand>
         <MenuBarNav aria-label="Primary">
-          <NavButton active render={renderNavLink('/home')}>
+          <NavLink active href="/home">
             Home
-          </NavButton>
-          <NavButton render={renderNavLink('/docs')}>Docs</NavButton>
+          </NavLink>
+          <NavLink href="/docs">Docs</NavLink>
         </MenuBarNav>
         <MenuBarActions>
-          <NavButton render={renderNavLink('/account')}>Account</NavButton>
+          <NavLink href="/account">Account</NavLink>
         </MenuBarActions>
       </MenuBar>,
     );
@@ -80,280 +40,180 @@ describe('NavigationMenu', () => {
     );
     expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
       'data-slot',
-      'nav-button',
-    );
-    expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
-      'data-active',
-      'true',
+      'nav-link',
     );
     expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
       'aria-current',
       'page',
     );
-    expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute(
-      'tabindex',
+  });
+
+  it('composes nav links with framework router links', () => {
+    render(
+      <NavLink render={<a data-router-link="" href="/docs" />}>Docs</NavLink>,
     );
-    expect(screen.getByText('Account').closest('div')).toHaveAttribute(
-      'data-slot',
-      'menu-bar-actions',
+
+    expect(screen.getByRole('link', { name: 'Docs' })).toHaveAttribute(
+      'data-router-link',
+      '',
     );
   });
 
-  it('supports disabled nav buttons without firing click handlers', async () => {
-    const onClick = vi.fn();
+  it('prevents disabled and current links from activating', async () => {
+    const disabledClick = vi.fn();
+    const activeClick = vi.fn();
     const user = userEvent.setup();
 
     render(
-      <NavButton disabled onClick={onClick} render={renderNavLink('/disabled')}>
-        Disabled
-      </NavButton>,
+      <>
+        <NavLink disabled href="/disabled" onClick={disabledClick}>
+          Disabled
+        </NavLink>
+        <NavLink active href="/current" onClick={activeClick}>
+          Current
+        </NavLink>
+      </>,
     );
 
-    const link = screen.getByRole('link', { name: 'Disabled' });
-    expect(link).toHaveAttribute('aria-disabled', 'true');
-    expect(link).toHaveAttribute('data-disabled', 'true');
-    expect(link).toHaveAttribute('tabindex', '-1');
+    const disabled = screen.getByRole('link', { name: 'Disabled' });
+    expect(disabled).toHaveAttribute('aria-disabled', 'true');
+    expect(disabled).toHaveAttribute('tabindex', '-1');
 
-    await user.click(link);
-    expect(onClick).not.toHaveBeenCalled();
+    await user.click(disabled);
+    await user.click(screen.getByRole('link', { name: 'Current' }));
+    expect(disabledClick).not.toHaveBeenCalled();
+    expect(activeClick).not.toHaveBeenCalled();
   });
 
-  it('keeps active nav buttons in the tab order and prevents redundant activation', async () => {
-    const onClick = vi.fn();
-    const user = userEvent.setup();
-
+  it('renders icon-only links with an accessible label', () => {
     render(
-      <NavButton active onClick={onClick} render={renderNavLink('/current')}>
-        Current
-      </NavButton>,
-    );
-
-    const link = screen.getByRole('link', { name: 'Current' });
-    expect(link).toHaveAttribute('aria-current', 'page');
-    expect(link).not.toHaveAttribute('tabindex');
-
-    await user.click(link);
-    expect(onClick).not.toHaveBeenCalled();
-  });
-
-  it('keeps active links and dropdown triggers in sequential tab order', async () => {
-    const user = userEvent.setup();
-
-    render(
-      <MenuBar>
-        <MenuBarNav aria-label="Primary">
-          <NavButton active render={renderNavLink('/dashboard')}>
-            Dashboard
-          </NavButton>
-          <NavigationMenu aria-label="Projects">
-            <NavigationMenuList>
-              <NavigationMenuItem value="projects">
-                <NavigationMenuTrigger active>Projects</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <NavigationMenuLink href="/projects/active">
-                    Active projects
-                  </NavigationMenuLink>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-          <NavButton render={renderNavLink('/reports')}>Reports</NavButton>
-        </MenuBarNav>
-      </MenuBar>,
-    );
-
-    await user.tab();
-    expect(screen.getByRole('link', { name: 'Dashboard' })).toHaveFocus();
-
-    await user.tab();
-    expect(screen.getByRole('button', { name: /Projects/ })).toHaveFocus();
-
-    await user.tab();
-    expect(screen.getByRole('link', { name: 'Reports' })).toHaveFocus();
-  });
-
-  it('opens dropdown navigation and reaches its links with the keyboard', async () => {
-    const user = userEvent.setup();
-    render(<TestNavigationMenu />);
-
-    const trigger = screen.getByRole('button', { name: /Platform/ });
-    trigger.focus();
-    await user.keyboard('{Enter}');
-
-    const firstLink = await screen.findByRole('link', {
-      name: 'Workspaces',
-    });
-    expect(firstLink).toHaveFocus();
-
-    await user.tab();
-    expect(screen.getByRole('link', { name: 'Environments' })).toHaveFocus();
-  });
-
-  it('composes nav buttons with the render prop', () => {
-    render(
-      <NavButton render={<button type="button" />} icon={<span />}>
-        Menu Item
-      </NavButton>,
-    );
-
-    const button = screen.getByRole('button', { name: 'Menu Item' });
-    expect(button).toHaveAttribute('data-slot', 'nav-button');
-  });
-
-  it('supports icon-only nav buttons with an accessible label', () => {
-    render(
-      <NavButton
+      <NavLink
         aria-label="Notifications"
+        href="/notifications"
         icon={<span aria-hidden="true" />}
-        render={renderNavLink('/notifications')}
       />,
     );
 
     const link = screen.getByRole('link', { name: 'Notifications' });
-    expect(link).toHaveAttribute('data-slot', 'nav-button');
+    expect(link).toHaveAttribute('data-slot', 'nav-link');
     expect(link).not.toHaveTextContent(/\S/);
   });
 
-  it('renders the root, list, items, trigger, and links with stable data hooks', () => {
-    render(<TestNavigationMenu />);
+  it('composes dropdown-menu and leaves item behavior to the consumer', async () => {
+    const openSettings = vi.fn();
+    const user = userEvent.setup();
 
-    expect(screen.getByRole('navigation', { name: 'Main' })).toHaveAttribute(
-      'data-slot',
-      'navigation-menu',
-    );
-    expect(screen.getByRole('list')).toHaveAttribute(
-      'data-slot',
-      'navigation-menu-list',
-    );
-    expect(screen.getAllByRole('listitem')[0]).toHaveAttribute(
-      'data-slot',
-      'navigation-menu-item',
-    );
-    expect(screen.getByRole('button', { name: /Platform/ })).toHaveAttribute(
-      'data-slot',
-      'navigation-menu-trigger',
-    );
-    expect(screen.getByRole('link', { name: 'Docs' })).toHaveAttribute(
-      'data-slot',
-      'navigation-menu-link',
-    );
-    expect(screen.getByRole('link', { name: 'Docs' })).toHaveAttribute(
-      'data-active',
-    );
-  });
-
-  it('announces active dropdown triggers as the current page', () => {
     render(
-      <NavigationMenu aria-label="Main">
-        <NavigationMenuList>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger active>Projects</NavigationMenuTrigger>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>,
+      <NavDropdownMenu active trigger="Projects">
+        <DropdownMenuItem onClick={openSettings}>Settings</DropdownMenuItem>
+        <DropdownMenuItem render={<a href="/profile" />}>
+          Profile
+        </DropdownMenuItem>
+      </NavDropdownMenu>,
     );
 
     const trigger = screen.getByRole('button', { name: /Projects/ });
+    expect(trigger).toHaveAttribute('data-slot', 'nav-dropdown-menu-trigger');
     expect(trigger).toHaveAttribute('aria-current', 'page');
-    expect(trigger).toHaveAttribute('data-active', 'true');
-  });
+    expect(trigger).toHaveTextContent('Projects');
 
-  it('opens popup content when a trigger is pressed', async () => {
-    const user = userEvent.setup();
-    render(<TestNavigationMenu />);
+    await user.click(trigger);
 
-    expect(screen.queryByRole('link', { name: 'Workspaces' })).toBeNull();
-
-    await user.click(screen.getByRole('button', { name: /Platform/ }));
-
-    const link = await screen.findByRole('link', { name: 'Workspaces' });
-    expect(link).toHaveAttribute('href', '/workspaces');
-    const content = link.closest('[data-slot="navigation-menu-content"]');
-    expect(content).toHaveClass('motion-safe:transition-[opacity,transform]');
-    expect(content?.className).not.toContain('focus:ring-0');
-    expect(link.closest('[data-slot="navigation-menu-popup"]')).toHaveAttribute(
-      'data-slot',
-      'navigation-menu-popup',
-    );
-  });
-
-  it('composes links with the render prop', async () => {
-    render(
-      <NavigationMenu aria-label="Main" delay={0}>
-        <NavigationMenuList>
-          <NavigationMenuItem>
-            <NavigationMenuLink render={<a data-router-link="" href="/docs" />}>
-              Docs
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>,
-    );
-
-    const link = screen.getByRole('link', { name: 'Docs' });
-    expect(link).toHaveAttribute('href', '/docs');
-    expect(link).toHaveAttribute('data-router-link', '');
-    expect(link).toHaveAttribute('data-slot', 'navigation-menu-link');
-  });
-
-  it('exposes style helpers for external composition', () => {
-    const navButtonClasses = navButtonVariants();
-    const triggerClasses = navigationMenuTriggerStyle();
-
-    expect(navButtonClasses).toContain('h-10');
-    expect(navButtonClasses).toContain('rounded-md');
-    expect(navButtonClasses).toContain('focus-visible:ring-2');
-    expect(navButtonClasses).not.toContain('ring-offset');
-    expect(navButtonClasses).toContain('data-[active=true]:after:bg-primary');
-    expect(navButtonClasses).toContain('data-[disabled]:bg-muted/50');
-    expect(navButtonClasses).not.toContain('data-[disabled]:opacity-60');
-    for (const className of navButtonClasses.split(' ')) {
-      expect(triggerClasses).toContain(className);
-    }
-    expect(triggerClasses).toContain('data-[popup-open]:bg-muted');
-    expect(triggerClasses).not.toContain('disabled:opacity-50');
-    expect(triggerClasses).toContain('motion-safe:duration-[--duration-fast]');
-    expect(navigationMenuLinkStyle()).toContain('data-active:bg-accent');
-    expect(navigationMenuLinkStyle()).toContain('focus-visible:ring-2');
-    expect(navigationMenuLinkStyle()).not.toContain('ring-offset');
-    expect(navigationMenuLinkStyle()).toContain(
-      'motion-safe:transition-[color,background-color,border-color,opacity,transform]',
-    );
-  });
-
-  it('renders an anchored popup shell when controlled open', async () => {
-    render(
-      <NavigationMenu aria-label="Main" value="platform">
-        <NavigationMenuList>
-          <NavigationMenuItem value="platform">
-            <NavigationMenuTrigger>Platform</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <NavigationMenuLink href="/workspaces">
-                Workspaces
-              </NavigationMenuLink>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>,
-    );
-
-    await waitFor(() => {
-      expect(screen.getByRole('link', { name: 'Workspaces' })).toBeVisible();
-    });
-
-    expect(screen.getByRole('navigation', { name: 'Main' })).toHaveClass(
-      'group/navigation-menu',
-    );
-    expect(screen.getByRole('button', { name: /Platform/ })).toHaveAttribute(
-      'data-popup-open',
-    );
+    const settings = await screen.findByRole('menuitem', { name: 'Settings' });
+    const profile = screen.getByRole('menuitem', { name: 'Profile' });
+    expect(profile).toHaveAttribute('href', '/profile');
     expect(
-      screen
-        .getByRole('link', { name: 'Workspaces' })
-        .closest('[data-slot="navigation-menu-positioner"]'),
-    ).toHaveStyle({ position: 'absolute' });
+      settings.closest('[data-slot="nav-dropdown-menu-content"]'),
+    ).not.toBeNull();
+
+    await user.click(settings);
+    expect(openSettings).toHaveBeenCalledOnce();
   });
 
-  // CSS transitions and anchored geometry are not fully testable in jsdom;
-  // the Storybook examples exercise the animated popup in a browser.
+  it('supports keyboard navigation and returns focus after Escape', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <NavDropdownMenu trigger="Settings">
+        <DropdownMenuItem>Light mode</DropdownMenuItem>
+        <DropdownMenuItem>Dark mode</DropdownMenuItem>
+        <DropdownMenuItem render={<a href="/about" />}>About</DropdownMenuItem>
+      </NavDropdownMenu>,
+    );
+
+    const trigger = screen.getByRole('button', { name: /Settings/ });
+    trigger.focus();
+    await user.keyboard('{Enter}');
+
+    const lightMode = await screen.findByRole('menuitem', {
+      name: 'Light mode',
+    });
+    expect(lightMode).toHaveFocus();
+
+    await user.keyboard('{ArrowDown}');
+    expect(screen.getByRole('menuitem', { name: 'Dark mode' })).toHaveFocus();
+
+    await user.keyboard('{ArrowDown}');
+    expect(screen.getByRole('menuitem', { name: 'About' })).toHaveFocus();
+    expect(screen.getByRole('menuitem', { name: 'About' })).toHaveAttribute(
+      'href',
+      '/about',
+    );
+
+    await user.keyboard('{Escape}');
+    expect(trigger).toHaveFocus();
+    expect(screen.queryByRole('menuitem', { name: 'Light mode' })).toBeNull();
+  });
+
+  it('supports disabled dropdown triggers and positioning props', () => {
+    render(
+      <NavDropdownMenu
+        contentProps={{ align: 'end', sideOffset: 8 }}
+        disabled
+        trigger="Disabled menu"
+      >
+        <DropdownMenuItem>Item</DropdownMenuItem>
+      </NavDropdownMenu>,
+    );
+
+    const trigger = screen.getByRole('button', { name: /Disabled menu/ });
+    expect(trigger).toBeDisabled();
+    expect(trigger).toHaveAttribute('data-disabled', 'true');
+  });
+
+  it('supports an icon-only notifications dropdown trigger', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <NavDropdownMenu
+        icon={<span aria-hidden="true" />}
+        trigger={null}
+        triggerProps={{
+          'aria-label': 'Notifications',
+          showExpandIcon: false,
+        }}
+      >
+        <DropdownMenuItem render={<a href="/notifications/build" />}>
+          Build completed
+        </DropdownMenuItem>
+      </NavDropdownMenu>,
+    );
+
+    const trigger = screen.getByRole('button', { name: 'Notifications' });
+    expect(trigger).toHaveAttribute('data-slot', 'nav-dropdown-menu-trigger');
+
+    await user.click(trigger);
+    expect(
+      await screen.findByRole('menuitem', { name: 'Build completed' }),
+    ).toHaveAttribute('href', '/notifications/build');
+  });
+
+  it('exposes the shared navbar style helper', () => {
+    const classes = navLinkVariants();
+
+    expect(classes).toContain('h-10');
+    expect(classes).toContain('focus-visible:ring-2');
+    expect(classes).toContain('data-[active=true]:after:bg-primary');
+    expect(classes).toContain('motion-safe:duration-[--duration-fast]');
+  });
 });

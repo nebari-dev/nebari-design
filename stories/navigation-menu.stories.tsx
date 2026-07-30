@@ -1,52 +1,28 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import {
-  Bell,
-  CreditCard,
-  Home,
-  Info,
-  LogOut,
-  Moon,
-  Settings,
-  Sun,
-  User,
-} from 'lucide-react';
-import type { HTMLAttributes } from 'react';
+import { Bell, Home, Settings, User } from 'lucide-react';
 import { expect, userEvent, within } from 'storybook/test';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuTrigger,
-} from '@/ui/dropdown-menu';
+import { DropdownMenuItem } from '@/ui/dropdown-menu';
 import {
   MenuBar,
   MenuBarActions,
   MenuBarNav,
-  NavButton,
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuLinkStyle,
-  navigationMenuTriggerStyle,
+  NavDropdownMenu,
+  NavLink,
 } from '@/ui/navigation-menu';
 
 const meta = {
   title: 'Components/Navigation Menu',
-  component: NavButton,
+  component: NavLink,
   parameters: {
     layout: 'centered',
     docs: {
       description: {
         component:
-          'Application navigation primitives: `NavButton` for individual nav items and Base UI navigation-menu parts for dropdown navigation.',
+          'Application navigation primitives: anchor-first `NavLink` items and `NavDropdownMenu` for menus composed from the shared dropdown-menu.',
       },
     },
   },
-} satisfies Meta<typeof NavButton>;
+} satisfies Meta<typeof NavLink>;
 
 export default meta;
 
@@ -59,116 +35,49 @@ type CompleteNavbarArgs = {
 };
 type CompleteNavbarStory = StoryObj<CompleteNavbarArgs>;
 
-function renderNavLink(href: string) {
-  return (props: HTMLAttributes<HTMLAnchorElement>) => (
-    <a href={href} {...props}>
-      {props.children}
-    </a>
-  );
-}
-
-function AvatarIcon() {
-  return (
-    <span
-      aria-hidden="true"
-      className="inline-flex size-7 items-center justify-center rounded-full bg-secondary font-medium text-secondary-foreground text-xs"
-    >
-      AL
-    </span>
-  );
-}
-
 function SettingsMenu() {
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        className={navigationMenuTriggerStyle()}
-        variant="ghost"
-      >
-        <Settings />
-        Settings
-      </DropdownMenuTrigger>
-      <DropdownMenuPortal>
-        <DropdownMenuContent className="w-56 p-2 shadow-lg">
-          <DropdownMenuItem className={navigationMenuLinkStyle()}>
-            <Sun />
-            Light mode
-          </DropdownMenuItem>
-          <DropdownMenuItem className={navigationMenuLinkStyle()}>
-            <Moon />
-            Dark mode
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className={navigationMenuLinkStyle()}
-            render={<a href="/about" />}
-          >
-            <Info />
-            About
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenuPortal>
-    </DropdownMenu>
+    <NavDropdownMenu icon={<Settings />} trigger="Settings">
+      <DropdownMenuItem onClick={() => undefined}>Light mode</DropdownMenuItem>
+      <DropdownMenuItem onClick={() => undefined}>Dark mode</DropdownMenuItem>
+      <DropdownMenuItem render={<a href="/about" />}>About</DropdownMenuItem>
+    </NavDropdownMenu>
   );
 }
 
-function AccountMenu() {
+function NotificationsMenu() {
   return (
-    <NavigationMenu aria-label="Account navigation">
-      <NavigationMenuList>
-        <NavigationMenuItem value="account">
-          <NavigationMenuTrigger>
-            <AvatarIcon />
-            Account
-          </NavigationMenuTrigger>
-          <NavigationMenuContent className="w-56">
-            <div className="grid gap-1">
-              <NavigationMenuLink href="/account/profile">
-                <User />
-                Profile
-              </NavigationMenuLink>
-              <NavigationMenuLink href="/account/billing">
-                <CreditCard />
-                Billing
-              </NavigationMenuLink>
-              <NavigationMenuLink href="/logout">
-                <LogOut />
-                Sign out
-              </NavigationMenuLink>
-            </div>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
+    <NavDropdownMenu
+      contentProps={{ align: 'end' }}
+      icon={<Bell />}
+      trigger={null}
+      triggerClassName="w-10 px-0"
+      triggerProps={{
+        'aria-label': 'Notifications',
+        showExpandIcon: false,
+      }}
+    >
+      <DropdownMenuItem render={<a href="/notifications/build" />}>
+        Build completed
+      </DropdownMenuItem>
+      <DropdownMenuItem render={<a href="/notifications/invite" />}>
+        New workspace invitation
+      </DropdownMenuItem>
+    </NavDropdownMenu>
   );
 }
 
 export const NavItem: Story = {
   name: 'Nav item',
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'A single `NavButton` with an icon and label. Use `render` to compose it as a router link.',
-      },
-    },
-  },
   render: () => (
-    <NavButton icon={<Home />} render={renderNavLink('/dashboard')}>
+    <NavLink href="/dashboard" icon={<Home />}>
       Dashboard
-    </NavButton>
+    </NavLink>
   ),
 };
 
 export const SettingsDropdown: Story = {
   name: 'Settings dropdown',
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'A settings action menu with roving focus. Open it and use the arrow keys to move between items.',
-      },
-    },
-  },
   render: () => <SettingsMenu />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -189,60 +98,27 @@ export const SettingsDropdown: Story = {
 
 export const NavItemVariants: Story = {
   name: 'Nav item variants',
-  parameters: {
-    docs: {
-      description: {
-        story:
-          '`NavButton` supports default, active, and disabled states. Use `NavigationMenuTrigger` for items that open dropdown menus.',
-      },
-    },
-  },
   render: () => (
     <div className="flex flex-wrap items-center gap-2">
-      <NavButton icon={<Home />} render={renderNavLink('/default')}>
+      <NavLink href="/default" icon={<Home />}>
         Default
-      </NavButton>
-      <NavButton active icon={<Home />} render={renderNavLink('/active')}>
+      </NavLink>
+      <NavLink active href="/active" icon={<Home />}>
         Active
-      </NavButton>
-      <NavButton disabled icon={<Home />} render={renderNavLink('/disabled')}>
+      </NavLink>
+      <NavLink disabled href="/disabled" icon={<Home />}>
         Disabled
-      </NavButton>
-      <NavigationMenu aria-label="More navigation">
-        <NavigationMenuList>
-          <NavigationMenuItem value="more">
-            <NavigationMenuTrigger>
-              <Settings />
-              With dropdown
-            </NavigationMenuTrigger>
-            <NavigationMenuContent className="w-56">
-              <div className="grid gap-1">
-                <NavigationMenuLink href="/preferences">
-                  Preferences
-                </NavigationMenuLink>
-                <NavigationMenuLink href="/keyboard-shortcuts">
-                  Keyboard shortcuts
-                </NavigationMenuLink>
-              </div>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
+      </NavLink>
+      <NavDropdownMenu icon={<Settings />} trigger="With dropdown">
+        <DropdownMenuItem render={<a href="/preferences" />}>
+          Preferences
+        </DropdownMenuItem>
+        <DropdownMenuItem render={<a href="/keyboard-shortcuts" />}>
+          Keyboard shortcuts
+        </DropdownMenuItem>
+      </NavDropdownMenu>
     </div>
   ),
-};
-
-export const AvatarDropdown: Story = {
-  name: 'Avatar area with dropdown',
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'An account/avatar trigger with dropdown actions. Click the trigger in Storybook to open the menu.',
-      },
-    },
-  },
-  render: () => <AccountMenu />,
 };
 
 export const CompleteNavbar: CompleteNavbarStory = {
@@ -264,61 +140,46 @@ export const CompleteNavbar: CompleteNavbarStory = {
   },
   parameters: {
     layout: 'fullscreen',
-    docs: {
-      description: {
-        story:
-          'A complete application navbar with Storybook controls for active item and optional action areas.',
-      },
-    },
   },
   render: ({ activeItem, showAccount, showNotifications, showSettings }) => (
     <div className="bg-background p-6 text-foreground">
       <MenuBar>
         <MenuBarNav aria-label="Primary navigation">
-          <NavButton
+          <NavLink
             active={activeItem === 'Dashboard'}
+            href="/dashboard"
             icon={<Home />}
-            render={renderNavLink('/dashboard')}
           >
             Dashboard
-          </NavButton>
-          <NavigationMenu aria-label="Projects navigation">
-            <NavigationMenuList>
-              <NavigationMenuItem value="projects">
-                <NavigationMenuTrigger active={activeItem === 'Projects'}>
-                  Projects
-                </NavigationMenuTrigger>
-                <NavigationMenuContent className="w-56">
-                  <div className="grid gap-1">
-                    <NavigationMenuLink href="/projects/active">
-                      Active projects
-                    </NavigationMenuLink>
-                    <NavigationMenuLink href="/projects/archived">
-                      Archived projects
-                    </NavigationMenuLink>
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-          <NavButton
-            active={activeItem === 'Reports'}
-            render={renderNavLink('/reports')}
+          </NavLink>
+          <NavDropdownMenu
+            active={activeItem === 'Projects'}
+            trigger="Projects"
           >
+            <DropdownMenuItem render={<a href="/projects/active" />}>
+              Active projects
+            </DropdownMenuItem>
+            <DropdownMenuItem render={<a href="/projects/archived" />}>
+              Archived projects
+            </DropdownMenuItem>
+          </NavDropdownMenu>
+          <NavLink active={activeItem === 'Reports'} href="/reports">
             Reports
-          </NavButton>
+          </NavLink>
         </MenuBarNav>
         <MenuBarActions>
           {showSettings ? <SettingsMenu /> : null}
-          {showNotifications ? (
-            <NavButton
-              aria-label="Notifications"
-              className="w-10 px-0"
-              icon={<Bell />}
-              render={renderNavLink('/notifications')}
-            />
+          {showNotifications ? <NotificationsMenu /> : null}
+          {showAccount ? (
+            <NavDropdownMenu icon={<User />} trigger="Account">
+              <DropdownMenuItem render={<a href="/account/profile" />}>
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => undefined}>
+                Sign out
+              </DropdownMenuItem>
+            </NavDropdownMenu>
           ) : null}
-          {showAccount ? <AccountMenu /> : null}
         </MenuBarActions>
       </MenuBar>
     </div>
