@@ -300,6 +300,24 @@
       ]
     },
     {
+      "name": "navigation-menu",
+      "type": "registry:ui",
+      "title": "Navigation Menu",
+      "description": "Application navigation bar with anchor-first NavLink items, NavDropdownMenu composition, and brand/actions slots.",
+      "dependencies": ["@base-ui/react", "class-variance-authority"],
+      "registryDependencies": [
+        "@nebari/dropdown-menu",
+        "@nebari/utils",
+        "@nebari/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/nebari/ui/navigation-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "dropdown-menu",
       "type": "registry:ui",
       "title": "Dropdown Menu",
