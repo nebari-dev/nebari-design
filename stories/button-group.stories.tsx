@@ -13,7 +13,11 @@ import {
 import type { ReactNode } from 'react';
 import { expect, userEvent, within } from 'storybook/test';
 import { Button } from '@/ui/button';
-import { ButtonGroup } from '@/ui/button-group';
+import {
+  ButtonGroup,
+  ButtonGroupSeparator,
+  ButtonGroupText,
+} from '@/ui/button-group';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -77,7 +81,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Button Group visually joins related actions into a segmented unit with shared seams, unified outer corners, and squared inner corners. Use Toggle Group instead when the controls represent mutually exclusive state.',
+          'Button Group visually joins related actions into a segmented unit with shared seams, unified outer corners, and squared inner corners. For mutually exclusive state, use controls that communicate their selected or pressed state.',
       },
     },
   },
@@ -260,6 +264,17 @@ export const Sizes: Story = {
         </ButtonGroup>
       ))}
     </div>
+  ),
+};
+
+export const SupportingContent: Story = {
+  render: () => (
+    <ButtonGroup aria-label="Branch actions">
+      <ButtonGroupText>Branch</ButtonGroupText>
+      <Button variant="ghost">main</Button>
+      <ButtonGroupSeparator />
+      <Button variant="ghost">Compare</Button>
+    </ButtonGroup>
   ),
 };
 

@@ -34,7 +34,8 @@ type ButtonGroupProps = React.ComponentProps<'fieldset'> & {
 /**
  * Groups closely related actions into one segmented control with shared seams
  * and unified outer corners. Label each group with `aria-label` or
- * `aria-labelledby`; use ToggleGroup instead for mutually exclusive state.
+ * `aria-labelledby`. For mutually exclusive state, use controls that expose
+ * their selected or pressed state to assistive technology.
  */
 function ButtonGroup({
   className,
