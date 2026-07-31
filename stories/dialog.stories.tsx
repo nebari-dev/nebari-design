@@ -1,5 +1,6 @@
 // biome-ignore-all lint/a11y/noNoninteractiveTabindex: dialog scroll containers need keyboard access.
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { ComponentProps } from 'react';
 import { useState } from 'react';
 import { expect, userEvent, within } from 'storybook/test';
 import { Button } from '@/ui/button';
@@ -14,6 +15,22 @@ import {
   DialogTrigger,
 } from '@/ui/dialog';
 
+// Base UI's `modal` is `boolean | 'trap-focus'`. Storybook args serialize as
+// strings, so the knob is keyed by string and mapped back to the real value.
+const MODAL_BY_KEY = {
+  true: true,
+  false: false,
+  'trap-focus': 'trap-focus',
+} as const;
+
+type DialogStoryArgs = ComponentProps<typeof DialogContent> &
+  Pick<
+    ComponentProps<typeof Dialog>,
+    'defaultOpen' | 'disablePointerDismissal' | 'open'
+  > & {
+    modal: keyof typeof MODAL_BY_KEY;
+  };
+
 const meta = {
   title: 'Components/Dialog',
   component: DialogContent,
@@ -26,11 +43,61 @@ const meta = {
       },
     },
   },
-} satisfies Meta<typeof DialogContent>;
+  args: { modal: 'true' },
+  argTypes: {
+    showCloseButton: {
+      description:
+        'Renders the default top-right close icon button inside the content surface.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'true' } },
+    },
+    defaultOpen: {
+      description:
+        'Set on `Dialog` (the root), not on `DialogContent` — opens the dialog on mount for an uncontrolled dialog.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    open: {
+      description:
+        'Controlled open state, set on `Dialog`. Pair it with `onOpenChange`; left as a docs-only row here so the playground stays interactive.',
+      control: false,
+    },
+    modal: {
+      description:
+        'Set on `Dialog`. `true` traps focus and locks page scroll. `false` and `trap-focus` differ only in keyboard focus containment — `DialogContent` always renders a full-screen backdrop, so the page behind is never pointer-interactive regardless. Outside-press dismissal is governed by `disablePointerDismissal`.',
+      control: 'select',
+      options: ['true', 'false', 'trap-focus'],
+      table: {
+        type: { summary: "boolean | 'trap-focus'" },
+        defaultValue: { summary: 'true' },
+      },
+    },
+    disablePointerDismissal: {
+      description:
+        'Set on `Dialog`. Prevents the dialog from closing on an outside press — Escape and explicit closes still work.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    className: { table: { disable: true } },
+    children: {
+      description:
+        'Composed content — `DialogHeader` (with `DialogTitle` and `DialogDescription`), the body, and `DialogFooter` with `DialogClose` actions.',
+      control: false,
+    },
+    render: {
+      description:
+        'Base UI render-prop composition. Swap the dialog content element while preserving its behavior, styling, and slot attributes.',
+      control: false,
+    },
+    portalProps: { table: { disable: true } },
+    viewportClassName: { table: { disable: true } },
+    overlayClassName: { table: { disable: true } },
+  },
+} satisfies Meta<DialogStoryArgs>;
 
 export default meta;
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<DialogStoryArgs>;
 
 const workspaceShareUrl = 'https://nebari.example/workspaces/analytics';
 
@@ -124,10 +191,18 @@ function ShareWorkspaceDialog() {
 }
 
 export const Default: Story = {
-  render: () => (
-    <Dialog>
+  // `defaultOpen` is read once on mount, so key the dialog on it to remount
+  // when the control changes — otherwise the knob would silently do nothing.
+  render: ({ defaultOpen, disablePointerDismissal, modal, open, ...args }) => (
+    <Dialog
+      key={String(defaultOpen)}
+      defaultOpen={defaultOpen}
+      disablePointerDismissal={disablePointerDismissal}
+      modal={MODAL_BY_KEY[modal]}
+      open={open}
+    >
       <DialogTrigger render={<Button />}>Open Dialog</DialogTrigger>
-      <DialogContent>
+      <DialogContent {...args}>
         <DialogHeader>
           <DialogTitle>Are you absolutely sure?</DialogTitle>
           <DialogDescription>
@@ -154,6 +229,7 @@ export const Default: Story = {
 
 export const GenericDialog: Story = {
   name: 'Generic Dialog',
+  parameters: { controls: { include: [] } },
   render: () => (
     <Dialog>
       <DialogTrigger render={<Button />}>Open Dialog</DialogTrigger>
@@ -178,6 +254,7 @@ export const GenericDialog: Story = {
 
 export const DeleteConfirmation: Story = {
   name: 'Delete Confirmation',
+  parameters: { controls: { include: [] } },
   render: () => (
     <Dialog>
       <DialogTrigger render={<Button variant="destructive" />}>
@@ -206,11 +283,13 @@ export const DeleteConfirmation: Story = {
 
 export const CustomCloseButton: Story = {
   name: 'Custom Close Button',
+  parameters: { controls: { include: [] } },
   render: () => <ShareWorkspaceDialog />,
 };
 
 export const StickyFooter: Story = {
   name: 'Sticky Footer',
+  parameters: { controls: { include: [] } },
   render: () => (
     <Dialog>
       <DialogTrigger render={<Button variant="outline" />}>
@@ -267,6 +346,7 @@ export const StickyFooter: Story = {
 
 export const ScrollableContent: Story = {
   name: 'Scrollable Content',
+  parameters: { controls: { include: [] } },
   render: () => (
     <Dialog>
       <DialogTrigger render={<Button variant="outline" />}>

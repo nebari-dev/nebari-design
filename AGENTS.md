@@ -81,6 +81,22 @@ rules that are easy to get wrong:
 - **Location &amp; naming.** Component at `registry/nebari/ui/<name>.tsx`
   (kebab-case). Story at `stories/<name>.stories.tsx` (CSF3), test at
   `tests/<name>.test.tsx` — both top-level, never co-located.
+- **Storybook controls.** `Default` is the interactive playground: define the
+  documented prop surface in meta `argTypes`, keep its knobs live, and do not
+  narrow its controls. Every other story uses `parameters.controls.include` to
+  expose only the props it intentionally varies (`[]` for a fixed showcase).
+  Variant args may remain as styling/source metadata without becoming behavior
+  controls. Document consumer APIs that cannot be a knob — Base UI's `render`,
+  `children` on a composed component, controlled-state props — with
+  `control: false` plus a description, so they stay in the props table. Reserve
+  `table: { disable: true }` for implementation plumbing and callbacks
+  (`className`, `style`, `id`, `portalProps`, `onValueChange`, …). Composite
+  stories use a local story-args type for
+  props and story-only toggles spanning multiple subcomponents. No knob may be a
+  no-op: args changes re-render without remounting, so key the component on any
+  mount-only prop (`defaultChecked`, `defaultValue`, `defaultOpen`) you expose,
+  and leave its controlled counterpart (`checked`, `value`, `open`) as a
+  docs-only row with `control: false`.
 - **Variants via `cva`.** Define `variants` + `defaultVariants` and export the
   `*Variants` function alongside the component. Type props with
   `VariantProps<typeof xVariants>`.

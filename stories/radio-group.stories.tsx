@@ -1,6 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { ComponentProps } from 'react';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/ui/field';
 import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
+
+type RadioGroupStoryArgs = ComponentProps<typeof RadioGroupItem> &
+  Pick<ComponentProps<typeof RadioGroup>, 'orientation'>;
+
+const plans = [
+  { label: 'Starter', value: 'starter' },
+  { label: 'Pro', value: 'pro' },
+  { label: 'Team', value: 'team' },
+];
 
 const meta = {
   title: 'Components/Radio Group',
@@ -14,14 +24,65 @@ const meta = {
       },
     },
   },
-  // Required `RadioGroupItem` prop — each story composes its own group via
-  // `render`, so this only satisfies the story arg types.
-  args: { value: 'option' },
-} satisfies Meta<typeof RadioGroupItem>;
+  args: {
+    // Required `RadioGroupItem` prop. The playground overrides it per option, so
+    // it only satisfies the story arg types.
+    value: 'option',
+    orientation: 'vertical',
+  },
+  argTypes: {
+    variant: {
+      description:
+        'Option layout. `default` is an inline radio; `box` turns each option into a bordered, fully clickable card.',
+      control: 'inline-radio',
+      options: ['default', 'box'],
+      table: { defaultValue: { summary: 'default' } },
+    },
+    orientation: {
+      description:
+        'Set on `RadioGroup`, not the item — stacks options vertically or wraps them in a row.',
+      control: 'inline-radio',
+      options: ['vertical', 'horizontal'],
+      table: { defaultValue: { summary: 'vertical' } },
+    },
+    description: {
+      description:
+        "Supplementary text beneath the option label, exposed as the radio's accessible description.",
+      control: 'text',
+    },
+    disabled: {
+      description:
+        'Disables the option: muted label, a `muted` target fill — `muted-foreground` when the option is selected — and no pointer or keyboard interaction. `RadioGroup` also accepts `disabled` to disable every option at once.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    readOnly: {
+      description: 'Keeps the option focusable but blocks selection changes.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    value: {
+      description:
+        "Identifies the option within its group and is what `RadioGroup`'s value matches against. The playground assigns one per option rather than from a control.",
+      control: false,
+    },
+    children: {
+      description:
+        'The visible and accessible option label. The playground renders one option per plan, so each label is set per item rather than from a control.',
+      control: false,
+    },
+    className: { table: { disable: true } },
+    render: {
+      description:
+        'Base UI render-prop composition. Swap the rendered option element while preserving radio behavior, styling, and slot attributes.',
+      control: false,
+    },
+  },
+} satisfies Meta<RadioGroupStoryArgs>;
 
 export default meta;
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<RadioGroupStoryArgs>;
 
 /**
  * The default option layout. `RadioGroup` provides mutually exclusive
@@ -29,12 +90,18 @@ type Story = StoryObj<typeof meta>;
  * accessible name (here via `aria-label`, or a `Field` label — see below).
  */
 export const Default: Story = {
-  render: () => (
-    <div className="w-72">
-      <RadioGroup aria-label="Plan" defaultValue="pro">
-        <RadioGroupItem value="starter">Starter</RadioGroupItem>
-        <RadioGroupItem value="pro">Pro</RadioGroupItem>
-        <RadioGroupItem value="team">Team</RadioGroupItem>
+  render: ({ orientation, value: _value, ...args }) => (
+    <div className={orientation === 'horizontal' ? 'w-[28rem]' : 'w-72'}>
+      <RadioGroup
+        aria-label="Plan"
+        defaultValue="pro"
+        orientation={orientation}
+      >
+        {plans.map((plan) => (
+          <RadioGroupItem {...args} key={plan.value} value={plan.value}>
+            {plan.label}
+          </RadioGroupItem>
+        ))}
       </RadioGroup>
     </div>
   ),
@@ -46,6 +113,7 @@ export const Default: Story = {
  */
 export const WithDescription: Story = {
   name: 'With description',
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className="w-72">
       <RadioGroup aria-label="Plan" defaultValue="pro">
@@ -74,6 +142,7 @@ export const WithDescription: Story = {
  * wrapping row. The group still owns the single-selection behavior.
  */
 export const Horizontal: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className="w-[28rem]">
       <RadioGroup aria-label="Plan" defaultValue="pro" orientation="horizontal">
@@ -90,6 +159,7 @@ export const Horizontal: Story = {
  * Reach for it when options carry more content or need a larger hit target.
  */
 export const Box: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className="w-72">
       <RadioGroup aria-label="Plan" defaultValue="pro">
@@ -124,6 +194,7 @@ export const Box: Story = {
  * the whole group can be disabled at once.
  */
 export const Disabled: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className="flex flex-col gap-8">
       <div className="flex w-72 flex-col gap-3">
@@ -159,6 +230,7 @@ export const Disabled: Story = {
  */
 export const WithField: Story = {
   name: 'With Field',
+  parameters: { controls: { include: [] } },
   render: () => (
     <Field className="w-80">
       <FieldLabel id="wf-label">Choose a plan</FieldLabel>
@@ -193,6 +265,7 @@ export const WithField: Story = {
  * the radios. The cue clears as soon as the user selects an option.
  */
 export const Invalid: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <Field className="w-80" invalid>
       <FieldLabel id="inv-label">Choose a plan</FieldLabel>

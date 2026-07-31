@@ -49,6 +49,7 @@ export const Default: Story = {
 export const Sizes: Story = {
   name: 'Sizes',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -70,6 +71,7 @@ export const Sizes: Story = {
 export const CustomColor: Story = {
   name: 'Custom color',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -89,6 +91,7 @@ export const CustomColor: Story = {
 export const WithText: Story = {
   name: 'With visible text',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -109,6 +112,7 @@ export const WithText: Story = {
 export const CustomLabel: Story = {
   name: 'Custom accessible label',
   parameters: {
+    controls: { include: ['size', 'label'] },
     docs: {
       description: {
         story:

@@ -146,7 +146,11 @@ const meta = {
       options: ['default', 'ellipsis', 'dropdown'],
       table: { defaultValue: { summary: 'default' } },
     },
-    children: { table: { disable: true } },
+    children: {
+      description:
+        'Composed content — a `BreadcrumbList` of `BreadcrumbItem`s separated by `BreadcrumbSeparator`, ending in a `BreadcrumbPage` for the current route.',
+      control: false,
+    },
     className: { table: { disable: true } },
   },
 } satisfies Meta<BreadcrumbStoryArgs>;
@@ -254,11 +258,7 @@ async function verifyCollapsedMenu(
 
 export const Default: Story = {
   name: 'Default',
-  args: {
-    variant: 'default',
-  },
   parameters: {
-    controls: { include: ['variant'] },
     docs: {
       description: {
         story:
@@ -286,11 +286,8 @@ export const Default: Story = {
 
 export const Ellipsis: Story = {
   name: 'Ellipsis',
-  args: {
-    variant: 'ellipsis',
-  },
   parameters: {
-    controls: { disable: true },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -310,11 +307,8 @@ export const Ellipsis: Story = {
 
 export const Dropdown: Story = {
   name: 'Dropdown',
-  args: {
-    variant: 'dropdown',
-  },
   parameters: {
-    controls: { disable: true },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -335,7 +329,7 @@ export const Dropdown: Story = {
 export const RenderAsLink: Story = {
   name: 'Render as link',
   parameters: {
-    controls: { disable: true },
+    controls: { include: [] },
     docs: {
       description: {
         story:

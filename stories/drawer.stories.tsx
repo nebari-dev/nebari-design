@@ -212,6 +212,7 @@ export const Default: Story = {
 
 export const BottomSheet: Story = {
   name: 'Bottom sheet',
+  parameters: { controls: { include: ['side'] } },
   args: {
     side: 'bottom',
   },
@@ -227,19 +228,13 @@ export const BottomSheet: Story = {
 
 export const LongContent: Story = {
   name: 'Long content',
-  render: ({
-    showCloseButton = true,
-    showSwipeHandle,
-    side = 'right',
-  }: Partial<DrawerStoryArgs>) => (
-    <Drawer {...drawerProps({ showSwipeHandle, side })}>
+  parameters: { controls: { include: [] } },
+  render: () => (
+    <Drawer side="right">
       <DrawerTrigger render={<Button variant="outline" />}>
         Review workspace
       </DrawerTrigger>
-      <DrawerContent
-        className="h-dvh max-h-dvh"
-        showCloseButton={showCloseButton}
-      >
+      <DrawerContent className="h-dvh max-h-dvh" showCloseButton>
         <DrawerHeader>
           <div className="min-w-0 flex-1">
             <DrawerTitle>Workspace review</DrawerTitle>
@@ -296,6 +291,7 @@ export const LongContent: Story = {
 
 export const NestedDrawer: Story = {
   name: 'Multi nested drawer',
+  parameters: { controls: { include: [] } },
   render: () => (
     <Drawer side="right">
       <DrawerTrigger render={<Button variant="outline" />}>

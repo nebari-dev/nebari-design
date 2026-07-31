@@ -52,25 +52,62 @@ const meta = {
     step: 1,
   },
   argTypes: {
-    defaultValue: { control: 'number' },
-    disabled: { control: 'boolean' },
-    getThumbAriaLabel: { table: { disable: true } },
-    getThumbAriaValueText: { table: { disable: true } },
-    max: { control: 'number' },
-    min: { control: 'number' },
-    onValueChange: { table: { disable: true } },
-    onValueCommitted: { table: { disable: true } },
+    defaultValue: {
+      control: 'number',
+      description:
+        'Initial value when the slider is uncontrolled. Pass an array for a range or multi-thumb slider.',
+      table: { defaultValue: { summary: '0' } },
+    },
+    min: {
+      control: 'number',
+      description: 'Lower bound of the range.',
+      table: { defaultValue: { summary: '0' } },
+    },
+    max: {
+      control: 'number',
+      description: 'Upper bound of the range.',
+      table: { defaultValue: { summary: '100' } },
+    },
+    step: {
+      control: 'number',
+      description:
+        'Granularity the value must adhere to. Arrow keys move by one step.',
+      table: { defaultValue: { summary: '1' } },
+    },
+    minStepsBetweenValues: {
+      description:
+        'Minimum number of steps that must separate two thumbs. Only applies to a range or multi-thumb slider, so it is a docs-only row here — the playground is single-thumb. See the `Range` and `Multiple Thumbs` stories.',
+      control: false,
+      table: { defaultValue: { summary: '0' } },
+    },
     orientation: {
       control: 'inline-radio',
+      description:
+        'Track direction. `vertical` fills from the bottom up and needs a fixed-height wrapper.',
       options: ['horizontal', 'vertical'],
       table: { defaultValue: { summary: 'horizontal' } },
     },
     showValueTooltip: {
       control: 'boolean',
+      description:
+        'Shows the current value in a tooltip above the thumb while dragging or focused.',
       table: { defaultValue: { summary: 'true' } },
     },
-    step: { control: 'number' },
-    value: { table: { disable: true } },
+    disabled: {
+      control: 'boolean',
+      description:
+        'Mutes the track and thumb and blocks pointer and keyboard interaction — the value stays readable.',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    getThumbAriaLabel: { table: { disable: true } },
+    getThumbAriaValueText: { table: { disable: true } },
+    onValueChange: { table: { disable: true } },
+    onValueCommitted: { table: { disable: true } },
+    value: {
+      description:
+        'Controlled value. Pair it with `onValueChange`; left as a docs-only row here so the playground stays interactive.',
+      control: false,
+    },
   },
 } satisfies Meta<typeof Slider>;
 
@@ -80,15 +117,22 @@ type Story = StoryObj<typeof meta>;
 
 /** The default slider selects a single value from a bounded range. */
 export const Default: Story = {
+  // `defaultValue` is read once on mount, so key the slider on it to remount
+  // when the control changes.
   render: (args) => (
     <div className={args.orientation === 'vertical' ? 'h-52' : 'w-80'}>
-      <Slider {...args} getThumbAriaLabel={() => 'Resource limit'} />
+      <Slider
+        key={String(args.defaultValue)}
+        {...args}
+        getThumbAriaLabel={() => 'Resource limit'}
+      />
     </div>
   ),
 };
 
 /** Use an array with two values for a range slider. */
 export const Range: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className="w-80">
       <Slider
@@ -105,6 +149,7 @@ export const Range: Story = {
 /** Use an array with more values for multiple thumbs. */
 export const MultipleThumbs: Story = {
   name: 'Multiple Thumbs',
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className="w-80">
       <Slider
@@ -118,6 +163,7 @@ export const MultipleThumbs: Story = {
 
 /** Use `orientation="vertical"` for a vertical slider. */
 export const Vertical: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <Field className="items-center gap-3">
       <FieldLabel>Resource limit</FieldLabel>
@@ -134,11 +180,13 @@ export const Vertical: Story = {
 
 /** Control the slider value when another part of the UI depends on it. */
 export const Controlled: Story = {
+  parameters: { controls: { include: [] } },
   render: () => <ControlledSlider />,
 };
 
 /** Disabled sliders communicate the value without accepting interaction. */
 export const Disabled: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className="w-80">
       <Slider

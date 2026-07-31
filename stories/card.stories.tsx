@@ -55,7 +55,11 @@ const meta = {
       table: { defaultValue: { summary: 'true' } },
     },
     className: { table: { disable: true } },
-    children: { table: { disable: true } },
+    children: {
+      description:
+        'Composed content — `CardHeader` (with `CardTitle`, `CardDescription`, `CardAction`), `CardContent`, and `CardFooter`.',
+      control: false,
+    },
   },
 } satisfies Meta<CardStoryArgs>;
 
@@ -124,6 +128,7 @@ export const Default: Story = {
 
 export const Sizes: Story = {
   name: 'Size',
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className={responsiveTwoCardGridClassName}>
       <Card className={rowCardClassName}>
@@ -164,6 +169,7 @@ export const Sizes: Story = {
 
 export const WithAction: Story = {
   name: 'With action',
+  parameters: { controls: { include: [] } },
   render: () => (
     <Card className={singleCardClassName}>
       <CardHeader>
@@ -197,6 +203,7 @@ export const WithAction: Story = {
 
 export const HeaderExamples: Story = {
   name: 'Header examples',
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className={responsiveThreeCardGridClassName}>
       <Card className={rowCardClassName}>
@@ -230,6 +237,7 @@ export const HeaderExamples: Story = {
 
 export const FooterExamples: Story = {
   name: 'Footer examples',
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className={responsiveThreeCardGridClassName}>
       <Card className={rowCardClassName}>
@@ -273,6 +281,7 @@ export const FooterExamples: Story = {
 
 export const CustomSpacing: Story = {
   name: 'Custom spacing',
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className={responsiveThreeCardGridClassName}>
       {[
@@ -307,6 +316,7 @@ export const CustomSpacing: Story = {
 
 export const EdgeToEdgeContent: Story = {
   name: 'Edge-to-edge content',
+  parameters: { controls: { include: [] } },
   render: () => (
     <Card className={singleCardClassName}>
       <img

@@ -8,10 +8,57 @@ const meta = {
   component: Textarea,
   parameters: { layout: 'centered' },
   args: { placeholder: 'Placeholder text' },
+  argTypes: {
+    placeholder: {
+      description: 'Hint text shown while the textarea is empty.',
+      control: 'text',
+    },
+    defaultValue: {
+      description: 'Initial value when the textarea is uncontrolled.',
+      control: 'text',
+    },
+    value: {
+      description:
+        'Controlled value. Pair it with `onChange`; left as a docs-only row here so the playground stays interactive.',
+      control: false,
+    },
+    rows: {
+      description:
+        'Visible line count. The control also has a `min-h-16` floor, so small values are clamped by the minimum height.',
+      control: { type: 'number', min: 1, max: 12, step: 1 },
+    },
+    disabled: {
+      description:
+        'Dims the textarea to `bg-muted`, blocks pointer events, and disables resizing.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    required: {
+      description:
+        'Marks the textarea as required for native and Base UI `Field` validation.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    readOnly: {
+      description:
+        'Keeps the value focusable and selectable but not editable — still resizeable, unlike `disabled`.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    'aria-invalid': {
+      description:
+        'Renders the invalid state — a 2px `destructive` outline plus a trailing `triangle-alert` icon.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    className: { table: { disable: true } },
+  },
   decorators: [
-    (Story) => (
+    // `defaultValue` is read once on mount, so key the story on it to remount
+    // when the control changes — otherwise the knob would silently do nothing.
+    (Story, { args }) => (
       <div className="w-64">
-        <Story />
+        <Story key={String(args.defaultValue)} />
       </div>
     ),
   ],
@@ -25,10 +72,14 @@ export const Default: Story = {};
 
 export const Filled: Story = {
   args: { defaultValue: 'A short description of this environment.' },
+  parameters: { controls: { include: ['defaultValue'] } },
 };
 
 /** Disabled is dimmed, non-interactive, and cannot be resized. */
-export const Disabled: Story = { args: { disabled: true } };
+export const Disabled: Story = {
+  args: { disabled: true },
+  parameters: { controls: { include: ['disabled'] } },
+};
 
 /**
  * The error state pairs the 2px `destructive` outline with a trailing
@@ -36,6 +87,7 @@ export const Disabled: Story = { args: { disabled: true } };
  * than color alone (WCAG 1.4.1).
  */
 export const WithError: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <Field>
       <FieldLabel>Description</FieldLabel>
@@ -47,6 +99,7 @@ export const WithError: Story = {
 
 /** Composed in a `Field` — rendered as the control so it auto-associates. */
 export const WithField: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <Field>
       <FieldLabel>Description</FieldLabel>

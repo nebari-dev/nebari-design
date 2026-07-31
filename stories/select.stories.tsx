@@ -49,6 +49,7 @@ const timezones = [
 ] satisfies SelectOption[];
 
 type SelectTriggerProps = ComponentProps<typeof SelectTrigger>;
+type SelectContentProps = ComponentProps<typeof SelectContent>;
 
 interface SelectPreviewProps {
   label: string;
@@ -59,6 +60,7 @@ interface SelectPreviewProps {
   helperText?: ReactNode;
   invalid?: boolean;
   contentClassName?: string;
+  contentProps?: Omit<SelectContentProps, 'children'>;
   triggerProps?: Omit<SelectTriggerProps, 'children'>;
 }
 
@@ -79,6 +81,7 @@ function SelectPreview({
   helperText = 'Select one option.',
   invalid = false,
   contentClassName,
+  contentProps,
   triggerProps,
 }: SelectPreviewProps) {
   return (
@@ -93,7 +96,7 @@ function SelectPreview({
             {(value) => findOptionLabel(options, value, placeholder)}
           </SelectValue>
         </SelectTrigger>
-        <SelectContent className={contentClassName}>
+        <SelectContent {...contentProps} className={contentClassName}>
           {children ??
             options.map((option) => (
               <SelectItem
@@ -119,6 +122,14 @@ function SelectPreview({
   );
 }
 
+type SelectStoryArgs = SelectTriggerProps &
+  Pick<
+    SelectContentProps,
+    'align' | 'alignItemWithTrigger' | 'side' | 'sideOffset'
+  > & {
+    invalid?: boolean;
+  };
+
 const meta = {
   title: 'Components/Select',
   component: SelectTrigger,
@@ -131,21 +142,85 @@ const meta = {
       },
     },
   },
-  argTypes: {
-    disabled: { control: 'boolean' },
+  args: {
+    align: 'center',
+    alignItemWithTrigger: false,
+    invalid: false,
+    side: 'bottom',
+    sideOffset: 0,
   },
-} satisfies Meta<typeof SelectTrigger>;
+  argTypes: {
+    disabled: {
+      description:
+        'Disables the trigger — muted fill, no pointer or keyboard interaction, and the popup can no longer be opened.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    invalid: {
+      description:
+        'Story-only toggle. Marks the surrounding `Field` invalid and sets `aria-invalid` on the trigger, swapping the border and ring to `destructive` and the description for a `FieldError`.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    side: {
+      description:
+        'Set on `SelectContent` — which side of the trigger the popup is positioned against.',
+      control: 'select',
+      options: ['top', 'right', 'bottom', 'left'],
+      table: { defaultValue: { summary: 'bottom' } },
+    },
+    align: {
+      description:
+        'Set on `SelectContent` — how the popup aligns along the trigger on the chosen side.',
+      control: 'inline-radio',
+      options: ['start', 'center', 'end'],
+      table: { defaultValue: { summary: 'center' } },
+    },
+    sideOffset: {
+      description:
+        'Set on `SelectContent` — gap in pixels between the trigger and the popup.',
+      control: { type: 'number', min: 0, max: 24, step: 1 },
+      table: { defaultValue: { summary: '0' } },
+    },
+    alignItemWithTrigger: {
+      description:
+        'Set on `SelectContent`. When enabled the popup overlays the trigger so the selected item sits on top of it, instead of opening below.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    children: {
+      description:
+        'Trigger content — a `SelectValue`, whose render prop receives the selected value so it can resolve the matching option label.',
+      control: false,
+    },
+    className: { table: { disable: true } },
+    render: {
+      description:
+        'Base UI render-prop composition. Swap the trigger element while preserving select behavior, styling, and slot attributes.',
+      control: false,
+    },
+  },
+} satisfies Meta<SelectStoryArgs>;
 
 export default meta;
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<SelectStoryArgs>;
 
 export const Default: Story = {
-  render: (args) => (
+  render: ({
+    align,
+    alignItemWithTrigger,
+    invalid,
+    side,
+    sideOffset,
+    ...triggerProps
+  }) => (
     <SelectPreview
+      contentProps={{ align, alignItemWithTrigger, side, sideOffset }}
+      invalid={invalid}
       label="Framework"
       placeholder="Select a framework"
-      triggerProps={args}
+      triggerProps={triggerProps}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -178,6 +253,7 @@ export const Default: Story = {
 };
 
 export const Groups: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <SelectPreview
       label="Deployment target"
@@ -206,6 +282,7 @@ export const Groups: Story = {
 };
 
 export const Scrollable: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <SelectPreview
       contentClassName="max-h-56"
@@ -217,6 +294,7 @@ export const Scrollable: Story = {
 };
 
 export const Disabled: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <SelectPreview
       helperText="This select is unavailable."
@@ -228,6 +306,7 @@ export const Disabled: Story = {
 };
 
 export const Invalid: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <SelectPreview
       helperText="Please select a framework."

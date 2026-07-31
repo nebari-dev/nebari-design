@@ -55,7 +55,11 @@ const meta = {
     className: { table: { disable: true } },
     id: { table: { disable: true } },
     portalProps: { table: { disable: true } },
-    render: { table: { disable: true } },
+    render: {
+      description:
+        'Base UI render-prop composition. Swap the tooltip content element while preserving positioning, styling, and slot attributes.',
+      control: false,
+    },
     role: { table: { disable: true } },
     style: { table: { disable: true } },
   },
@@ -97,6 +101,7 @@ export const Default: Story = {
 };
 
 export const Sides: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className="grid grid-cols-2 items-center justify-items-center gap-6 sm:grid-cols-4">
       <Tooltip>
@@ -145,6 +150,7 @@ export const Sides: Story = {
 
 export const SupplementalInfo: Story = {
   name: 'Supplemental info',
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className="flex items-center gap-2">
       <span className="font-medium text-sm">Workspace settings</span>
@@ -167,6 +173,7 @@ export const SupplementalInfo: Story = {
 
 export const WithShortcut: Story = {
   name: 'With shortcut',
+  parameters: { controls: { include: [] } },
   render: () => (
     <Tooltip>
       <TooltipTrigger
@@ -184,6 +191,7 @@ export const WithShortcut: Story = {
 };
 
 export const Focus: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <Tooltip>
       <TooltipTrigger

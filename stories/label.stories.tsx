@@ -7,6 +7,18 @@ const meta = {
   component: Label,
   parameters: { layout: 'centered' },
   args: { children: 'Label' },
+  argTypes: {
+    children: {
+      description: 'Label text describing the associated control.',
+      control: 'text',
+    },
+    htmlFor: {
+      description:
+        'The `id` of the control this label names. Not needed inside a `Field` — Base UI wires the association through context; use it when pairing a standalone `Label` with an `Input`.',
+      control: 'text',
+    },
+    className: { table: { disable: true } },
+  },
 } satisfies Meta<typeof Label>;
 
 export default meta;
@@ -17,6 +29,7 @@ export const Default: Story = {};
 
 /** Paired with an `Input` via `htmlFor` / `id` for standalone use. */
 export const WithInput: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className="flex w-64 flex-col gap-1.5">
       <Label htmlFor="username">Username</Label>

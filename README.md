@@ -133,6 +133,15 @@ The dev server runs at <http://localhost:6006>. Stories live in the top-level
 `*.stories.tsx`. Storybook uses the same Tailwind v4 setup and `@/*` alias as the
 registry source, so imports resolve the same way they do in tests and builds.
 
+Component stories follow a shared controls pattern. `Default` is the interactive
+playground and exposes the documented knobs; every other story narrows controls
+with `parameters.controls.include`, using `[]` for a fixed showcase. Variant
+args can supply styling or generated-source context without becoming behavioral
+controls. Consumer composition APIs such as Base UI's `render` prop remain
+visible in the props table with `control: false`, while implementation plumbing
+is hidden. The full authoring recipe is in
+`.claude/skills/nebari-component/SKILL.md`.
+
 The preview loads the Nebari theme tokens and webfonts, enables autodocs for
 every component, and includes a toolbar switcher for light and dark themes. The
 custom toolbar is retained instead of adding a second addon switch: its `theme`

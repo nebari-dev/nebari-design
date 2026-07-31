@@ -164,19 +164,24 @@ const meta = {
     caption: {
       control: 'text',
       description:
-        'Optional visible `TableCaption` text. Leave empty to omit the caption.',
-    },
-    empty: {
-      control: 'boolean',
-      description: 'Shows the table empty state instead of data rows.',
-    },
-    showActions: {
-      control: 'boolean',
-      description: 'Adds a copy/delete action column.',
+        'Story-only toggle. Optional visible `TableCaption` text — leave empty to omit the caption.',
+      table: { defaultValue: { summary: '(none)' } },
     },
     showFooter: {
       control: 'boolean',
-      description: 'Adds a summary footer row.',
+      description: 'Story-only toggle. Adds a summary `TableFooter` row.',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    showActions: {
+      control: 'boolean',
+      description: 'Story-only toggle. Adds a copy/delete action column.',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    empty: {
+      control: 'boolean',
+      description:
+        'Story-only toggle. Shows the table empty state instead of data rows.',
+      table: { defaultValue: { summary: 'false' } },
     },
   },
 } satisfies Meta<TableStoryArgs>;
@@ -195,6 +200,7 @@ export const Default: Story = {
 
 export const WithFooter: Story = {
   name: 'With footer',
+  parameters: { controls: { include: ['showFooter'] } },
   args: {
     showFooter: true,
   },
@@ -206,6 +212,7 @@ export const WithFooter: Story = {
 };
 
 export const Actions: Story = {
+  parameters: { controls: { include: ['showActions'] } },
   args: {
     showActions: true,
   },
@@ -218,6 +225,7 @@ export const Actions: Story = {
 
 export const EmptyState: Story = {
   name: 'Empty state',
+  parameters: { controls: { include: ['empty'] } },
   args: {
     empty: true,
   },

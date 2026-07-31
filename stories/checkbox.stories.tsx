@@ -71,18 +71,64 @@ const meta = {
     },
   },
   args: {
-    children: 'Checkbox Text',
+    children: 'Enable automatic updates',
+    defaultChecked: true,
   },
   argTypes: {
     variant: {
-      control: 'select',
+      description:
+        'Field layout. `default` is an inline checkbox; `box` turns the label and description into a bordered, fully clickable card.',
+      control: 'inline-radio',
       options: ['default', 'box'],
       table: { defaultValue: { summary: 'default' } },
     },
-    defaultChecked: { control: 'boolean' },
-    disabled: { control: 'boolean' },
-    indeterminate: { control: 'boolean' },
-    description: { control: 'text' },
+    children: {
+      description: 'The visible and accessible checkbox label.',
+      control: 'text',
+    },
+    description: {
+      description:
+        "Supplementary text beneath the label, exposed as the checkbox's accessible description.",
+      control: 'text',
+    },
+    defaultChecked: {
+      description: 'Initial state when the checkbox is uncontrolled.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    checked: {
+      description:
+        'Controlled state. Pair it with `onCheckedChange`; left as a docs-only row here so the playground stays interactive.',
+      control: false,
+    },
+    indeterminate: {
+      description:
+        'Renders the mixed state (a dash instead of a check) for a partially-selected group of children. Clicking resolves it to checked or unchecked.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    disabled: {
+      description:
+        'Mutes the label and fills the control with `muted`; a checked or indeterminate box keeps a `muted-foreground` fill with a `background`-colored mark. Blocks pointer and keyboard interaction.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    required: {
+      description:
+        'Marks the checkbox as required for Base UI `Field` validation — it must be checked to pass.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    onCheckedChange: {
+      description: 'Called with the next checked state on every toggle.',
+      action: 'checked changed',
+      control: false,
+    },
+    render: {
+      description:
+        'Base UI render-prop composition. Swap the rendered element while preserving checkbox behavior, styling, and slot attributes.',
+      control: false,
+    },
   },
 } satisfies Meta<typeof Checkbox>;
 
@@ -95,9 +141,11 @@ type Story = StoryObj<typeof meta>;
  * are enough context for a single boolean choice.
  */
 export const Default: Story = {
-  render: () => (
+  // `defaultChecked` is read once on mount, so key the checkbox on it to
+  // remount when the control changes.
+  render: (args) => (
     <div className="w-72">
-      <Checkbox defaultChecked>Enable automatic updates</Checkbox>
+      <Checkbox key={String(args.defaultChecked)} {...args} />
     </div>
   ),
 };
@@ -108,6 +156,7 @@ export const Default: Story = {
  */
 export const WithDescription: Story = {
   name: 'With description',
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className="w-72">
       <Checkbox description="Run updates when a newer image is available.">
@@ -122,6 +171,7 @@ export const WithDescription: Story = {
  * checkbox fields in a wrapping row.
  */
 export const Horizontal: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <CheckboxGroup aria-label="Workspace features" orientation="horizontal">
       <Checkbox defaultChecked value="notebooks">
@@ -138,6 +188,7 @@ export const Horizontal: Story = {
  * Reach for it when the choice needs more visual weight or descriptive copy.
  */
 export const Box: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className="w-80">
       <Checkbox
@@ -155,6 +206,7 @@ export const Box: Story = {
  * not accept interaction.
  */
 export const Disabled: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className="flex w-80 flex-col gap-4">
       <Checkbox disabled>Enable usage reporting</Checkbox>
@@ -171,6 +223,7 @@ export const Disabled: Story = {
  */
 export const WithField: Story = {
   name: 'With Field',
+  parameters: { controls: { include: [] } },
   render: () => (
     <Field className="w-80">
       <FieldLabel id="notifications-label">Notifications</FieldLabel>
@@ -193,6 +246,7 @@ export const WithField: Story = {
  * cue. The error clears as soon as the user checks the box.
  */
 export const Invalid: Story = {
+  parameters: { controls: { include: [] } },
   render: () => <InvalidCheckboxExample />,
 };
 
@@ -201,6 +255,7 @@ export const Invalid: Story = {
  * resolves it to a normal checked or unchecked state.
  */
 export const Indeterminate: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className="grid w-[38rem] grid-cols-2 items-start gap-6">
       {variantRows.map((row) => (

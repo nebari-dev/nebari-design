@@ -27,6 +27,13 @@ const meta = {
         'Badge content — text, and optionally a leading/trailing icon.',
       control: 'text',
     },
+    render: {
+      description:
+        'Base UI render-prop composition. Swap the default `<span>` for another element — e.g. `render={<a href="…" />}` — while keeping the badge\'s styling.',
+      control: false,
+      table: { defaultValue: { summary: '<span />' } },
+    },
+    className: { table: { disable: true } },
   },
 } satisfies Meta<typeof Badge>;
 
@@ -48,6 +55,7 @@ export const Default: Story = {
 export const Variants: Story = {
   name: 'Variants',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -79,6 +87,7 @@ export const Variants: Story = {
 export const WithLeadingIcon: Story = {
   name: 'With leading icon',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -107,6 +116,7 @@ export const WithLeadingIcon: Story = {
 export const WithTrailingIcon: Story = {
   name: 'With trailing icon',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -135,6 +145,7 @@ export const WithTrailingIcon: Story = {
 export const AsLink: Story = {
   name: 'Render as link',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:

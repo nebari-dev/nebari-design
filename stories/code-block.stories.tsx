@@ -73,8 +73,8 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Basic: Story = {
-  name: 'Basic',
+export const Default: Story = {
+  name: 'Default',
   parameters: {
     docs: {
       description: {
@@ -94,6 +94,7 @@ export const HorizontalScroll: Story = {
   name: 'Horizontal scroll',
   args: { code: longLineSnippet },
   parameters: {
+    controls: { include: ['code'] },
     docs: {
       description: {
         story:
@@ -112,6 +113,7 @@ export const WithHeader: Story = {
   name: 'With header',
   args: { showCopyButton: false },
   parameters: {
+    controls: { include: ['showCopyButton'] },
     docs: {
       description: {
         story:
@@ -138,6 +140,7 @@ export const WithLineNumbers: Story = {
     showCopyButton: false,
   },
   parameters: {
+    controls: { include: ['code', 'showLineNumbers', 'showCopyButton'] },
     docs: {
       description: {
         story:
@@ -164,6 +167,7 @@ export const MaxLines: Story = {
     showCopyButton: false,
   },
   parameters: {
+    controls: { include: ['code', 'showLineNumbers', 'showCopyButton'] },
     docs: {
       description: {
         story:
@@ -191,6 +195,9 @@ export const Dark: Story = {
     dark: true,
   },
   parameters: {
+    controls: {
+      include: ['code', 'showLineNumbers', 'showCopyButton', 'dark'],
+    },
     docs: {
       description: {
         story:

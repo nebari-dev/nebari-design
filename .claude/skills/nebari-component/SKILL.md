@@ -292,7 +292,62 @@ A component that references motion tokens (`--duration-*`, `--ease-*`,
 
 ## Step 3 — the story
 
-Create `stories/<name>.stories.tsx` (CSF3, one story per meaningful variant):
+Create `stories/<name>.stories.tsx` (CSF3, one story per meaningful variant).
+
+### Controls convention (required)
+
+`Default` is the interactive playground; every other story shows only the props
+it varies. Seven rules, applied by every story under `Components/*`:
+
+1. **Meta declares the full documented prop surface.** Each prop gets a
+   `description`, a `control`, `options` for unions, and `table.defaultValue`
+   when the component has a real default (omit it for props with none, like
+   `children` or `placeholder`). Consumer-facing props that cannot be
+   represented by a knob, especially Base UI's `render` prop, stay visible with
+   `control: false`.
+2. **Depth = own props + key state props.** The component's own props and cva
+   variant keys, plus the inherited Base UI/HTML props a playground needs
+   (`open`/`defaultOpen`, `checked`/`defaultChecked`, `disabled`, `placeholder`,
+   `aria-invalid`, …). Not the whole inherited surface.
+3. **Hide plumbing; document everything else.** Two distinct tools:
+   - `table: { disable: true }` — implementation plumbing and callbacks only:
+     `className`, `style`, `id`, `portalProps`, `viewportClassName`,
+     `overlayClassName`, `validate`, `onValueChange`, and props the component
+     hardcodes (e.g. tooltip's `role`).
+   - `control: false` plus a `description` — consumer APIs that cannot be a
+     knob: Base UI's `render`, `children` when the component is composed from
+     subcomponents (the knob would be meaningless JSX), and controlled-state
+     props (see rule 7). These stay visible in the props table because
+     consumers need them.
+
+   Never use either for per-story narrowing; that always uses
+   `controls.include`.
+4. **`Default` is the playground.** Name it exactly `Default` and give it no
+   prop-fixing per-story `args` (baseline meta `args` are fine) and no
+   `parameters.controls`. Its `render` must thread `args` into the component so
+   every interactive knob is live.
+5. **Every other story sets `parameters.controls.include`**, listing exactly the
+   interactive props it sets in its own `args` — `[]` when it has none. An arg
+   used only to choose generated source or a fixed styling fixture (for example,
+   a showcase's `variant`) may remain in `args` while being omitted from
+   controls; it must not change the story's fixed behavior.
+6. **Composite components use the story-args pattern.** When the knobs span
+   subcomponents (tabs' `variant` lives on `TabsList`, dialog's `defaultOpen` on
+   the root), declare a local `<Name>StoryArgs` type with those props plus any
+   story-only toggles, use `satisfies Meta<NameStoryArgs>`, and label each
+   synthetic knob "Story-only toggle" in its description. See
+   `stories/card.stories.tsx`, `stories/tabs.stories.tsx`.
+7. **No no-op knobs — mind mount-only and controlled props.** Storybook
+   re-renders into a cached React root on an args change; it never remounts. So
+   a mount-only prop (`defaultChecked`, `defaultValue`, `defaultOpen`) exposed
+   as a live control would silently do nothing. Keep the control and key the
+   component on that prop so the knob forces a remount:
+   `<Switch key={String(args.defaultChecked)} {...args} />`. Its controlled
+   counterpart (`checked`, `value`, `open`) gets `control: false` with a
+   "left as a docs-only row here so the playground stays interactive" note —
+   a live controlled knob with no state wiring freezes the component the moment
+   it is touched. Use `control: false`, not `table: { disable: true }`: these
+   are real consumer APIs and belong in the props table.
 
 ```tsx
 import type { Meta, StoryObj } from '@storybook/react-vite';
@@ -301,27 +356,71 @@ import { Button } from '@/ui/button';
 const meta = {
   title: 'Components/Button',
   component: Button,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    docs: { description: { component: 'One paragraph on what it is and when to use it.' } },
+  },
   args: { children: 'Button' },
+  argTypes: {
+    variant: {
+      description: 'Visual style of the button. `link` uses the foreground text color and no fill.',
+      control: 'select',
+      options: ['default', 'destructive', 'outline', 'secondary', 'ghost', 'link'],
+      table: { defaultValue: { summary: 'default' } },
+    },
+    size: {
+      description: 'Height and padding preset. The `icon-*` sizes are square.',
+      control: 'select',
+      options: ['xs', 'sm', 'default', 'lg', 'icon-xs', 'icon-sm', 'icon', 'icon-lg'],
+      table: { defaultValue: { summary: 'default' } },
+    },
+    loading: {
+      description: 'Renders a `Spinner`, sets `aria-busy`, and disables the button.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    children: { description: 'Button content.', control: 'text' },
+    render: {
+      description: 'Base UI render-prop composition for swapping the rendered element.',
+      control: false,
+      table: { defaultValue: { summary: '<button type="button" />' } },
+    },
+    className: { table: { disable: true } },
+  },
 } satisfies Meta<typeof Button>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+// Playground: no own args, no controls param — every prop is a live control.
 export const Default: Story = {};
-export const Secondary: Story = { args: { variant: 'secondary' } };
-export const Outline: Story = { args: { variant: 'outline' } };
-export const Small: Story = { args: { size: 'sm' } };
+
+// Varies one prop through its own args → expose just that prop.
+export const Loading: Story = {
+  args: { loading: true },
+  parameters: { controls: { include: ['loading'] } },
+};
+
+// Pure showcase — the render hardcodes the grid, so no knobs at all.
+export const Variants: Story = {
+  parameters: { controls: { include: [] } },
+  render: (args) => (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button {...args} variant="default">Default</Button>
+      <Button {...args} variant="secondary">Secondary</Button>
+      <Button {...args} variant="ghost">Ghost</Button>
+    </div>
+  ),
+};
 ```
 
-To preview dark mode, wrap a story in `<div className="dark bg-background p-8">`
-(see `stories/Welcome.stories.tsx`).
+To preview dark mode, wrap a story in `<div className="dark bg-background p-8">`.
 
 Where feasible, include a story that exercises the component's interactive or
-animated states — for example a `Playground` story with all props exposed via
-controls, or an `Interactive` story with a `play` function that focuses, hovers,
-or clicks the element. Vitest/jsdom has no layout engine and cannot assert CSS
+animated states — `Default` already covers the all-props-exposed case, so add an
+`Interactive` story with a `play` function that focuses, hovers, or clicks the
+element. Vitest/jsdom has no layout engine and cannot assert CSS
 transitions; Storybook stories are the right place to visually verify motion.
 Add a comment in the test file where CSS transition coverage is intentionally
 absent (e.g. `// CSS transitions are not testable in jsdom; animated states are

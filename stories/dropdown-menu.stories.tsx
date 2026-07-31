@@ -35,10 +35,6 @@ const meta = {
       control: 'text',
       description: 'Visible trigger label.',
     },
-    showExpandIcon: {
-      control: 'boolean',
-      description: 'Shows trailing expand icon on trigger.',
-    },
     variant: {
       control: 'select',
       options: [
@@ -49,7 +45,31 @@ const meta = {
         'ghost',
         'link',
       ],
-      description: 'Trigger visual style variant.',
+      description:
+        'Trigger visual style variant. Every variant other than `default` defers to the matching `Button` variant.',
+      table: { defaultValue: { summary: 'default' } },
+    },
+    showExpandIcon: {
+      control: 'boolean',
+      description:
+        'Shows the trailing chevron expand icon on the trigger, and adds the gap for it.',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    expandIcon: {
+      control: false,
+      description:
+        'Replaces the default `chevrons-up-down` icon shown when `showExpandIcon` is set.',
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Disables the trigger so the menu can no longer be opened.',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    className: { table: { disable: true } },
+    render: {
+      description:
+        'Base UI render-prop composition. Swap the trigger element while preserving its behavior, styling, and slot attributes.',
+      control: false,
     },
   },
 } satisfies Meta<typeof DropdownMenuTrigger>;
@@ -84,6 +104,7 @@ export const Default: Story = {
 };
 
 export const WithCheckboxItems: Story = {
+  parameters: { controls: { include: [] } },
   render: () => {
     const [showLineNumbers, setShowLineNumbers] = useState(true);
     const [wrapLines, setWrapLines] = useState(false);
@@ -116,6 +137,7 @@ export const WithCheckboxItems: Story = {
 };
 
 export const WithSubmenu: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <DropdownMenu>
       <DropdownMenuTrigger>File</DropdownMenuTrigger>
@@ -137,6 +159,7 @@ export const WithSubmenu: Story = {
 };
 
 export const TriggerVariants: Story = {
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className="flex items-center gap-6">
       <DropdownMenu>

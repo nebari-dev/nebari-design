@@ -24,6 +24,19 @@ const meta = {
       options: ['default', 'success', 'warning', 'destructive'],
       table: { defaultValue: { summary: 'default' } },
     },
+    role: {
+      description:
+        'ARIA live-region role. Derived from `variant` — `alert` (assertive) for `warning` and `destructive`, `status` (polite) otherwise — and overridable when the alert is rendered before the user acts.',
+      control: 'select',
+      options: ['status', 'alert'],
+      table: { defaultValue: { summary: 'status | alert (by variant)' } },
+    },
+    children: {
+      description:
+        'Composed content — `AlertTitle` and `AlertDescription`, plus an optional `lucide-react` icon as the first child for the leading-icon layout, and `AlertAction` for a trailing action.',
+      control: false,
+    },
+    className: { table: { disable: true } },
   },
 } satisfies Meta<typeof Alert>;
 
@@ -55,6 +68,7 @@ export const Default: Story = {
 export const Variants: Story = {
   name: 'Variants',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -101,6 +115,7 @@ export const Variants: Story = {
 export const TitleOnly: Story = {
   name: 'Title only',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -119,6 +134,7 @@ export const TitleOnly: Story = {
 export const WithoutIcon: Story = {
   name: 'Without icon',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -139,6 +155,7 @@ export const WithoutIcon: Story = {
 export const WithAction: Story = {
   name: 'With action',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -165,6 +182,7 @@ export const WithAction: Story = {
 export const Dismissible: Story = {
   name: 'Dismissible',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:

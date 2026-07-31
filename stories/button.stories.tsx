@@ -68,6 +68,13 @@ const meta = {
         'Button content — text, and optionally a leading/trailing icon.',
       control: 'text',
     },
+    render: {
+      description:
+        'Base UI render-prop composition. Swap the default `<button type="button">` for another element — e.g. `render={<a href="…" />}` — while keeping the button\'s styling and slot attributes.',
+      control: false,
+      table: { defaultValue: { summary: '<button type="button" />' } },
+    },
+    className: { table: { disable: true } },
   },
 } satisfies Meta<typeof Button>;
 
@@ -89,6 +96,7 @@ export const Default: Story = {
 export const Variants: Story = {
   name: 'Variants',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -123,6 +131,7 @@ export const Variants: Story = {
 export const Sizes: Story = {
   name: 'Sizes',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -151,6 +160,7 @@ export const Sizes: Story = {
 export const IconSizes: Story = {
   name: 'Icon sizes',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -179,6 +189,7 @@ export const IconSizes: Story = {
 export const WithIcon: Story = {
   name: 'With icon',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -207,6 +218,7 @@ export const WithIcon: Story = {
 export const Loading: Story = {
   name: 'Loading',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -243,6 +255,7 @@ export const Loading: Story = {
 export const Disabled: Story = {
   name: 'Disabled',
   parameters: {
+    controls: { include: ['disabled'] },
     docs: {
       description: {
         story:
@@ -256,6 +269,7 @@ export const Disabled: Story = {
 export const AsLink: Story = {
   name: 'Render as link',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:

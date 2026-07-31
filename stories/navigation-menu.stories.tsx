@@ -22,6 +22,47 @@ const meta = {
       },
     },
   },
+  args: {
+    active: false,
+    children: 'Dashboard',
+    disabled: false,
+    href: '/dashboard',
+  },
+  argTypes: {
+    children: {
+      description: 'The link label.',
+      control: 'text',
+    },
+    href: {
+      description:
+        'Destination for the default anchor. Clicks are suppressed while the link is `active` or `disabled`.',
+      control: 'text',
+    },
+    active: {
+      description:
+        'Marks the link as the current page or section, adding the primary underline indicator.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    disabled: {
+      description:
+        'Removes the link from interaction and applies the muted disabled style.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    icon: {
+      description:
+        'Optional icon rendered before the label, or as the only visible content for an icon-only link.',
+      control: false,
+    },
+    className: { table: { disable: true } },
+    render: {
+      description:
+        'Base UI render-prop composition. Swap the default anchor for a router link while preserving navigation styling and slot attributes.',
+      control: false,
+      table: { defaultValue: { summary: '<a href="/" />' } },
+    },
+  },
 } satisfies Meta<typeof NavLink>;
 
 export default meta;
@@ -67,17 +108,14 @@ function NotificationsMenu() {
   );
 }
 
-export const NavItem: Story = {
-  name: 'Nav item',
-  render: () => (
-    <NavLink href="/dashboard" icon={<Home />}>
-      Dashboard
-    </NavLink>
-  ),
+export const Default: Story = {
+  name: 'Default',
+  render: (args) => <NavLink icon={<Home />} {...args} />,
 };
 
 export const SettingsDropdown: Story = {
   name: 'Settings dropdown',
+  parameters: { controls: { include: [] } },
   render: () => <SettingsMenu />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -98,6 +136,7 @@ export const SettingsDropdown: Story = {
 
 export const NavItemVariants: Story = {
   name: 'Nav item variants',
+  parameters: { controls: { include: [] } },
   render: () => (
     <div className="flex flex-wrap items-center gap-2">
       <NavLink href="/default" icon={<Home />}>
@@ -131,14 +170,37 @@ export const CompleteNavbar: CompleteNavbarStory = {
   },
   argTypes: {
     activeItem: {
+      description:
+        'Story-only toggle. Which primary nav item is marked `active`.',
       control: 'select',
       options: ['Dashboard', 'Projects', 'Reports'],
+      table: { defaultValue: { summary: 'Dashboard' } },
     },
-    showAccount: { control: 'boolean' },
-    showNotifications: { control: 'boolean' },
-    showSettings: { control: 'boolean' },
+    showSettings: {
+      description: 'Story-only toggle for the settings dropdown.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'true' } },
+    },
+    showNotifications: {
+      description: 'Story-only toggle for the notifications dropdown.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'true' } },
+    },
+    showAccount: {
+      description: 'Story-only toggle for the account dropdown.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'true' } },
+    },
   },
   parameters: {
+    controls: {
+      include: [
+        'activeItem',
+        'showSettings',
+        'showNotifications',
+        'showAccount',
+      ],
+    },
     layout: 'fullscreen',
   },
   render: ({ activeItem, showAccount, showNotifications, showSettings }) => (
