@@ -51,7 +51,7 @@
     "@vitest/browser": "4.1.10",
     "@vitest/browser-playwright": "4.1.10",
     "@vitest/coverage-v8": "4.1.10",
-    "jsdom": "^29.1.1",
+    "jsdom": "^30.0.1",
     "playwright": "1.61.1",
     "shadcn": "^4.10.0",
     "storybook": "^10.5.0",
