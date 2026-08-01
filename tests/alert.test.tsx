@@ -35,16 +35,13 @@ describe('Alert', () => {
     },
   );
 
-  it(
-    'uses an assertive alert role for warning/destructive and a polite status role otherwise',
-    () => {
-      const { rerender } = render(<Alert variant="success">Polite</Alert>);
-      expect(screen.getByRole('status')).toBeInTheDocument();
+  it('uses an assertive alert role for warning/destructive and a polite status role otherwise', () => {
+    const { rerender } = render(<Alert variant="success">Polite</Alert>);
+    expect(screen.getByRole('status')).toBeInTheDocument();
 
-      rerender(<Alert variant="warning">Assertive</Alert>);
-      expect(screen.getByRole('alert')).toBeInTheDocument();
-    },
-  );
+    rerender(<Alert variant="warning">Assertive</Alert>);
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+  });
 
   it('honors an explicit role override', () => {
     render(
