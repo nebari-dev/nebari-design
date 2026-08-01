@@ -24,21 +24,27 @@ describe('Alert', () => {
     ['success', 'status', 'bg-success', 'text-success-foreground'],
     ['warning', 'alert', 'bg-warning', 'text-warning-foreground'],
     ['destructive', 'alert', 'bg-destructive', 'text-destructive-foreground'],
-  ] as const)('reflects the %s variant as a data attribute and classes', (variant, role, bg, fg) => {
-    render(<Alert variant={variant}>Message</Alert>);
+  ] as const)(
+    'reflects the %s variant as a data attribute and classes',
+    (variant, role, bg, fg) => {
+      render(<Alert variant={variant}>Message</Alert>);
 
-    const alert = screen.getByRole(role);
-    expect(alert).toHaveAttribute('data-variant', variant);
-    expect(alert).toHaveClass(bg, fg);
-  });
+      const alert = screen.getByRole(role);
+      expect(alert).toHaveAttribute('data-variant', variant);
+      expect(alert).toHaveClass(bg, fg);
+    },
+  );
 
-  it('uses an assertive alert role for warning/destructive and a polite status role otherwise', () => {
-    const { rerender } = render(<Alert variant="success">Polite</Alert>);
-    expect(screen.getByRole('status')).toBeInTheDocument();
+  it(
+    'uses an assertive alert role for warning/destructive and a polite status role otherwise',
+    () => {
+      const { rerender } = render(<Alert variant="success">Polite</Alert>);
+      expect(screen.getByRole('status')).toBeInTheDocument();
 
-    rerender(<Alert variant="warning">Assertive</Alert>);
-    expect(screen.getByRole('alert')).toBeInTheDocument();
-  });
+      rerender(<Alert variant="warning">Assertive</Alert>);
+      expect(screen.getByRole('alert')).toBeInTheDocument();
+    },
+  );
 
   it('honors an explicit role override', () => {
     render(
