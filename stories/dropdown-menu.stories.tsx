@@ -105,7 +105,6 @@ export const Default: Story = {
 };
 
 export const WithCheckboxItems: Story = {
-  // The menu items are the subject; the trigger knobs still apply.
   parameters: {
     controls: { include: ['variant', 'showExpandIcon', 'disabled'] },
   },
@@ -165,7 +164,6 @@ export const WithSubmenu: Story = {
 };
 
 export const TriggerVariants: Story = {
-  // Each trigger fixes its own `variant` and `showExpandIcon`.
   parameters: { controls: { include: ['disabled'] } },
   render: ({ disabled }) => (
     <div className="flex items-center gap-6">

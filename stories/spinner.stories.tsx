@@ -14,8 +14,6 @@ const meta = {
     },
   },
   args: {
-    // Both match the component's own defaults, so seeding them only gives the
-    // controls a populated initial state.
     label: 'Loading',
     size: 'default',
   },
@@ -53,7 +51,6 @@ export const Default: Story = {
 
 export const Sizes: Story = {
   parameters: {
-    // Every spinner fixes its own size, and `label` has its own story below.
     controls: { include: [] },
     docs: {
       description: {

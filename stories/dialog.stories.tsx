@@ -15,8 +15,7 @@ import {
   DialogTrigger,
 } from '@/ui/dialog';
 
-// Base UI's `modal` is `boolean | 'trap-focus'`. Storybook args serialize as
-// strings, so the knob is keyed by string and mapped back to the real value.
+// Storybook args serialize as strings, so `boolean | 'trap-focus'` is keyed by string.
 const MODAL_BY_KEY = {
   true: true,
   false: false,
@@ -54,7 +53,6 @@ function DialogRoot({
   );
 }
 
-/** Applies to every story: the root state knobs plus the close button. */
 const dialogControls = [
   'showCloseButton',
   'defaultOpen',
@@ -130,8 +128,7 @@ const meta = {
     overlayClassName: { table: { disable: true } },
   },
   decorators: [
-    // `defaultOpen` is read once on mount, so key the story on it to remount
-    // when the control changes — otherwise the knob would silently do nothing.
+    // `defaultOpen` is mount-only, so the key forces a remount when it changes.
     (Story, { args }) => <Story key={String(args.defaultOpen)} />,
   ],
 } satisfies Meta<DialogStoryArgs>;
@@ -313,7 +310,6 @@ export const DeleteConfirmation: Story = {
 };
 
 export const CustomCloseButton: Story = {
-  // The dialog fixes `showCloseButton={false}` — that is the story.
   parameters: {
     controls: {
       include: dialogControls.filter((prop) => prop !== 'showCloseButton'),

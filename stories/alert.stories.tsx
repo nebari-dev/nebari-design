@@ -14,10 +14,7 @@ type AlertStoryArgs = Omit<AlertProps, 'role'> & {
   role: 'auto' | 'status' | 'alert';
 };
 
-// An unset `role` is the meaningful default — the Alert derives it from
-// `variant` — so the knob models it as an explicit `auto` option. Leaving the
-// arg undefined instead would render a click-to-reveal control and give the
-// story no way back to the derived role.
+// `auto` keeps the derived-from-`variant` role reachable from the knob.
 const ALERT_ROLE_BY_KEY: Record<string, AlertProps['role']> = {
   auto: undefined,
   status: 'status',

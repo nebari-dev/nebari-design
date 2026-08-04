@@ -14,10 +14,7 @@ import {
   DrawerTrigger,
 } from '@/ui/drawer';
 
-// Omitting `showSwipeHandle` is the meaningful default — the drawer shows the
-// handle for bottom drawers and hides it for side drawers — so the knob models
-// that as an explicit `auto` option. An unset arg would render as a
-// click-to-reveal control with no way back to the automatic behavior.
+// `auto` keeps the per-side default (shown for bottom) reachable from the knob.
 const SWIPE_HANDLE_BY_KEY = {
   auto: undefined,
   shown: true,
@@ -30,7 +27,6 @@ type DrawerStoryArgs = {
   side: DrawerSide;
 };
 
-/** Applies to every story: the side plus both chrome toggles. */
 const drawerControls = ['side', 'showCloseButton', 'showSwipeHandle'];
 
 const meta = {
@@ -77,7 +73,6 @@ const meta = {
 
 export default meta;
 
-// `meta` has no `component`, so the story args come from the story-args type.
 type Story = StoryObj<DrawerStoryArgs>;
 
 const LONG_CONTENT_SECTIONS = [

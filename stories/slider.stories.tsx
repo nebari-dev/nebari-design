@@ -118,8 +118,7 @@ const meta = {
     },
   },
   decorators: [
-    // `defaultValue` is read once on mount, so key the story on it to remount
-    // when the control changes — otherwise the knob would silently do nothing.
+    // `defaultValue` is mount-only, so the key forces a remount when it changes.
     (Story, { args }) => <Story key={String(args.defaultValue)} />,
   ],
 } satisfies Meta<typeof Slider>;
@@ -139,8 +138,7 @@ export const Default: Story = {
 
 /** Use an array with two values for a range slider. */
 export const Range: Story = {
-  // `defaultValue` is the array that makes this a range, so it is fixed in the
-  // render rather than exposed as a (single-number) knob.
+  // `defaultValue` is an array here, so the single-number knob drops out.
   parameters: {
     controls: {
       include: ['min', 'max', 'step', 'showValueTooltip', 'disabled'],
@@ -207,7 +205,6 @@ export const Vertical: Story = {
 
 /** Control the slider value when another part of the UI depends on it. */
 export const Controlled: Story = {
-  // The example owns `value`, `min`, `max`, and `step`.
   parameters: { controls: { include: ['showValueTooltip', 'disabled'] } },
   render: ({ disabled, showValueTooltip }) => (
     <ControlledSlider disabled={disabled} showValueTooltip={showValueTooltip} />

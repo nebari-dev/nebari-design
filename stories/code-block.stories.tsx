@@ -95,20 +95,14 @@ export const Default: Story = {
   ),
 };
 
-/**
- * `showCopyButton` governs the *floating* copy button on the root. Any story
- * whose header composes its own `CodeBlockCopyButton` fixes it to `false` in the
- * render — leaving it as a knob would offer to add a second, floating button
- * rather than to hide the one on screen.
- */
+/** Excludes `showCopyButton`: it adds a second, floating button, not hides one. */
 const composedCopyButtonControls = ['code', 'showLineNumbers', 'dark'];
 
 export const HorizontalScroll: Story = {
   name: 'Horizontal scroll',
   args: { code: longLineSnippet },
   parameters: {
-    // Header-less, so the floating copy button is the one on screen and its
-    // knob is live.
+    // Header-less, so the floating copy button is the one on screen.
     controls: {
       include: ['code', 'showCopyButton', 'showLineNumbers', 'dark'],
     },

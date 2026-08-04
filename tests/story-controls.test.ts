@@ -3,29 +3,15 @@ import { describe, expect, it } from 'vitest';
 
 /**
  * Guards the Storybook controls convention documented in
- * `.claude/skills/nebari-component/SKILL.md` Step 3.
+ * `.claude/skills/nebari-component/SKILL.md` Step 3. Storybook's react-docgen
+ * surfaces nothing beyond what a story declares — meta `argTypes` *is* the props
+ * table — so without this test a missing `controls.include` or a typo in an
+ * `include` list fails silently.
  *
- * This matters because Storybook's react-docgen surfaces nothing beyond what a
- * story declares — meta `argTypes` *is* the props table. Without this test, a
- * new prop, a story missing `controls.include`, or a typo in an `include` list
- * all fail silently.
- *
- * Not covered here:
- * - **cva variant drift, and omitted props generally.** `cva()` does not expose
- *   its config at runtime and docgen yields nothing, so there is no source of
- *   truth for "the full prop surface" to diff against. A prop that is simply
- *   never declared cannot be detected. The uncontrolled/controlled pairing
- *   check below closes the one sub-case that has a derivable expectation.
- * - **Whether a render actually *uses* the args it receives.** Arity is
- *   checkable (below); use is not. A render taking `args` and ignoring them
- *   stays a review-time concern.
- * - **Whether an `include` list is the *right* set.** "Applicable to this
- *   story" depends on what the render hardcodes, which is not statically
- *   derivable. The two checks that are derivable — a story's own args must all
- *   be exposed, and an args-consuming render must expose something — are below;
- *   the rest is a review-time judgment.
- * - **Rule 8 (mount-only props keyed to force a remount).** Not detectable
- *   statically; verified by hand in the Storybook UI.
+ * Review-time concerns, not statically derivable: an omitted prop (`cva()` does
+ * not expose its config at runtime, so there is no full prop surface to diff
+ * against), whether a render *uses* the args it takes, whether an `include` list
+ * is the right set, and rule 8's remount keying.
  */
 
 type StoryModule = {
@@ -121,8 +107,7 @@ describe.each(componentStories)('$path', ({ mod }) => {
   });
 
   it('fixes no props in the Default playground args', () => {
-    // Rule 4: baseline meta args are fine, per-story args are not — they would
-    // pin a knob the playground is supposed to leave live.
+    // Baseline meta args are fine; per-story args would pin a live knob.
     const [, story] = stories.find(([name]) => name === 'Default') ?? [];
     expect(Object.keys(story?.args ?? {})).toEqual([]);
   });
@@ -140,11 +125,8 @@ describe.each(componentStories)('$path', ({ mod }) => {
   });
 
   it('seeds every knob whose control would otherwise need a click', () => {
-    // Storybook's BooleanControl/NumberControl/ObjectControl render a "Set …"
-    // button while their value is `undefined`, so an unseeded knob costs a click
-    // before it can be used. Where `undefined` is a meaningful state, the knob
-    // models it as an explicit option (`auto`) rather than staying unset — see
-    // `showSwipeHandle` in drawer and `role` in alert.
+    // Where `undefined` is itself a meaningful state, the knob models it as an
+    // explicit `auto` option — see `showSwipeHandle` in drawer, `role` in alert.
     const argTypes = mod.default?.argTypes ?? {};
     const args = (mod.default?.args ?? {}) as Record<string, unknown>;
 
@@ -159,8 +141,7 @@ describe.each(componentStories)('$path', ({ mod }) => {
   });
 
   it('exposes every prop a story pins in its own args', () => {
-    // A story's own args are what it is demonstrating, so they belong in its
-    // controls — otherwise the reader cannot tell what makes the story different.
+    // Otherwise the reader cannot tell what makes the story different.
     const offenders = stories
       .filter(([name]) => name !== 'Default')
       .flatMap(([name, story]) => {
@@ -179,9 +160,7 @@ describe.each(componentStories)('$path', ({ mod }) => {
   });
 
   it('leaves no args-consuming story without a control', () => {
-    // A render that takes `args` has something live to expose; pairing it with
-    // an empty `include` produces a dead controls panel. A story that genuinely
-    // fixes everything should take no args at all.
+    // A story that genuinely fixes everything should take no args at all.
     const dead = stories
       .filter(([name]) => name !== 'Default')
       .filter(([, story]) => (renderArity(story) ?? 0) > 0)
@@ -223,8 +202,7 @@ describe.each(componentStories)('$path', ({ mod }) => {
   });
 
   it('documents the controlled counterpart of every uncontrolled default', () => {
-    // Rule 8: if `defaultChecked` is a knob, `checked` must at least be a
-    // docs-only row — consumers need to know the controlled prop exists.
+    // Consumers need to know the controlled prop exists.
     const argTypes = mod.default?.argTypes ?? {};
     const missing = Object.keys(argTypes)
       .map((key) => /^default([A-Z]\w*)$/.exec(key))

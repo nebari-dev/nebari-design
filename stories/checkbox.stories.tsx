@@ -136,8 +136,7 @@ const meta = {
     },
   },
   decorators: [
-    // `defaultChecked` is read once on mount, so key the story on it to remount
-    // when the control changes — otherwise the knob would silently do nothing.
+    // `defaultChecked` is mount-only, so the key forces a remount when it changes.
     (Story, { args }) => <Story key={String(args.defaultChecked)} />,
   ],
 } satisfies Meta<typeof Checkbox>;
@@ -180,8 +179,6 @@ export const WithDescription: Story = {
  * checkbox fields in a wrapping row.
  */
 export const Horizontal: Story = {
-  // Each checkbox owns its label and value; the layout and state knobs apply to
-  // the whole group.
   parameters: { controls: { include: ['variant', 'disabled'] } },
   render: ({ disabled, variant }) => (
     <CheckboxGroup aria-label="Workspace features" orientation="horizontal">
@@ -228,8 +225,6 @@ export const Box: Story = {
  */
 export const Disabled: Story = {
   args: { disabled: true },
-  // Each checkbox fixes the variant and checked state it demonstrates; toggle
-  // `disabled` to compare them against their enabled look.
   parameters: { controls: { include: ['disabled'] } },
   render: ({ disabled }) => (
     <div className="flex w-80 flex-col gap-4">
@@ -271,7 +266,6 @@ export const WithField: Story = {
  * cue. The error clears as soon as the user checks the box.
  */
 export const Invalid: Story = {
-  // The example owns `checked`/`required`, so `variant` is the one live knob.
   parameters: { controls: { include: ['variant'] } },
   render: ({ variant }) => (
     <InvalidCheckboxExample variant={variant ?? 'default'} />
@@ -283,8 +277,6 @@ export const Invalid: Story = {
  * resolves it to a normal checked or unchecked state.
  */
 export const Indeterminate: Story = {
-  // Both variants are shown side by side and the example owns `checked` and
-  // `indeterminate`, so nothing is left to adjust.
   parameters: { controls: { include: [] } },
   render: () => (
     <div className="grid w-[38rem] grid-cols-2 items-start gap-6">

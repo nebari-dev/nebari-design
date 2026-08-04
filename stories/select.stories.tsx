@@ -249,8 +249,7 @@ export const Default: Story = {
 };
 
 export const Groups: Story = {
-  // The item composition is the subject; the popup positioning knobs still
-  // apply. `disabled` is left out — it would hide what the story shows.
+  // `disabled` is left out — it would hide what the story shows.
   parameters: {
     controls: {
       include: ['side', 'align', 'sideOffset', 'alignItemWithTrigger'],
@@ -285,8 +284,6 @@ export const Groups: Story = {
 };
 
 export const Scrollable: Story = {
-  // `max-h-56` on the popup is what makes it scroll, so only the positioning
-  // knobs are live here.
   parameters: {
     controls: {
       include: ['side', 'align', 'sideOffset', 'alignItemWithTrigger'],

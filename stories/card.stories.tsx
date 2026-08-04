@@ -128,7 +128,6 @@ export const Default: Story = {
 
 export const Sizes: Story = {
   name: 'Size',
-  // Each card fixes the `size` it demonstrates, so no knob is live here.
   parameters: { controls: { include: [] } },
   render: () => (
     <div className={responsiveTwoCardGridClassName}>
@@ -282,8 +281,7 @@ export const FooterExamples: Story = {
 
 export const CustomSpacing: Story = {
   name: 'Custom spacing',
-  // Each card overrides `--card-spacing` in `className`, which wins over the
-  // value `size` sets — so a `size` knob here would be inert.
+  // `className` overrides `--card-spacing`, so a `size` knob would be inert.
   parameters: { controls: { include: [] } },
   render: () => (
     <div className={responsiveThreeCardGridClassName}>

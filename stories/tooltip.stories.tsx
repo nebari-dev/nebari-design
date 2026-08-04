@@ -87,10 +87,6 @@ type Story = StoryObj<typeof meta>;
 
 const triggerButtonClassName = 'min-w-24 leading-none';
 
-/**
- * Every story below fixes its own tooltip text, so `children` drops out of the
- * controls while the whole positioning surface stays live.
- */
 const positioningControls = [
   'side',
   'align',
@@ -113,7 +109,6 @@ export const Default: Story = {
 };
 
 export const Sides: Story = {
-  // Each tooltip fixes its own `side`.
   parameters: {
     controls: {
       include: positioningControls.filter((prop) => prop !== 'side'),

@@ -53,8 +53,7 @@ const meta = {
     },
   },
   args: {
-    // Required `RadioGroupItem` prop. The playground overrides it per option, so
-    // it only satisfies the story arg types.
+    // Required prop; each option overrides it, so this only satisfies the types.
     value: 'option',
     disabled: false,
     orientation: 'vertical',
@@ -140,8 +139,7 @@ export const Default: Story = {
  */
 export const WithDescription: Story = {
   name: 'With description',
-  // Each option carries its own description text, so the `description` knob is
-  // not applicable here — the layout and state knobs are.
+  // Each option carries its own description text, so that knob drops out.
   parameters: { controls: { include: ['variant', 'disabled', 'readOnly'] } },
   render: ({ disabled, readOnly, variant }) => (
     <div className="w-72">
@@ -205,8 +203,6 @@ export const Box: Story = {
  * the whole group can be disabled at once.
  */
 export const Disabled: Story = {
-  // Both groups fix which options are disabled — that contrast is the point —
-  // so `variant` is the knob left to vary.
   parameters: { controls: { include: ['variant'] } },
   render: ({ variant }) => (
     <div className="flex flex-col gap-8">
@@ -277,8 +273,6 @@ export const WithField: Story = {
  * the radios. The cue clears as soon as the user selects an option.
  */
 export const Invalid: Story = {
-  // The field owns `invalid` and the group owns `required`; `variant` is the
-  // one knob that still applies.
   parameters: { controls: { include: ['variant'] } },
   render: ({ variant }) => (
     <Field className="w-80" invalid>

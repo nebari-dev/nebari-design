@@ -100,7 +100,6 @@ export const Default: Story = {
 
 export const Variants: Story = {
   parameters: {
-    // The grid fixes `variant` and each label; the remaining axes stay live.
     controls: { include: ['size', 'loading', 'disabled'] },
     docs: {
       description: {
@@ -194,7 +193,6 @@ export const IconSizes: Story = {
 export const WithIcon: Story = {
   name: 'With icon',
   parameters: {
-    // Each button fixes its own `variant` and label to show icon placement.
     controls: { include: ['size', 'loading', 'disabled'] },
     docs: {
       description: {
@@ -224,9 +222,7 @@ export const WithIcon: Story = {
 export const Loading: Story = {
   args: { loading: true },
   parameters: {
-    // `loading` is the subject and stays live — toggle it off to compare each
-    // button against its resting state. The last button fixes `size` to show
-    // the icon-only collapse, so `size` is not a knob here.
+    // The last button fixes `size` to show the icon-only collapse.
     controls: { include: ['loading', 'variant', 'disabled'] },
     docs: {
       description: {

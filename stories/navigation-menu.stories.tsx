@@ -114,8 +114,6 @@ export const Default: Story = {
 
 export const SettingsDropdown: Story = {
   name: 'Settings dropdown',
-  // This story shows `NavDropdownMenu`, not `NavLink`, so none of the meta
-  // knobs reach it.
   parameters: { controls: { include: [] } },
   render: () => <SettingsMenu />,
   play: async ({ canvasElement }) => {
@@ -137,7 +135,6 @@ export const SettingsDropdown: Story = {
 
 export const NavItemVariants: Story = {
   name: 'Nav item variants',
-  // Each item fixes the state it demonstrates, plus its own label and href.
   parameters: { controls: { include: [] } },
   render: () => (
     <div className="flex flex-wrap items-center gap-2">

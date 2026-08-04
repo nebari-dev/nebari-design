@@ -53,8 +53,6 @@ export const Default: Story = {
 
 export const Variants: Story = {
   parameters: {
-    // Every badge fixes both its `variant` and its label, so no knob is live
-    // here — use `Default` to play with a single badge.
     controls: { include: [] },
     docs: {
       description: {
@@ -77,8 +75,6 @@ export const Variants: Story = {
 export const WithLeadingIcon: Story = {
   name: 'With leading icon',
   parameters: {
-    // Each badge fixes the `variant` that carries its status meaning, and its
-    // own label, so no knob is live here.
     controls: { include: [] },
     docs: {
       description: {
@@ -108,7 +104,6 @@ export const WithLeadingIcon: Story = {
 export const WithTrailingIcon: Story = {
   name: 'With trailing icon',
   parameters: {
-    // Each badge fixes its own `variant` and label, so no knob is live here.
     controls: { include: [] },
     docs: {
       description: {

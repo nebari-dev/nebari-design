@@ -53,8 +53,7 @@ const meta = {
     },
   },
   decorators: [
-    // `defaultChecked` is read once on mount, so key the story on it to remount
-    // when the control changes — otherwise the knob would silently do nothing.
+    // `defaultChecked` is mount-only, so the key forces a remount when it changes.
     (Story, { args }) => <Story key={String(args.defaultChecked)} />,
   ],
 } satisfies Meta<typeof Switch>;

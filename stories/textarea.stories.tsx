@@ -13,7 +13,6 @@ const meta = {
     placeholder: 'Placeholder text',
     readOnly: false,
     required: false,
-    // Matches the browser default, so the seeded knob is behavior-neutral.
     rows: 2,
   },
   argTypes: {
@@ -62,8 +61,7 @@ const meta = {
     className: { table: { disable: true } },
   },
   decorators: [
-    // `defaultValue` is read once on mount, so key the story on it to remount
-    // when the control changes — otherwise the knob would silently do nothing.
+    // `defaultValue` is mount-only, so the key forces a remount when it changes.
     (Story, { args }) => (
       <div className="w-64">
         <Story key={String(args.defaultValue)} />
