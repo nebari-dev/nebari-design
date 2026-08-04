@@ -2,10 +2,8 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { CheckIcon, CopyIcon } from 'lucide-react';
 import type * as React from 'react';
 import {
-  Children,
   createContext,
   Fragment,
-  isValidElement,
   useCallback,
   useContext,
   useState,
@@ -23,12 +21,6 @@ interface CodeBlockContextValue {
    * a narrow, header-less block.
    */
   hasFloatingCopyButton: boolean;
-  /**
-   * Whether the header renders the copy button in its trailing slot. One
-   * `showCopyButton` governs both placements, so the knob always controls the
-   * button the reader can actually see.
-   */
-  showHeaderCopyButton: boolean;
 }
 
 const CodeBlockContext = createContext<CodeBlockContextValue | null>(null);
@@ -47,11 +39,9 @@ type CodeBlockProps = React.ComponentProps<'div'> & {
   /** Render a non-selectable, aria-hidden line-number gutter in the body. */
   showLineNumbers?: boolean;
   /**
-   * Render the block's copy button. It sits at the end of the
-   * {@link CodeBlockHeader} when there is one, and floats over the top-right of
-   * the body otherwise, so a bare block still offers copy. Set to `false` to
-   * drop it entirely — or when placing a {@link CodeBlockCopyButton} yourself,
-   * so the block doesn't render a second one.
+   * Render a floating copy button in the top-right corner. On by default so a
+   * bare block still offers copy. Set to `false` when composing your own
+   * {@link CodeBlockCopyButton} inside a {@link CodeBlockHeader}, to avoid two.
    */
   showCopyButton?: boolean;
   /**
@@ -63,37 +53,11 @@ type CodeBlockProps = React.ComponentProps<'div'> & {
 };
 
 /**
- * Does this subtree contain a {@link CodeBlockHeader}? The root renders before
- * its children, so it cannot be told by the header — it inspects the children it
- * was handed. Fragments are searched too, so `<><Header /><Body /></>` counts;
- * a header hidden inside another component does not, which is why
- * {@link CodeBlockHeader} is documented as a direct child.
- */
-function includesHeader(children: React.ReactNode): boolean {
-  return Children.toArray(children).some((child) => {
-    if (!isValidElement(child)) {
-      return false;
-    }
-
-    if (child.type === CodeBlockHeader) {
-      return true;
-    }
-
-    return (
-      child.type === Fragment &&
-      includesHeader((child.props as { children?: React.ReactNode }).children)
-    );
-  });
-}
-
-/**
  * CodeBlock frames a formatted, monospaced snippet. It shares the snippet with
  * its descendants via context, so {@link CodeBlockBody} and
  * {@link CodeBlockCopyButton} read the text without it being re-threaded.
- * Compose it with an optional {@link CodeBlockHeader} (language/filename label)
- * and a {@link CodeBlockBody}; the copy button comes from `showCopyButton`,
- * which places it in the header when there is one and floats it over the body
- * otherwise.
+ * Compose it with an optional {@link CodeBlockHeader} (language/filename label),
+ * a {@link CodeBlockBody}, and a {@link CodeBlockCopyButton}.
  *
  * Syntax highlighting is intentionally out of scope — the body renders plain
  * monospaced text.
@@ -107,19 +71,9 @@ function CodeBlock({
   children,
   ...props
 }: CodeBlockProps) {
-  // A header bar is the natural home for the copy button, so the block only
-  // floats one over the body when there is no header to put it in. Either way
-  // there is exactly one, and `showCopyButton` controls it.
-  const showFloatingCopyButton = showCopyButton && !includesHeader(children);
-
   return (
     <CodeBlockContext.Provider
-      value={{
-        code,
-        showLineNumbers,
-        hasFloatingCopyButton: showFloatingCopyButton,
-        showHeaderCopyButton: showCopyButton,
-      }}
+      value={{ code, showLineNumbers, hasFloatingCopyButton: showCopyButton }}
     >
       <div
         data-slot="code-block"
@@ -143,7 +97,7 @@ function CodeBlock({
         )}
         {...props}
       >
-        {showFloatingCopyButton ? <CodeBlockCopyButton floating /> : null}
+        {showCopyButton ? <CodeBlockCopyButton floating /> : null}
         {children}
       </div>
     </CodeBlockContext.Provider>
@@ -151,18 +105,10 @@ function CodeBlock({
 }
 
 /**
- * Header bar for a {@link CodeBlock}, holding a language/filename label. It also
- * renders the block's {@link CodeBlockCopyButton} in its trailing slot unless the
- * root sets `showCopyButton={false}` — so the copy affordance follows the header
- * rather than floating over the code.
+ * Header bar for a {@link CodeBlock}, typically holding a language/filename
+ * label and a {@link CodeBlockCopyButton}.
  */
-function CodeBlockHeader({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<'div'>) {
-  const { showHeaderCopyButton } = useCodeBlockContext('CodeBlockHeader');
-
+function CodeBlockHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="code-block-header"
@@ -171,10 +117,7 @@ function CodeBlockHeader({
         className,
       )}
       {...props}
-    >
-      {children}
-      {showHeaderCopyButton ? <CodeBlockCopyButton /> : null}
-    </div>
+    />
   );
 }
 

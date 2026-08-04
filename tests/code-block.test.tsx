@@ -152,51 +152,6 @@ describe('CodeBlock', () => {
     expect(header).toHaveAttribute('data-slot', 'code-block-header');
   });
 
-  it('puts the copy button in the header instead of floating it', () => {
-    render(
-      <CodeBlock code={snippet}>
-        <CodeBlockHeader>script.ts</CodeBlockHeader>
-        <CodeBlockBody />
-      </CodeBlock>,
-    );
-
-    const header = screen.getByText('script.ts');
-    const button = screen.getByRole('button', { name: 'Copy code' });
-    expect(header).toContainElement(button);
-    // A header bar is the copy button's home, so the root does not also float
-    // one over the body — that is what produced two buttons.
-    expect(button).not.toHaveAttribute('data-floating');
-    expect(screen.getAllByRole('button')).toHaveLength(1);
-  });
-
-  it('finds a header nested in a fragment', () => {
-    render(
-      <CodeBlock code={snippet}>
-        {/* biome-ignore lint/complexity/noUselessFragments: the fragment is the case under test */}
-        <>
-          <CodeBlockHeader>script.ts</CodeBlockHeader>
-          <CodeBlockBody />
-        </>
-      </CodeBlock>,
-    );
-
-    expect(screen.getAllByRole('button')).toHaveLength(1);
-    expect(
-      screen.getByRole('button', { name: 'Copy code' }),
-    ).not.toHaveAttribute('data-floating');
-  });
-
-  it('omits the header copy button when showCopyButton is false', () => {
-    render(
-      <CodeBlock code={snippet} showCopyButton={false}>
-        <CodeBlockHeader>script.ts</CodeBlockHeader>
-        <CodeBlockBody />
-      </CodeBlock>,
-    );
-
-    expect(screen.queryByRole('button')).not.toBeInTheDocument();
-  });
-
   it('renders an aria-hidden, non-selectable line-number gutter when showLineNumbers is set', () => {
     render(
       <CodeBlock code={snippet} showLineNumbers>
@@ -253,8 +208,10 @@ describe('CodeBlock', () => {
     mockClipboard(writeText);
 
     render(
-      <CodeBlock code={snippet}>
-        <CodeBlockHeader>script.ts</CodeBlockHeader>
+      <CodeBlock code={snippet} showCopyButton={false}>
+        <CodeBlockHeader>
+          <CodeBlockCopyButton />
+        </CodeBlockHeader>
         <CodeBlockBody />
       </CodeBlock>,
     );
@@ -274,8 +231,6 @@ describe('CodeBlock', () => {
     const writeText = vi.fn().mockRejectedValue(new Error('denied'));
     mockClipboard(writeText);
 
-    // `showCopyButton={false}` plus a hand-placed button is the escape hatch for
-    // custom placement — the block renders none of its own.
     render(
       <CodeBlock code={snippet} showCopyButton={false}>
         <CodeBlockCopyButton />
@@ -385,9 +340,6 @@ describe('CodeBlock', () => {
   it('throws when a slot is used outside CodeBlock', () => {
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
     expect(() => render(<CodeBlockBody />)).toThrow(
-      /must be used within a <CodeBlock>/,
-    );
-    expect(() => render(<CodeBlockHeader />)).toThrow(
       /must be used within a <CodeBlock>/,
     );
     spy.mockRestore();
