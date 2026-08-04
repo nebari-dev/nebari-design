@@ -6,7 +6,14 @@ const meta = {
   title: 'Components/Input',
   component: Input,
   parameters: { layout: 'centered' },
-  args: { placeholder: 'Placeholder text' },
+  args: {
+    'aria-invalid': false,
+    disabled: false,
+    placeholder: 'Placeholder text',
+    readOnly: false,
+    required: false,
+    type: 'text',
+  },
   argTypes: {
     placeholder: {
       description: 'Hint text shown while the input is empty.',
@@ -72,12 +79,12 @@ export const Default: Story = {};
 
 export const Filled: Story = {
   args: { defaultValue: 'you@nebari.dev' },
-  parameters: { controls: { include: ['defaultValue'] } },
+  parameters: { controls: { include: ['defaultValue', 'type'] } },
 };
 
 export const Disabled: Story = {
   args: { disabled: true },
-  parameters: { controls: { include: ['disabled'] } },
+  parameters: { controls: { include: ['disabled', 'defaultValue'] } },
 };
 
 /**
@@ -86,11 +93,12 @@ export const Disabled: Story = {
  * than color alone (WCAG 1.4.1).
  */
 export const WithError: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  args: { 'aria-invalid': true, defaultValue: 'invalid@email' },
+  parameters: { controls: { include: ['aria-invalid', 'defaultValue'] } },
+  render: (args) => (
     <Field>
       <FieldLabel>Email</FieldLabel>
-      <Input defaultValue="invalid@email" aria-invalid />
+      <Input {...args} />
       <FieldError match>Enter a valid email address.</FieldError>
     </Field>
   ),
@@ -98,11 +106,14 @@ export const WithError: Story = {
 
 /** Composed in a `Field` — label, description, and control auto-associate. */
 export const WithField: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  args: { placeholder: 'you@nebari.dev' },
+  parameters: {
+    controls: { include: ['placeholder', 'disabled', 'required'] },
+  },
+  render: (args) => (
     <Field>
       <FieldLabel>Email</FieldLabel>
-      <Input placeholder="you@nebari.dev" />
+      <Input {...args} />
       <FieldDescription>We'll never share your email.</FieldDescription>
     </Field>
   ),

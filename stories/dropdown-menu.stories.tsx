@@ -27,6 +27,7 @@ const meta = {
   },
   args: {
     children: 'Open',
+    disabled: false,
     showExpandIcon: false,
     variant: 'default',
   },
@@ -104,14 +105,17 @@ export const Default: Story = {
 };
 
 export const WithCheckboxItems: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => {
+  // The menu items are the subject; the trigger knobs still apply.
+  parameters: {
+    controls: { include: ['variant', 'showExpandIcon', 'disabled'] },
+  },
+  render: ({ children: _children, ...args }) => {
     const [showLineNumbers, setShowLineNumbers] = useState(true);
     const [wrapLines, setWrapLines] = useState(false);
 
     return (
       <DropdownMenu>
-        <DropdownMenuTrigger>Options</DropdownMenuTrigger>
+        <DropdownMenuTrigger {...args}>Options</DropdownMenuTrigger>
         <DropdownMenuPortal>
           <DropdownMenuContent>
             <DropdownMenuGroup>
@@ -137,10 +141,12 @@ export const WithCheckboxItems: Story = {
 };
 
 export const WithSubmenu: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  parameters: {
+    controls: { include: ['variant', 'showExpandIcon', 'disabled'] },
+  },
+  render: ({ children: _children, ...args }) => (
     <DropdownMenu>
-      <DropdownMenuTrigger>File</DropdownMenuTrigger>
+      <DropdownMenuTrigger {...args}>File</DropdownMenuTrigger>
       <DropdownMenuPortal>
         <DropdownMenuContent>
           <DropdownMenuItem>New file</DropdownMenuItem>
@@ -159,11 +165,14 @@ export const WithSubmenu: Story = {
 };
 
 export const TriggerVariants: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  // Each trigger fixes its own `variant` and `showExpandIcon`.
+  parameters: { controls: { include: ['disabled'] } },
+  render: ({ disabled }) => (
     <div className="flex items-center gap-6">
       <DropdownMenu>
-        <DropdownMenuTrigger showExpandIcon>Open</DropdownMenuTrigger>
+        <DropdownMenuTrigger disabled={disabled} showExpandIcon>
+          Open
+        </DropdownMenuTrigger>
         <DropdownMenuPortal>
           <DropdownMenuContent>
             <DropdownMenuItem>Dropdown Menu Item Text</DropdownMenuItem>
@@ -172,7 +181,7 @@ export const TriggerVariants: Story = {
       </DropdownMenu>
 
       <DropdownMenu>
-        <DropdownMenuTrigger showExpandIcon variant="ghost">
+        <DropdownMenuTrigger disabled={disabled} showExpandIcon variant="ghost">
           Open
         </DropdownMenuTrigger>
         <DropdownMenuPortal>

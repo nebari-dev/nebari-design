@@ -182,8 +182,9 @@ export const Default: Story = {
 
 export const Underline: Story = {
   name: 'Underline',
+  args: { variant: 'underline' },
   parameters: {
-    controls: { include: [] },
+    controls: { include: ['variant', 'icons', 'disabled'] },
     docs: {
       description: {
         story:
@@ -191,13 +192,14 @@ export const Underline: Story = {
       },
     },
   },
-  render: () => <ExampleTabs variant="underline" />,
+  render: (args) => <ExampleTabs key={String(args.defaultValue)} {...args} />,
 };
 
 export const Vertical: Story = {
   name: 'Vertical',
+  args: { orientation: 'vertical' },
   parameters: {
-    controls: { include: [] },
+    controls: { include: ['orientation', 'variant', 'icons'] },
     docs: {
       description: {
         story:
@@ -205,13 +207,14 @@ export const Vertical: Story = {
       },
     },
   },
-  render: () => <ExampleTabs orientation="vertical" variant="pill" />,
+  render: (args) => <ExampleTabs key={String(args.defaultValue)} {...args} />,
 };
 
 export const Disabled: Story = {
   name: 'Disabled',
+  args: { disabled: true },
   parameters: {
-    controls: { include: [] },
+    controls: { include: ['disabled', 'variant'] },
     docs: {
       description: {
         story:
@@ -219,13 +222,14 @@ export const Disabled: Story = {
       },
     },
   },
-  render: () => <ExampleTabs disabled variant="pill" />,
+  render: (args) => <ExampleTabs key={String(args.defaultValue)} {...args} />,
 };
 
 export const Icons: Story = {
   name: 'Icons',
+  args: { icons: true },
   parameters: {
-    controls: { include: [] },
+    controls: { include: ['icons', 'variant'] },
     docs: {
       description: {
         story:
@@ -233,5 +237,5 @@ export const Icons: Story = {
       },
     },
   },
-  render: () => <ExampleTabs icons variant="pill" />,
+  render: (args) => <ExampleTabs key={String(args.defaultValue)} {...args} />,
 };

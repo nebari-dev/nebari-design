@@ -7,7 +7,15 @@ const meta = {
   title: 'Components/Textarea',
   component: Textarea,
   parameters: { layout: 'centered' },
-  args: { placeholder: 'Placeholder text' },
+  args: {
+    'aria-invalid': false,
+    disabled: false,
+    placeholder: 'Placeholder text',
+    readOnly: false,
+    required: false,
+    // Matches the browser default, so the seeded knob is behavior-neutral.
+    rows: 2,
+  },
   argTypes: {
     placeholder: {
       description: 'Hint text shown while the textarea is empty.',
@@ -72,13 +80,13 @@ export const Default: Story = {};
 
 export const Filled: Story = {
   args: { defaultValue: 'A short description of this environment.' },
-  parameters: { controls: { include: ['defaultValue'] } },
+  parameters: { controls: { include: ['defaultValue', 'rows'] } },
 };
 
 /** Disabled is dimmed, non-interactive, and cannot be resized. */
 export const Disabled: Story = {
   args: { disabled: true },
-  parameters: { controls: { include: ['disabled'] } },
+  parameters: { controls: { include: ['disabled', 'defaultValue'] } },
 };
 
 /**
@@ -87,11 +95,12 @@ export const Disabled: Story = {
  * than color alone (WCAG 1.4.1).
  */
 export const WithError: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  args: { 'aria-invalid': true },
+  parameters: { controls: { include: ['aria-invalid', 'rows'] } },
+  render: (args) => (
     <Field>
       <FieldLabel>Description</FieldLabel>
-      <FieldPrimitive.Control render={<Textarea aria-invalid />} />
+      <FieldPrimitive.Control render={<Textarea {...args} />} />
       <FieldError match>This field is required.</FieldError>
     </Field>
   ),
@@ -99,11 +108,14 @@ export const WithError: Story = {
 
 /** Composed in a `Field` — rendered as the control so it auto-associates. */
 export const WithField: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  args: { placeholder: 'Describe this environment…' },
+  parameters: {
+    controls: { include: ['placeholder', 'rows', 'disabled', 'required'] },
+  },
+  render: (args) => (
     <Field>
       <FieldLabel>Description</FieldLabel>
-      <FieldPrimitive.Control render={<Textarea />} />
+      <FieldPrimitive.Control render={<Textarea {...args} />} />
       <FieldDescription>Markdown is supported.</FieldDescription>
     </Field>
   ),

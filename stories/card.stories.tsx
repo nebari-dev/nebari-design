@@ -128,6 +128,7 @@ export const Default: Story = {
 
 export const Sizes: Story = {
   name: 'Size',
+  // Each card fixes the `size` it demonstrates, so no knob is live here.
   parameters: { controls: { include: [] } },
   render: () => (
     <div className={responsiveTwoCardGridClassName}>
@@ -169,9 +170,9 @@ export const Sizes: Story = {
 
 export const WithAction: Story = {
   name: 'With action',
-  parameters: { controls: { include: [] } },
-  render: () => (
-    <Card className={singleCardClassName}>
+  parameters: { controls: { include: ['size'] } },
+  render: ({ showFooter: _showFooter, showHeader: _showHeader, ...args }) => (
+    <Card {...args} className={singleCardClassName}>
       <CardHeader>
         <CardTitle>Environment status</CardTitle>
         <CardDescription>nebari-default-env is ready.</CardDescription>
@@ -203,21 +204,21 @@ export const WithAction: Story = {
 
 export const HeaderExamples: Story = {
   name: 'Header examples',
-  parameters: { controls: { include: [] } },
-  render: () => (
+  parameters: { controls: { include: ['size'] } },
+  render: ({ showFooter: _showFooter, showHeader: _showHeader, ...args }) => (
     <div className={responsiveThreeCardGridClassName}>
-      <Card className={rowCardClassName}>
+      <Card {...args} className={rowCardClassName}>
         <CardHeader>
           <CardTitle>Title only</CardTitle>
         </CardHeader>
       </Card>
-      <Card className={rowCardClassName}>
+      <Card {...args} className={rowCardClassName}>
         <CardHeader>
           <CardTitle>With description</CardTitle>
           <CardDescription>Use supporting copy for context.</CardDescription>
         </CardHeader>
       </Card>
-      <Card className={rowCardClassName}>
+      <Card {...args} className={rowCardClassName}>
         <CardHeader className="border-b">
           <CardTitle>With action</CardTitle>
           <CardDescription>Action aligns to the top-right.</CardDescription>
@@ -237,10 +238,10 @@ export const HeaderExamples: Story = {
 
 export const FooterExamples: Story = {
   name: 'Footer examples',
-  parameters: { controls: { include: [] } },
-  render: () => (
+  parameters: { controls: { include: ['size'] } },
+  render: ({ showFooter: _showFooter, showHeader: _showHeader, ...args }) => (
     <div className={responsiveThreeCardGridClassName}>
-      <Card className={rowCardClassName}>
+      <Card {...args} className={rowCardClassName}>
         <CardHeader>
           <CardTitle>Single action</CardTitle>
           <CardDescription>Primary command aligned left.</CardDescription>
@@ -249,7 +250,7 @@ export const FooterExamples: Story = {
           <Button size="sm">Create</Button>
         </CardFooter>
       </Card>
-      <Card className={rowCardClassName}>
+      <Card {...args} className={rowCardClassName}>
         <CardHeader>
           <CardTitle>Action pair</CardTitle>
           <CardDescription>Cancel and confirm side by side.</CardDescription>
@@ -261,7 +262,7 @@ export const FooterExamples: Story = {
           <Button size="sm">Confirm</Button>
         </CardFooter>
       </Card>
-      <Card className={rowCardClassName}>
+      <Card {...args} className={rowCardClassName}>
         <CardHeader>
           <CardTitle>Separated footer</CardTitle>
           <CardDescription>
@@ -281,6 +282,8 @@ export const FooterExamples: Story = {
 
 export const CustomSpacing: Story = {
   name: 'Custom spacing',
+  // Each card overrides `--card-spacing` in `className`, which wins over the
+  // value `size` sets — so a `size` knob here would be inert.
   parameters: { controls: { include: [] } },
   render: () => (
     <div className={responsiveThreeCardGridClassName}>
@@ -316,9 +319,9 @@ export const CustomSpacing: Story = {
 
 export const EdgeToEdgeContent: Story = {
   name: 'Edge-to-edge content',
-  parameters: { controls: { include: [] } },
-  render: () => (
-    <Card className={singleCardClassName}>
+  parameters: { controls: { include: ['size'] } },
+  render: ({ showFooter: _showFooter, showHeader: _showHeader, ...args }) => (
+    <Card {...args} className={singleCardClassName}>
       <img
         alt=""
         className="aspect-video w-full bg-secondary object-cover"

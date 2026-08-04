@@ -6,6 +6,7 @@ const meta = {
   title: 'Components/Field',
   component: Field,
   parameters: { layout: 'centered' },
+  args: { disabled: false, invalid: false },
   argTypes: {
     name: {
       description:
@@ -56,9 +57,12 @@ export const Default: Story = {
 
 /** Inline layout — label and description on the left, control on the right. */
 export const Inline: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
-    <Field className="w-64 flex-row items-start justify-between gap-4">
+  parameters: { controls: { include: ['disabled', 'invalid'] } },
+  render: (args) => (
+    <Field
+      {...args}
+      className="w-64 flex-row items-start justify-between gap-4"
+    >
       <div className="flex flex-col gap-0.5">
         <FieldLabel>Enable copy</FieldLabel>
         <FieldDescription>

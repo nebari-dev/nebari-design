@@ -1,10 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import {
-  CodeBlock,
-  CodeBlockBody,
-  CodeBlockCopyButton,
-  CodeBlockHeader,
-} from '@/ui/code-block';
+import { CodeBlock, CodeBlockBody, CodeBlockHeader } from '@/ui/code-block';
 
 const basicSnippet = `pnpm dlx shadcn@latest add @nebari/code-block`;
 
@@ -56,7 +51,7 @@ const meta = {
     },
     showCopyButton: {
       description:
-        'Render a floating copy button in the top-right — for header-less blocks.',
+        "Render the block's copy button. It sits at the end of the `CodeBlockHeader` when there is one, and floats over the top-right of the body otherwise.",
       control: 'boolean',
       table: { defaultValue: { summary: 'true' } },
     },
@@ -90,11 +85,14 @@ export const Default: Story = {
   ),
 };
 
+/** Every knob is live in every story; only the fixed content differs. */
+const codeBlockControls = ['code', 'showLineNumbers', 'showCopyButton', 'dark'];
+
 export const HorizontalScroll: Story = {
   name: 'Horizontal scroll',
   args: { code: longLineSnippet },
   parameters: {
-    controls: { include: ['code'] },
+    controls: { include: codeBlockControls },
     docs: {
       description: {
         story:
@@ -110,10 +108,14 @@ export const HorizontalScroll: Story = {
 };
 
 export const WithHeader: Story = {
+  args: {
+    showCopyButton: false
+  },
+
   name: 'With header',
-  args: { showCopyButton: false },
+
   parameters: {
-    controls: { include: ['showCopyButton'] },
+    controls: { include: codeBlockControls },
     docs: {
       description: {
         story:
@@ -121,15 +123,15 @@ export const WithHeader: Story = {
       },
     },
   },
+
   render: (args) => (
     <CodeBlock {...args} className="min-w-[28rem]">
       <CodeBlockHeader>
         <span>Terminal</span>
-        <CodeBlockCopyButton />
       </CodeBlockHeader>
       <CodeBlockBody />
     </CodeBlock>
-  ),
+  )
 };
 
 export const WithLineNumbers: Story = {
@@ -137,10 +139,9 @@ export const WithLineNumbers: Story = {
   args: {
     code: multiLineSnippet,
     showLineNumbers: true,
-    showCopyButton: false,
   },
   parameters: {
-    controls: { include: ['code', 'showLineNumbers', 'showCopyButton'] },
+    controls: { include: codeBlockControls },
     docs: {
       description: {
         story:
@@ -152,7 +153,6 @@ export const WithLineNumbers: Story = {
     <CodeBlock {...args}>
       <CodeBlockHeader>
         <span>example.tsx</span>
-        <CodeBlockCopyButton />
       </CodeBlockHeader>
       <CodeBlockBody />
     </CodeBlock>
@@ -163,11 +163,10 @@ export const MaxLines: Story = {
   name: 'Max lines',
   args: {
     code: manyLinesSnippet,
-    showLineNumbers: true,
-    showCopyButton: false,
+    showLineNumbers: false,
   },
   parameters: {
-    controls: { include: ['code', 'showLineNumbers', 'showCopyButton'] },
+    controls: { include: codeBlockControls },
     docs: {
       description: {
         story:
@@ -179,7 +178,6 @@ export const MaxLines: Story = {
     <CodeBlock {...args}>
       <CodeBlockHeader>
         <span>steps.ts — 24 lines, capped at 8</span>
-        <CodeBlockCopyButton />
       </CodeBlockHeader>
       <CodeBlockBody maxLines={8} />
     </CodeBlock>
@@ -191,13 +189,10 @@ export const Dark: Story = {
   args: {
     code: multiLineSnippet,
     showLineNumbers: true,
-    showCopyButton: false,
     dark: true,
   },
   parameters: {
-    controls: {
-      include: ['code', 'showLineNumbers', 'showCopyButton', 'dark'],
-    },
+    controls: { include: codeBlockControls },
     docs: {
       description: {
         story:
@@ -209,7 +204,6 @@ export const Dark: Story = {
     <CodeBlock {...args}>
       <CodeBlockHeader>
         <span>example.tsx</span>
-        <CodeBlockCopyButton />
       </CodeBlockHeader>
       <CodeBlockBody />
     </CodeBlock>

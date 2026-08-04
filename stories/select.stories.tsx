@@ -145,6 +145,7 @@ const meta = {
   args: {
     align: 'center',
     alignItemWithTrigger: false,
+    disabled: false,
     invalid: false,
     side: 'bottom',
     sideOffset: 0,
@@ -253,12 +254,28 @@ export const Default: Story = {
 };
 
 export const Groups: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  // The item composition is the subject; the popup positioning knobs still
+  // apply. `disabled` is left out — it would hide what the story shows.
+  parameters: {
+    controls: {
+      include: ['side', 'align', 'sideOffset', 'alignItemWithTrigger'],
+    },
+  },
+  render: ({
+    align,
+    alignItemWithTrigger,
+    invalid,
+    side,
+    sideOffset,
+    ...triggerProps
+  }) => (
     <SelectPreview
+      contentProps={{ align, alignItemWithTrigger, side, sideOffset }}
+      invalid={invalid}
       label="Deployment target"
       options={[...frameworks, ...regions]}
       placeholder="Select a target"
+      triggerProps={triggerProps}
     >
       <SelectGroup>
         <SelectLabel>Frameworks</SelectLabel>
@@ -282,37 +299,73 @@ export const Groups: Story = {
 };
 
 export const Scrollable: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  // `max-h-56` on the popup is what makes it scroll, so only the positioning
+  // knobs are live here.
+  parameters: {
+    controls: {
+      include: ['side', 'align', 'sideOffset', 'alignItemWithTrigger'],
+    },
+  },
+  render: ({
+    align,
+    alignItemWithTrigger,
+    invalid,
+    side,
+    sideOffset,
+    ...triggerProps
+  }) => (
     <SelectPreview
       contentClassName="max-h-56"
+      contentProps={{ align, alignItemWithTrigger, side, sideOffset }}
+      invalid={invalid}
       label="Timezone"
       options={timezones}
       placeholder="Select a timezone"
+      triggerProps={triggerProps}
     />
   ),
 };
 
 export const Disabled: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  args: { disabled: true },
+  parameters: { controls: { include: ['disabled'] } },
+  render: ({
+    align,
+    alignItemWithTrigger,
+    invalid,
+    side,
+    sideOffset,
+    ...triggerProps
+  }) => (
     <SelectPreview
+      contentProps={{ align, alignItemWithTrigger, side, sideOffset }}
       helperText="This select is unavailable."
+      invalid={invalid}
       label="Framework"
       placeholder="Select a framework"
-      triggerProps={{ disabled: true }}
+      triggerProps={triggerProps}
     />
   ),
 };
 
 export const Invalid: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  args: { invalid: true },
+  parameters: { controls: { include: ['invalid'] } },
+  render: ({
+    align,
+    alignItemWithTrigger,
+    invalid,
+    side,
+    sideOffset,
+    ...triggerProps
+  }) => (
     <SelectPreview
+      contentProps={{ align, alignItemWithTrigger, side, sideOffset }}
       helperText="Please select a framework."
-      invalid
+      invalid={invalid}
       label="Framework"
       placeholder="Select a framework"
+      triggerProps={triggerProps}
     />
   ),
 };

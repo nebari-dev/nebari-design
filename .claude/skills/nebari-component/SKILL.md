@@ -297,7 +297,9 @@ Create `stories/<name>.stories.tsx` (CSF3, one story per meaningful variant).
 ### Controls convention (required)
 
 `Default` is the interactive playground; every other story shows only the props
-it varies. Seven rules, applied by every story under `Components/*`:
+that apply to it, and every control it shows is a populated widget from first
+paint. Eight rules, applied by every story under `Components/*`
+(`tests/story-controls.test.ts` enforces what is statically checkable):
 
 1. **Meta declares the full documented prop surface.** Each prop gets a
    `description`, a `control`, `options` for unions, and `table.defaultValue`
@@ -317,7 +319,7 @@ it varies. Seven rules, applied by every story under `Components/*`:
    - `control: false` plus a `description` — consumer APIs that cannot be a
      knob: Base UI's `render`, `children` when the component is composed from
      subcomponents (the knob would be meaningless JSX), and controlled-state
-     props (see rule 7). These stay visible in the props table because
+     props (see rule 8). These stay visible in the props table because
      consumers need them.
 
    Never use either for per-story narrowing; that always uses
@@ -326,18 +328,52 @@ it varies. Seven rules, applied by every story under `Components/*`:
    prop-fixing per-story `args` (baseline meta `args` are fine) and no
    `parameters.controls`. Its `render` must thread `args` into the component so
    every interactive knob is live.
-5. **Every other story sets `parameters.controls.include`**, listing exactly the
-   interactive props it sets in its own `args` — `[]` when it has none. An arg
-   used only to choose generated source or a fixed styling fixture (for example,
-   a showcase's `variant`) may remain in `args` while being omitted from
-   controls; it must not change the story's fixed behavior.
-6. **Composite components use the story-args pattern.** When the knobs span
+5. **Every knob is seeded in meta `args`.** Storybook's boolean, number, and
+   object controls render a click-to-reveal "Set …" button while their value is
+   `undefined`, so an unseeded knob costs a click before it can be used. Seed
+   every declared knob with the value that reproduces the component's default
+   rendering — `false` for booleans, the documented default for selects, the
+   effective default for numbers — so seeding never changes what the story looks
+   like. Seed in meta, not per story: rule 4 keeps `Default` free of own args.
+   Optional free-text knobs (`loadingText`, `htmlFor`) need no seed; a text
+   control always renders an input.
+
+   Where an unset prop is itself a meaningful state, model it as an explicit
+   `auto` option rather than leaving the arg undefined — a story-args union plus
+   a lookup back to the real value, the pattern dialog already uses for `modal`:
+
+   ```tsx
+   // stories/drawer.stories.tsx
+   const SWIPE_HANDLE_BY_KEY = { auto: undefined, shown: true, hidden: false } as const;
+   // argTypes: control 'inline-radio', options ['auto', 'shown', 'hidden']
+   // args: { showSwipeHandle: 'auto' }
+   ```
+
+   Without it the knob is both click-to-reveal *and* a one-way door: once
+   touched, there is no way back to the automatic behavior.
+6. **Every other story sets `parameters.controls.include` to the props that
+   apply to it.** Derive the list:
+   - Express the story's subject through its own `args` whenever it is one prop
+     on one instance (`args: { variant: 'underline' }`, not
+     `<ExampleTabs variant="underline" />`), so the subject is a live control.
+     Every prop a story pins in `args` must appear in its `include`.
+   - Thread `args` into the rendered component(s) and add the knobs that stay
+     live — typically the variant/size axes and state flags.
+   - Drop what the story fixes per instance (the axis a showcase grid
+     enumerates, the labels it supplies), what its composition makes inert
+     (`loadingText` at icon-only sizes, `size` where `className` overrides the
+     spacing it sets), and what would hide the point of the story (`disabled` on
+     a story about an open popup).
+   - `include: []` is correct only when nothing is left to adjust. Then the
+     render must not take `args` either — an args-consuming render with an empty
+     `include` is a dead panel. Say why in a comment.
+7. **Composite components use the story-args pattern.** When the knobs span
    subcomponents (tabs' `variant` lives on `TabsList`, dialog's `defaultOpen` on
    the root), declare a local `<Name>StoryArgs` type with those props plus any
    story-only toggles, use `satisfies Meta<NameStoryArgs>`, and label each
    synthetic knob "Story-only toggle" in its description. See
    `stories/card.stories.tsx`, `stories/tabs.stories.tsx`.
-7. **No no-op knobs — mind mount-only and controlled props.** Storybook
+8. **No no-op knobs — mind mount-only and controlled props.** Storybook
    re-renders into a cached React root on an args change; it never remounts. So
    a mount-only prop (`defaultChecked`, `defaultValue`, `defaultOpen`) exposed
    as a live control would silently do nothing. Keep the control and key the
@@ -360,7 +396,9 @@ const meta = {
     layout: 'centered',
     docs: { description: { component: 'One paragraph on what it is and when to use it.' } },
   },
-  args: { children: 'Button' },
+  // Every knob is seeded with the component's own default (rule 5), so no
+  // control opens as a "Set boolean" button.
+  args: { children: 'Button', disabled: false, loading: false, size: 'default', variant: 'default' },
   argTypes: {
     variant: {
       description: 'Visual style of the button. `link` uses the foreground text color and no fill.',
@@ -376,6 +414,11 @@ const meta = {
     },
     loading: {
       description: 'Renders a `Spinner`, sets `aria-busy`, and disables the button.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    disabled: {
+      description: 'Disables the button and collapses it to the muted look.',
       control: 'boolean',
       table: { defaultValue: { summary: 'false' } },
     },
@@ -396,15 +439,17 @@ type Story = StoryObj<typeof meta>;
 // Playground: no own args, no controls param — every prop is a live control.
 export const Default: Story = {};
 
-// Varies one prop through its own args → expose just that prop.
+// Subject expressed through args, so `loading` stays live and can be toggled
+// off to compare against the resting state. Style axes come along.
 export const Loading: Story = {
   args: { loading: true },
-  parameters: { controls: { include: ['loading'] } },
+  parameters: { controls: { include: ['loading', 'variant', 'size'] } },
 };
 
-// Pure showcase — the render hardcodes the grid, so no knobs at all.
+// Showcase grid: it fixes `variant` and each label, so those drop out and the
+// remaining axes stay live.
 export const Variants: Story = {
-  parameters: { controls: { include: [] } },
+  parameters: { controls: { include: ['size', 'loading', 'disabled'] } },
   render: (args) => (
     <div className="flex flex-wrap items-center gap-3">
       <Button {...args} variant="default">Default</Button>
@@ -414,6 +459,10 @@ export const Variants: Story = {
   ),
 };
 ```
+
+For the `include: []` end of the spectrum — a story where nothing is left to
+adjust, so its render takes no args — see `Variants` in
+`stories/badge.stories.tsx` (every badge fixes both its variant and its label).
 
 To preview dark mode, wrap a story in `<div className="dark bg-background p-8">`.
 

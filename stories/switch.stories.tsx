@@ -6,7 +6,12 @@ const meta = {
   title: 'Components/Switch',
   component: Switch,
   parameters: { layout: 'centered' },
-  args: { 'aria-label': 'Enable setting', defaultChecked: true },
+  args: {
+    'aria-label': 'Enable setting',
+    defaultChecked: true,
+    disabled: false,
+    required: false,
+  },
   argTypes: {
     defaultChecked: {
       description: 'Initial state when the switch is uncontrolled.',
@@ -82,8 +87,9 @@ export const DisabledOff: Story = {
  * manual `id` / `aria-labelledby` wiring is needed.
  */
 export const WithLabel: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  parameters: { controls: { include: ['defaultChecked', 'disabled'] } },
+  // `Field` supplies the accessible name, so `aria-label` is dropped here.
+  render: ({ 'aria-label': _ariaLabel, ...args }) => (
     <Field className="w-64 flex-row items-start justify-between gap-4">
       <div className="flex flex-col gap-0.5">
         <FieldLabel>Enable copy</FieldLabel>
@@ -91,7 +97,7 @@ export const WithLabel: Story = {
           Allow users to copy this environment
         </FieldDescription>
       </div>
-      <Switch defaultChecked />
+      <Switch {...args} />
     </Field>
   ),
 };
@@ -101,12 +107,12 @@ export const WithLabel: Story = {
  * clicking anywhere toggles the switch.
  */
 export const Box: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  parameters: { controls: { include: ['defaultChecked', 'disabled'] } },
+  render: ({ 'aria-label': _ariaLabel, ...args }) => (
     <Field>
       <FieldLabel className="flex w-64 cursor-pointer items-center justify-between gap-4 rounded-md border border-border bg-background p-4 hover:bg-muted">
         Deep Research
-        <Switch defaultChecked />
+        <Switch {...args} />
       </FieldLabel>
     </Field>
   ),

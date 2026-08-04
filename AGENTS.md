@@ -83,19 +83,25 @@ rules that are easy to get wrong:
   `tests/<name>.test.tsx` — both top-level, never co-located.
 - **Storybook controls.** `Default` is the interactive playground: define the
   documented prop surface in meta `argTypes`, keep its knobs live, and do not
-  narrow its controls. Every other story uses `parameters.controls.include` to
-  expose only the props it intentionally varies (`[]` for a fixed showcase).
-  Variant args may remain as styling/source metadata without becoming behavior
-  controls. Document consumer APIs that cannot be a knob — Base UI's `render`,
-  `children` on a composed component, controlled-state props — with
-  `control: false` plus a description, so they stay in the props table. Reserve
-  `table: { disable: true }` for implementation plumbing and callbacks
-  (`className`, `style`, `id`, `portalProps`, `onValueChange`, …). Composite
-  stories use a local story-args type for
-  props and story-only toggles spanning multiple subcomponents. No knob may be a
-  no-op: args changes re-render without remounting, so key the component on any
-  mount-only prop (`defaultChecked`, `defaultValue`, `defaultOpen`) you expose,
-  and leave its controlled counterpart (`checked`, `value`, `open`) as a
+  narrow its controls. Seed every knob in meta `args` with the value that
+  reproduces the component's default rendering — boolean, number, and object
+  controls render a click-to-reveal "Set …" button while their arg is
+  `undefined`; where an unset prop is itself meaningful, model it as an explicit
+  `auto` option mapped back to `undefined` (see drawer's `showSwipeHandle`).
+  Every other story sets `parameters.controls.include` to the props that apply to
+  it: express its subject through its own `args` rather than hardcoding it in the
+  render, add the knobs the render leaves live, and drop what it fixes per
+  instance or makes inert. `include: []` is for stories where nothing is
+  adjustable — those take no `args` in their render either. Document consumer
+  APIs that cannot be a knob — Base UI's `render`, `children` on a composed
+  component, controlled-state props — with `control: false` plus a description,
+  so they stay in the props table. Reserve `table: { disable: true }` for
+  implementation plumbing and callbacks (`className`, `style`, `id`,
+  `portalProps`, `onValueChange`, …). Composite stories use a local story-args
+  type for props and story-only toggles spanning multiple subcomponents. No knob
+  may be a no-op: args changes re-render without remounting, so key the component
+  on any mount-only prop (`defaultChecked`, `defaultValue`, `defaultOpen`) you
+  expose, and leave its controlled counterpart (`checked`, `value`, `open`) as a
   docs-only row with `control: false`.
 - **Variants via `cva`.** Define `variants` + `defaultVariants` and export the
   `*Variants` function alongside the component. Type props with

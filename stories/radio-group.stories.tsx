@@ -28,7 +28,10 @@ const meta = {
     // Required `RadioGroupItem` prop. The playground overrides it per option, so
     // it only satisfies the story arg types.
     value: 'option',
+    disabled: false,
     orientation: 'vertical',
+    readOnly: false,
+    variant: 'default',
   },
   argTypes: {
     variant: {
@@ -113,23 +116,37 @@ export const Default: Story = {
  */
 export const WithDescription: Story = {
   name: 'With description',
-  parameters: { controls: { include: [] } },
-  render: () => (
+  // Each option carries its own description text, so the `description` knob is
+  // not applicable here — the layout and state knobs are.
+  parameters: { controls: { include: ['variant', 'disabled', 'readOnly'] } },
+  render: ({ disabled, readOnly, variant }) => (
     <div className="w-72">
       <RadioGroup aria-label="Plan" defaultValue="pro">
         <RadioGroupItem
           description="For individuals getting started."
+          disabled={disabled}
+          readOnly={readOnly}
           value="starter"
+          variant={variant}
         >
           Starter
         </RadioGroupItem>
         <RadioGroupItem
           description="For growing teams that need more."
+          disabled={disabled}
+          readOnly={readOnly}
           value="pro"
+          variant={variant}
         >
           Pro
         </RadioGroupItem>
-        <RadioGroupItem description="For organizations at scale." value="team">
+        <RadioGroupItem
+          description="For organizations at scale."
+          disabled={disabled}
+          readOnly={readOnly}
+          value="team"
+          variant={variant}
+        >
           Team
         </RadioGroupItem>
       </RadioGroup>
@@ -142,13 +159,27 @@ export const WithDescription: Story = {
  * wrapping row. The group still owns the single-selection behavior.
  */
 export const Horizontal: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
-    <div className="w-[28rem]">
-      <RadioGroup aria-label="Plan" defaultValue="pro" orientation="horizontal">
-        <RadioGroupItem value="starter">Starter</RadioGroupItem>
-        <RadioGroupItem value="pro">Pro</RadioGroupItem>
-        <RadioGroupItem value="team">Team</RadioGroupItem>
+  args: { orientation: 'horizontal' },
+  parameters: {
+    controls: { include: ['orientation', 'variant', 'disabled'] },
+  },
+  render: ({ disabled, orientation, variant }) => (
+    <div className={orientation === 'horizontal' ? 'w-[28rem]' : 'w-72'}>
+      <RadioGroup
+        aria-label="Plan"
+        defaultValue="pro"
+        orientation={orientation}
+      >
+        {plans.map((plan) => (
+          <RadioGroupItem
+            disabled={disabled}
+            key={plan.value}
+            value={plan.value}
+            variant={variant}
+          >
+            {plan.label}
+          </RadioGroupItem>
+        ))}
       </RadioGroup>
     </div>
   ),
@@ -159,28 +190,35 @@ export const Horizontal: Story = {
  * Reach for it when options carry more content or need a larger hit target.
  */
 export const Box: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  args: { variant: 'box' },
+  parameters: { controls: { include: ['variant', 'disabled', 'readOnly'] } },
+  render: ({ disabled, readOnly, variant }) => (
     <div className="w-72">
       <RadioGroup aria-label="Plan" defaultValue="pro">
         <RadioGroupItem
           description="For individuals getting started."
+          disabled={disabled}
+          readOnly={readOnly}
           value="starter"
-          variant="box"
+          variant={variant}
         >
           Starter
         </RadioGroupItem>
         <RadioGroupItem
           description="For growing teams that need more."
+          disabled={disabled}
+          readOnly={readOnly}
           value="pro"
-          variant="box"
+          variant={variant}
         >
           Pro
         </RadioGroupItem>
         <RadioGroupItem
           description="For organizations at scale."
+          disabled={disabled}
+          readOnly={readOnly}
           value="team"
-          variant="box"
+          variant={variant}
         >
           Team
         </RadioGroupItem>
@@ -194,17 +232,23 @@ export const Box: Story = {
  * the whole group can be disabled at once.
  */
 export const Disabled: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  // Both groups fix which options are disabled — that contrast is the point —
+  // so `variant` is the knob left to vary.
+  parameters: { controls: { include: ['variant'] } },
+  render: ({ variant }) => (
     <div className="flex flex-col gap-8">
       <div className="flex w-72 flex-col gap-3">
         <p className="font-medium text-muted-foreground text-xs">
           One option disabled
         </p>
         <RadioGroup aria-label="Plan" defaultValue="pro">
-          <RadioGroupItem value="starter">Starter</RadioGroupItem>
-          <RadioGroupItem value="pro">Pro</RadioGroupItem>
-          <RadioGroupItem disabled value="team">
+          <RadioGroupItem value="starter" variant={variant}>
+            Starter
+          </RadioGroupItem>
+          <RadioGroupItem value="pro" variant={variant}>
+            Pro
+          </RadioGroupItem>
+          <RadioGroupItem disabled value="team" variant={variant}>
             Team (coming soon)
           </RadioGroupItem>
         </RadioGroup>
@@ -215,9 +259,15 @@ export const Disabled: Story = {
           Entire group disabled
         </p>
         <RadioGroup aria-label="Plan" defaultValue="pro" disabled>
-          <RadioGroupItem value="starter">Starter</RadioGroupItem>
-          <RadioGroupItem value="pro">Pro</RadioGroupItem>
-          <RadioGroupItem value="team">Team</RadioGroupItem>
+          {plans.map((plan) => (
+            <RadioGroupItem
+              key={plan.value}
+              value={plan.value}
+              variant={variant}
+            >
+              {plan.label}
+            </RadioGroupItem>
+          ))}
         </RadioGroup>
       </div>
     </div>
@@ -230,8 +280,8 @@ export const Disabled: Story = {
  */
 export const WithField: Story = {
   name: 'With Field',
-  parameters: { controls: { include: [] } },
-  render: () => (
+  parameters: { controls: { include: ['variant', 'disabled'] } },
+  render: ({ disabled, variant }) => (
     <Field className="w-80">
       <FieldLabel id="wf-label">Choose a plan</FieldLabel>
       <FieldDescription id="wf-desc">
@@ -242,9 +292,16 @@ export const WithField: Story = {
         aria-labelledby="wf-label"
         defaultValue="pro"
       >
-        <RadioGroupItem value="starter">Starter</RadioGroupItem>
-        <RadioGroupItem value="pro">Pro</RadioGroupItem>
-        <RadioGroupItem value="team">Team</RadioGroupItem>
+        {plans.map((plan) => (
+          <RadioGroupItem
+            disabled={disabled}
+            key={plan.value}
+            value={plan.value}
+            variant={variant}
+          >
+            {plan.label}
+          </RadioGroupItem>
+        ))}
       </RadioGroup>
     </Field>
   ),
@@ -265,8 +322,10 @@ export const WithField: Story = {
  * the radios. The cue clears as soon as the user selects an option.
  */
 export const Invalid: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  // The field owns `invalid` and the group owns `required`; `variant` is the
+  // one knob that still applies.
+  parameters: { controls: { include: ['variant'] } },
+  render: ({ variant }) => (
     <Field className="w-80" invalid>
       <FieldLabel id="inv-label">Choose a plan</FieldLabel>
       <RadioGroup
@@ -274,9 +333,11 @@ export const Invalid: Story = {
         aria-labelledby="inv-label"
         required
       >
-        <RadioGroupItem value="starter">Starter</RadioGroupItem>
-        <RadioGroupItem value="pro">Pro</RadioGroupItem>
-        <RadioGroupItem value="team">Team</RadioGroupItem>
+        {plans.map((plan) => (
+          <RadioGroupItem key={plan.value} value={plan.value} variant={variant}>
+            {plan.label}
+          </RadioGroupItem>
+        ))}
       </RadioGroup>
       <FieldError id="inv-error" match>
         Please select a plan to continue.

@@ -19,12 +19,12 @@ import { describe, expect, it } from 'vitest';
  * - **Whether a render actually *uses* the args it receives.** Arity is
  *   checkable (below); use is not. A render taking `args` and ignoring them
  *   stays a review-time concern.
- * - **The inverse — a fixed showcase reading args it cannot expose.** Not
- *   separable from the legitimate case: a `controls.include: []` showcase may
- *   still spread baseline meta args into each hardcoded instance (see
- *   `Variants` in `stories/button.stories.tsx`), which is the documented
- *   pattern. Arity cannot distinguish the two.
- * - **Rule 7 (mount-only props keyed to force a remount).** Not detectable
+ * - **Whether an `include` list is the *right* set.** "Applicable to this
+ *   story" depends on what the render hardcodes, which is not statically
+ *   derivable. The two checks that are derivable — a story's own args must all
+ *   be exposed, and an args-consuming render must expose something — are below;
+ *   the rest is a review-time judgment.
+ * - **Rule 8 (mount-only props keyed to force a remount).** Not detectable
  *   statically; verified by hand in the Storybook UI.
  */
 
@@ -67,6 +67,29 @@ function getStories(mod: StoryModule): [string, Story][] {
       typeof value === 'object' &&
       value !== null,
   ) as [string, Story][];
+}
+
+/**
+ * Controls that render a click-to-reveal setter button ("Set boolean", "Set
+ * number", "Set object") instead of a widget when their arg is `undefined`.
+ * Meta must seed these so every panel opens with populated controls.
+ */
+const SETTER_BUTTON_CONTROLS = new Set(['boolean', 'number', 'object']);
+
+/** `control` is either a shorthand string, an object with a `type`, or `false`. */
+function controlType(argType: unknown): string | undefined {
+  const { control } = (argType ?? {}) as { control?: unknown };
+
+  if (typeof control === 'string') {
+    return control;
+  }
+
+  if (control && typeof control === 'object') {
+    const { type } = control as { type?: unknown };
+    return typeof type === 'string' ? type : undefined;
+  }
+
+  return undefined;
 }
 
 /**
@@ -116,6 +139,61 @@ describe.each(componentStories)('$path', ({ mod }) => {
     expect(unreachable).toEqual([]);
   });
 
+  it('seeds every knob whose control would otherwise need a click', () => {
+    // Storybook's BooleanControl/NumberControl/ObjectControl render a "Set …"
+    // button while their value is `undefined`, so an unseeded knob costs a click
+    // before it can be used. Where `undefined` is a meaningful state, the knob
+    // models it as an explicit option (`auto`) rather than staying unset — see
+    // `showSwipeHandle` in drawer and `role` in alert.
+    const argTypes = mod.default?.argTypes ?? {};
+    const args = (mod.default?.args ?? {}) as Record<string, unknown>;
+
+    const unseeded = Object.entries(argTypes)
+      .filter(([, argType]) =>
+        SETTER_BUTTON_CONTROLS.has(controlType(argType) ?? ''),
+      )
+      .filter(([prop]) => args[prop] === undefined)
+      .map(([prop]) => prop);
+
+    expect(unseeded).toEqual([]);
+  });
+
+  it('exposes every prop a story pins in its own args', () => {
+    // A story's own args are what it is demonstrating, so they belong in its
+    // controls — otherwise the reader cannot tell what makes the story different.
+    const offenders = stories
+      .filter(([name]) => name !== 'Default')
+      .flatMap(([name, story]) => {
+        const include = story.parameters?.controls?.include;
+
+        if (!Array.isArray(include)) {
+          return [];
+        }
+
+        return Object.keys(story.args ?? {})
+          .filter((prop) => !include.includes(prop))
+          .map((prop) => `${name}: ${prop}`);
+      });
+
+    expect(offenders).toEqual([]);
+  });
+
+  it('leaves no args-consuming story without a control', () => {
+    // A render that takes `args` has something live to expose; pairing it with
+    // an empty `include` produces a dead controls panel. A story that genuinely
+    // fixes everything should take no args at all.
+    const dead = stories
+      .filter(([name]) => name !== 'Default')
+      .filter(([, story]) => (renderArity(story) ?? 0) > 0)
+      .filter(([, story]) => {
+        const include = story.parameters?.controls?.include;
+        return Array.isArray(include) && include.length === 0;
+      })
+      .map(([name]) => name);
+
+    expect(dead).toEqual([]);
+  });
+
   it('narrows controls on every non-Default story', () => {
     const offenders = stories
       .filter(([name]) => name !== 'Default')
@@ -145,7 +223,7 @@ describe.each(componentStories)('$path', ({ mod }) => {
   });
 
   it('documents the controlled counterpart of every uncontrolled default', () => {
-    // Rule 7: if `defaultChecked` is a knob, `checked` must at least be a
+    // Rule 8: if `defaultChecked` is a knob, `checked` must at least be a
     // docs-only row — consumers need to know the controlled prop exists.
     const argTypes = mod.default?.argTypes ?? {};
     const missing = Object.keys(argTypes)

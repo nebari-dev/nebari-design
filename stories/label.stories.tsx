@@ -29,10 +29,13 @@ export const Default: Story = {};
 
 /** Paired with an `Input` via `htmlFor` / `id` for standalone use. */
 export const WithInput: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  args: { children: 'Username' },
+  // `htmlFor` is fixed to the input's `id` — breaking that pairing is the one
+  // thing this story must not allow.
+  parameters: { controls: { include: ['children'] } },
+  render: (args) => (
     <div className="flex w-64 flex-col gap-1.5">
-      <Label htmlFor="username">Username</Label>
+      <Label {...args} htmlFor="username" />
       <Input id="username" placeholder="JaneDoe" />
     </div>
   ),

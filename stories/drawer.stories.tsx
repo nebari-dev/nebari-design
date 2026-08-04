@@ -9,16 +9,29 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
-  type DrawerProps,
   type DrawerSide,
   DrawerTitle,
   DrawerTrigger,
 } from '@/ui/drawer';
 
-type DrawerStoryArgs = Pick<DrawerProps, 'showSwipeHandle'> & {
+// Omitting `showSwipeHandle` is the meaningful default — the drawer shows the
+// handle for bottom drawers and hides it for side drawers — so the knob models
+// that as an explicit `auto` option. An unset arg would render as a
+// click-to-reveal control with no way back to the automatic behavior.
+const SWIPE_HANDLE_BY_KEY = {
+  auto: undefined,
+  shown: true,
+  hidden: false,
+} as const;
+
+type DrawerStoryArgs = {
   showCloseButton: boolean;
+  showSwipeHandle: keyof typeof SWIPE_HANDLE_BY_KEY;
   side: DrawerSide;
 };
+
+/** Applies to every story: the side plus both chrome toggles. */
+const drawerControls = ['side', 'showCloseButton', 'showSwipeHandle'];
 
 const meta = {
   title: 'Components/Drawer',
@@ -33,6 +46,7 @@ const meta = {
   },
   args: {
     showCloseButton: true,
+    showSwipeHandle: 'auto',
     side: 'right',
   },
   argTypes: {
@@ -49,17 +63,22 @@ const meta = {
       table: { defaultValue: { summary: 'true' } },
     },
     showSwipeHandle: {
-      control: 'boolean',
+      control: 'inline-radio',
       description:
-        'Shows the grab handle. Defaults to true for bottom drawers and false for side drawers.',
-      table: { defaultValue: { summary: 'auto' } },
+        'Shows the grab handle. `auto` leaves it to the drawer — shown for bottom drawers, hidden for side drawers.',
+      options: ['auto', 'shown', 'hidden'],
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'auto' },
+      },
     },
   },
 } satisfies Meta<DrawerStoryArgs>;
 
 export default meta;
 
-type Story = StoryObj<typeof meta>;
+// `meta` has no `component`, so the story args come from the story-args type.
+type Story = StoryObj<DrawerStoryArgs>;
 
 const LONG_CONTENT_SECTIONS = [
   [
@@ -110,12 +129,14 @@ const LONG_CONTENT_SECTIONS = [
 ];
 
 function drawerProps({
-  showSwipeHandle,
+  showSwipeHandle = 'auto',
   side = 'right',
 }: Partial<Pick<DrawerStoryArgs, 'showSwipeHandle' | 'side'>>) {
+  const resolved = SWIPE_HANDLE_BY_KEY[showSwipeHandle];
+
   return {
     side,
-    ...(showSwipeHandle === undefined ? {} : { showSwipeHandle }),
+    ...(resolved === undefined ? {} : { showSwipeHandle: resolved }),
   };
 }
 
@@ -212,7 +233,7 @@ export const Default: Story = {
 
 export const BottomSheet: Story = {
   name: 'Bottom sheet',
-  parameters: { controls: { include: ['side'] } },
+  parameters: { controls: { include: drawerControls } },
   args: {
     side: 'bottom',
   },
@@ -228,13 +249,16 @@ export const BottomSheet: Story = {
 
 export const LongContent: Story = {
   name: 'Long content',
-  parameters: { controls: { include: [] } },
-  render: () => (
-    <Drawer side="right">
+  parameters: { controls: { include: drawerControls } },
+  render: ({ showCloseButton, showSwipeHandle, side }) => (
+    <Drawer {...drawerProps({ showSwipeHandle, side })}>
       <DrawerTrigger render={<Button variant="outline" />}>
         Review workspace
       </DrawerTrigger>
-      <DrawerContent className="h-dvh max-h-dvh" showCloseButton>
+      <DrawerContent
+        className="h-dvh max-h-dvh"
+        showCloseButton={showCloseButton}
+      >
         <DrawerHeader>
           <div className="min-w-0 flex-1">
             <DrawerTitle>Workspace review</DrawerTitle>
@@ -291,13 +315,13 @@ export const LongContent: Story = {
 
 export const NestedDrawer: Story = {
   name: 'Multi nested drawer',
-  parameters: { controls: { include: [] } },
-  render: () => (
-    <Drawer side="right">
+  parameters: { controls: { include: drawerControls } },
+  render: ({ showCloseButton, showSwipeHandle, side }) => (
+    <Drawer {...drawerProps({ showSwipeHandle, side })}>
       <DrawerTrigger render={<Button variant="outline" />}>
         Environment settings
       </DrawerTrigger>
-      <DrawerContent>
+      <DrawerContent showCloseButton={showCloseButton}>
         <DrawerHeader>
           <div className="min-w-0 flex-1">
             <DrawerTitle>Environment settings</DrawerTitle>
@@ -318,7 +342,7 @@ export const NestedDrawer: Story = {
                 Collaborator access and invitation settings.
               </div>
             </div>
-            <Drawer side="right">
+            <Drawer {...drawerProps({ showSwipeHandle, side })}>
               <DrawerTrigger render={<Button variant="outline" />}>
                 Advanced settings
               </DrawerTrigger>
@@ -348,7 +372,7 @@ export const NestedDrawer: Story = {
                         </div>
                       </div>
                     ))}
-                    <Drawer side="right">
+                    <Drawer {...drawerProps({ showSwipeHandle, side })}>
                       <DrawerTrigger render={<Button variant="outline" />}>
                         Rebuild policy
                       </DrawerTrigger>

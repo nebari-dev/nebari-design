@@ -14,7 +14,13 @@ const meta = {
       },
     },
   },
-  args: { children: 'Button' },
+  args: {
+    children: 'Button',
+    disabled: false,
+    loading: false,
+    size: 'default',
+    variant: 'default',
+  },
   argTypes: {
     variant: {
       description:
@@ -96,7 +102,8 @@ export const Default: Story = {
 export const Variants: Story = {
   name: 'Variants',
   parameters: {
-    controls: { include: [] },
+    // The grid fixes `variant` and each label; the remaining axes stay live.
+    controls: { include: ['size', 'loading', 'disabled'] },
     docs: {
       description: {
         story:
@@ -131,7 +138,7 @@ export const Variants: Story = {
 export const Sizes: Story = {
   name: 'Sizes',
   parameters: {
-    controls: { include: [] },
+    controls: { include: ['variant', 'loading', 'disabled'] },
     docs: {
       description: {
         story:
@@ -160,7 +167,8 @@ export const Sizes: Story = {
 export const IconSizes: Story = {
   name: 'Icon sizes',
   parameters: {
-    controls: { include: [] },
+    // `loadingText` is ignored at icon-only sizes, so it is left out here.
+    controls: { include: ['variant', 'loading', 'disabled'] },
     docs: {
       description: {
         story:
@@ -189,7 +197,8 @@ export const IconSizes: Story = {
 export const WithIcon: Story = {
   name: 'With icon',
   parameters: {
-    controls: { include: [] },
+    // Each button fixes its own `variant` and label to show icon placement.
+    controls: { include: ['size', 'loading', 'disabled'] },
     docs: {
       description: {
         story:
@@ -199,7 +208,7 @@ export const WithIcon: Story = {
   },
   render: (args) => (
     <div className="flex flex-wrap items-center gap-3">
-      <Button {...args}>
+      <Button {...args} variant="default">
         <Plus />
         New project
       </Button>
@@ -217,8 +226,12 @@ export const WithIcon: Story = {
 
 export const Loading: Story = {
   name: 'Loading',
+  args: { loading: true },
   parameters: {
-    controls: { include: [] },
+    // `loading` is the subject and stays live — toggle it off to compare each
+    // button against its resting state. The last button fixes `size` to show
+    // the icon-only collapse, so `size` is not a knob here.
+    controls: { include: ['loading', 'variant', 'disabled'] },
     docs: {
       description: {
         story:
@@ -228,24 +241,18 @@ export const Loading: Story = {
   },
   render: (args) => (
     <div className="flex flex-wrap items-center gap-3">
-      <Button {...args} loading loadingText="Saving…">
+      <Button {...args} loadingText="Saving…">
         Save
       </Button>
-      <Button {...args} loading loadingText="Creating…">
+      <Button {...args} loadingText="Creating…">
         <Plus />
         New project
       </Button>
-      <Button {...args} loading loadingText="Saving…">
+      <Button {...args} loadingText="Saving…">
         <Plus />
         Save
       </Button>
-      <Button
-        {...args}
-        aria-label="Add"
-        loading
-        size="icon"
-        loadingText="Adding…"
-      >
+      <Button {...args} aria-label="Add" loadingText="Adding…" size="icon">
         <Plus />
       </Button>
     </div>
@@ -255,7 +262,7 @@ export const Loading: Story = {
 export const Disabled: Story = {
   name: 'Disabled',
   parameters: {
-    controls: { include: ['disabled'] },
+    controls: { include: ['disabled', 'variant', 'size'] },
     docs: {
       description: {
         story:
@@ -269,7 +276,7 @@ export const Disabled: Story = {
 export const AsLink: Story = {
   name: 'Render as link',
   parameters: {
-    controls: { include: [] },
+    controls: { include: ['variant', 'size', 'disabled'] },
     docs: {
       description: {
         story:

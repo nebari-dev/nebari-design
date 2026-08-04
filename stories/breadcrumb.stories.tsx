@@ -287,6 +287,8 @@ export const Default: Story = {
 export const Ellipsis: Story = {
   name: 'Ellipsis',
   parameters: {
+    // Fixed composition with a pinned source snippet — the `variant` preview
+    // knob belongs to `Default`, so nothing is adjustable here.
     controls: { include: [] },
     docs: {
       description: {
@@ -308,6 +310,7 @@ export const Ellipsis: Story = {
 export const Dropdown: Story = {
   name: 'Dropdown',
   parameters: {
+    // Fixed composition with a pinned source snippet.
     controls: { include: [] },
     docs: {
       description: {
@@ -329,6 +332,7 @@ export const Dropdown: Story = {
 export const RenderAsLink: Story = {
   name: 'Render as link',
   parameters: {
+    // Fixed composition demonstrating `render` on each link.
     controls: { include: [] },
     docs: {
       description: {

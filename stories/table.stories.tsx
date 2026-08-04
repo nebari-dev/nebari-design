@@ -200,7 +200,8 @@ export const Default: Story = {
 
 export const WithFooter: Story = {
   name: 'With footer',
-  parameters: { controls: { include: ['showFooter'] } },
+  // The footer row spans the data columns, so the actions column affects it.
+  parameters: { controls: { include: ['showFooter', 'showActions'] } },
   args: {
     showFooter: true,
   },
@@ -212,7 +213,7 @@ export const WithFooter: Story = {
 };
 
 export const Actions: Story = {
-  parameters: { controls: { include: ['showActions'] } },
+  parameters: { controls: { include: ['showActions', 'showFooter'] } },
   args: {
     showActions: true,
   },
@@ -225,7 +226,8 @@ export const Actions: Story = {
 
 export const EmptyState: Story = {
   name: 'Empty state',
-  parameters: { controls: { include: ['empty'] } },
+  // The placeholder cell's `colSpan` tracks the actions column.
+  parameters: { controls: { include: ['empty', 'showActions'] } },
   args: {
     empty: true,
   },

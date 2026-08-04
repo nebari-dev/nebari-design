@@ -1,8 +1,28 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CircleAlert, CircleCheck, Info, TriangleAlert, X } from 'lucide-react';
 import { useRef, useState } from 'react';
-import { Alert, AlertAction, AlertDescription, AlertTitle } from '@/ui/alert';
+import {
+  Alert,
+  AlertAction,
+  AlertDescription,
+  type AlertProps,
+  AlertTitle,
+} from '@/ui/alert';
 import { Button } from '@/ui/button';
+
+type AlertStoryArgs = Omit<AlertProps, 'role'> & {
+  role: 'auto' | 'status' | 'alert';
+};
+
+// An unset `role` is the meaningful default — the Alert derives it from
+// `variant` — so the knob models it as an explicit `auto` option. Leaving the
+// arg undefined instead would render a click-to-reveal control and give the
+// story no way back to the derived role.
+const ALERT_ROLE_BY_KEY: Record<string, AlertProps['role']> = {
+  auto: undefined,
+  status: 'status',
+  alert: 'alert',
+};
 
 const meta = {
   title: 'Components/Alert',
@@ -16,6 +36,10 @@ const meta = {
       },
     },
   },
+  args: {
+    role: 'auto',
+    variant: 'default',
+  },
   argTypes: {
     variant: {
       description:
@@ -26,10 +50,13 @@ const meta = {
     },
     role: {
       description:
-        'ARIA live-region role. Derived from `variant` — `alert` (assertive) for `warning` and `destructive`, `status` (polite) otherwise — and overridable when the alert is rendered before the user acts.',
-      control: 'select',
-      options: ['status', 'alert'],
-      table: { defaultValue: { summary: 'status | alert (by variant)' } },
+        'ARIA live-region role. `auto` (the default) derives it from `variant` — `alert` (assertive) for `warning` and `destructive`, `status` (polite) otherwise — and an explicit role overrides that when the alert is rendered before the user acts.',
+      control: 'inline-radio',
+      options: ['auto', 'status', 'alert'],
+      table: {
+        type: { summary: "'status' | 'alert'" },
+        defaultValue: { summary: 'auto (status | alert by variant)' },
+      },
     },
     children: {
       description:
@@ -38,7 +65,7 @@ const meta = {
     },
     className: { table: { disable: true } },
   },
-} satisfies Meta<typeof Alert>;
+} satisfies Meta<AlertStoryArgs>;
 
 export default meta;
 
@@ -54,8 +81,8 @@ export const Default: Story = {
       },
     },
   },
-  render: (args) => (
-    <Alert {...args}>
+  render: ({ role = 'auto', ...args }) => (
+    <Alert {...args} role={ALERT_ROLE_BY_KEY[role]}>
       <Info />
       <AlertTitle>New environment available</AlertTitle>
       <AlertDescription>
@@ -68,7 +95,8 @@ export const Default: Story = {
 export const Variants: Story = {
   name: 'Variants',
   parameters: {
-    controls: { include: [] },
+    // Each alert fixes its own `variant`, so only `role` stays live here.
+    controls: { include: ['role'] },
     docs: {
       description: {
         story:
@@ -76,23 +104,23 @@ export const Variants: Story = {
       },
     },
   },
-  render: () => (
+  render: ({ role = 'auto', ...args }) => (
     <div className="flex flex-col gap-4">
-      <Alert variant="default">
+      <Alert {...args} role={ALERT_ROLE_BY_KEY[role]} variant="default">
         <Info />
         <AlertTitle>New environment available</AlertTitle>
         <AlertDescription>
           nebari-default-env 2.4.1 has been deployed to your cluster.
         </AlertDescription>
       </Alert>
-      <Alert variant="success">
+      <Alert {...args} role={ALERT_ROLE_BY_KEY[role]} variant="success">
         <CircleCheck />
         <AlertTitle>Conda environment created</AlertTitle>
         <AlertDescription>
           Your environment is ready to use in a new notebook.
         </AlertDescription>
       </Alert>
-      <Alert variant="warning">
+      <Alert {...args} role={ALERT_ROLE_BY_KEY[role]} variant="warning">
         <TriangleAlert />
         <AlertTitle>Kernel restarted</AlertTitle>
         <AlertDescription>
@@ -100,7 +128,7 @@ export const Variants: Story = {
           cleared.
         </AlertDescription>
       </Alert>
-      <Alert variant="destructive">
+      <Alert {...args} role={ALERT_ROLE_BY_KEY[role]} variant="destructive">
         <CircleAlert />
         <AlertTitle>Scheduled maintenance</AlertTitle>
         <AlertDescription>
@@ -115,7 +143,7 @@ export const Variants: Story = {
 export const TitleOnly: Story = {
   name: 'Title only',
   parameters: {
-    controls: { include: [] },
+    controls: { include: ['variant', 'role'] },
     docs: {
       description: {
         story:
@@ -123,8 +151,8 @@ export const TitleOnly: Story = {
       },
     },
   },
-  render: () => (
-    <Alert>
+  render: ({ role = 'auto', ...args }) => (
+    <Alert {...args} role={ALERT_ROLE_BY_KEY[role]}>
       <CircleCheck />
       <AlertTitle>Conda environment created successfully</AlertTitle>
     </Alert>
@@ -134,7 +162,7 @@ export const TitleOnly: Story = {
 export const WithoutIcon: Story = {
   name: 'Without icon',
   parameters: {
-    controls: { include: [] },
+    controls: { include: ['variant', 'role'] },
     docs: {
       description: {
         story:
@@ -142,8 +170,8 @@ export const WithoutIcon: Story = {
       },
     },
   },
-  render: () => (
-    <Alert>
+  render: ({ role = 'auto', ...args }) => (
+    <Alert {...args} role={ALERT_ROLE_BY_KEY[role]}>
       <AlertTitle>JupyterHub 4.1 is now available</AlertTitle>
       <AlertDescription>
         Contact your administrator to schedule the upgrade.
@@ -155,7 +183,7 @@ export const WithoutIcon: Story = {
 export const WithAction: Story = {
   name: 'With action',
   parameters: {
-    controls: { include: [] },
+    controls: { include: ['variant', 'role'] },
     docs: {
       description: {
         story:
@@ -163,8 +191,8 @@ export const WithAction: Story = {
       },
     },
   },
-  render: () => (
-    <Alert>
+  render: ({ role = 'auto', ...args }) => (
+    <Alert {...args} role={ALERT_ROLE_BY_KEY[role]}>
       <Info />
       <AlertTitle>Your session will expire soon</AlertTitle>
       <AlertDescription>
@@ -181,8 +209,9 @@ export const WithAction: Story = {
 
 export const Dismissible: Story = {
   name: 'Dismissible',
+  args: { variant: 'success' },
   parameters: {
-    controls: { include: [] },
+    controls: { include: ['variant', 'role'] },
     docs: {
       description: {
         story:
@@ -190,7 +219,7 @@ export const Dismissible: Story = {
       },
     },
   },
-  render: () => {
+  render: ({ role = 'auto', ...args }) => {
     const [open, setOpen] = useState(true);
     const showButtonRef = useRef<HTMLButtonElement>(null);
     const dismissButtonRef = useRef<HTMLButtonElement>(null);
@@ -213,7 +242,7 @@ export const Dismissible: Story = {
     }
 
     return (
-      <Alert variant="success">
+      <Alert {...args} role={ALERT_ROLE_BY_KEY[role]}>
         <CircleCheck />
         <AlertTitle>Conda environment created</AlertTitle>
         <AlertDescription>

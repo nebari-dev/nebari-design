@@ -3,7 +3,13 @@ import { useState } from 'react';
 import { Field, FieldLabel } from '@/ui/field';
 import { Slider } from '@/ui/slider';
 
-function ControlledSlider() {
+function ControlledSlider({
+  disabled,
+  showValueTooltip,
+}: {
+  disabled?: boolean;
+  showValueTooltip?: boolean;
+}) {
   const [value, setValue] = useState<readonly number[]>([30, 70]);
 
   return (
@@ -15,6 +21,7 @@ function ControlledSlider() {
         </output>
       </div>
       <Slider
+        disabled={disabled}
         getThumbAriaLabel={(index) =>
           index === 0 ? 'Minimum temperature' : 'Maximum temperature'
         }
@@ -23,6 +30,7 @@ function ControlledSlider() {
         onValueChange={(nextValue) => {
           setValue(Array.isArray(nextValue) ? nextValue : [nextValue]);
         }}
+        showValueTooltip={showValueTooltip}
         step={1}
         value={value}
       />
@@ -132,10 +140,21 @@ export const Default: Story = {
 
 /** Use an array with two values for a range slider. */
 export const Range: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  // `defaultValue` is the array that makes this a range, so it is fixed in the
+  // render rather than exposed as a (single-number) knob.
+  parameters: {
+    controls: {
+      include: ['min', 'max', 'step', 'showValueTooltip', 'disabled'],
+    },
+  },
+  render: ({
+    defaultValue: _defaultValue,
+    orientation: _orientation,
+    ...args
+  }) => (
     <div className="w-80">
       <Slider
+        {...args}
         defaultValue={[20, 80]}
         getThumbAriaLabel={(index) =>
           index === 0 ? 'Minimum resource window' : 'Maximum resource window'
@@ -149,10 +168,19 @@ export const Range: Story = {
 /** Use an array with more values for multiple thumbs. */
 export const MultipleThumbs: Story = {
   name: 'Multiple Thumbs',
-  parameters: { controls: { include: [] } },
-  render: () => (
+  parameters: {
+    controls: {
+      include: ['min', 'max', 'step', 'showValueTooltip', 'disabled'],
+    },
+  },
+  render: ({
+    defaultValue: _defaultValue,
+    orientation: _orientation,
+    ...args
+  }) => (
     <div className="w-80">
       <Slider
+        {...args}
         defaultValue={[20, 50, 80]}
         getThumbAriaLabel={(index) => `Resource checkpoint ${index + 1}`}
         minStepsBetweenValues={5}
@@ -163,15 +191,20 @@ export const MultipleThumbs: Story = {
 
 /** Use `orientation="vertical"` for a vertical slider. */
 export const Vertical: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  args: { defaultValue: 60, orientation: 'vertical' },
+  parameters: {
+    controls: {
+      include: ['orientation', 'defaultValue', 'showValueTooltip', 'disabled'],
+    },
+  },
+  render: (args) => (
     <Field className="items-center gap-3">
       <FieldLabel>Resource limit</FieldLabel>
-      <div className="h-52">
+      <div className={args.orientation === 'vertical' ? 'h-52' : 'w-80'}>
         <Slider
-          defaultValue={60}
+          key={String(args.defaultValue)}
+          {...args}
           getThumbAriaLabel={() => 'Resource limit'}
-          orientation="vertical"
         />
       </div>
     </Field>
@@ -180,18 +213,24 @@ export const Vertical: Story = {
 
 /** Control the slider value when another part of the UI depends on it. */
 export const Controlled: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => <ControlledSlider />,
+  // The example owns `value`, `min`, `max`, and `step`.
+  parameters: { controls: { include: ['showValueTooltip', 'disabled'] } },
+  render: ({ disabled, showValueTooltip }) => (
+    <ControlledSlider disabled={disabled} showValueTooltip={showValueTooltip} />
+  ),
 };
 
 /** Disabled sliders communicate the value without accepting interaction. */
 export const Disabled: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  args: { defaultValue: 50, disabled: true },
+  parameters: {
+    controls: { include: ['disabled', 'defaultValue', 'showValueTooltip'] },
+  },
+  render: ({ orientation: _orientation, ...args }) => (
     <div className="w-80">
       <Slider
-        defaultValue={50}
-        disabled
+        key={String(args.defaultValue)}
+        {...args}
         getThumbAriaLabel={() => 'Storage quota'}
       />
     </div>

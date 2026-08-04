@@ -87,6 +87,18 @@ type Story = StoryObj<typeof meta>;
 
 const triggerButtonClassName = 'min-w-24 leading-none';
 
+/**
+ * Every story below fixes its own tooltip text, so `children` drops out of the
+ * controls while the whole positioning surface stays live.
+ */
+const positioningControls = [
+  'side',
+  'align',
+  'sideOffset',
+  'alignOffset',
+  'showArrow',
+];
+
 export const Default: Story = {
   render: ({ children, ...args }) => (
     <Tooltip>
@@ -101,8 +113,13 @@ export const Default: Story = {
 };
 
 export const Sides: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  // Each tooltip fixes its own `side`.
+  parameters: {
+    controls: {
+      include: positioningControls.filter((prop) => prop !== 'side'),
+    },
+  },
+  render: ({ children: _children, side: _side, ...args }) => (
     <div className="grid grid-cols-2 items-center justify-items-center gap-6 sm:grid-cols-4">
       <Tooltip>
         <TooltipTrigger
@@ -112,7 +129,9 @@ export const Sides: Story = {
         >
           Left
         </TooltipTrigger>
-        <TooltipContent side="left">Left Tooltip</TooltipContent>
+        <TooltipContent {...args} side="left">
+          Left Tooltip
+        </TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger
@@ -122,7 +141,9 @@ export const Sides: Story = {
         >
           Top
         </TooltipTrigger>
-        <TooltipContent side="top">Top Tooltip</TooltipContent>
+        <TooltipContent {...args} side="top">
+          Top Tooltip
+        </TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger
@@ -132,7 +153,9 @@ export const Sides: Story = {
         >
           Bottom
         </TooltipTrigger>
-        <TooltipContent side="bottom">Bottom Tooltip</TooltipContent>
+        <TooltipContent {...args} side="bottom">
+          Bottom Tooltip
+        </TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger
@@ -142,7 +165,9 @@ export const Sides: Story = {
         >
           Right
         </TooltipTrigger>
-        <TooltipContent side="right">Right Tooltip</TooltipContent>
+        <TooltipContent {...args} side="right">
+          Right Tooltip
+        </TooltipContent>
       </Tooltip>
     </div>
   ),
@@ -150,8 +175,8 @@ export const Sides: Story = {
 
 export const SupplementalInfo: Story = {
   name: 'Supplemental info',
-  parameters: { controls: { include: [] } },
-  render: () => (
+  parameters: { controls: { include: positioningControls } },
+  render: ({ children: _children, ...args }) => (
     <div className="flex items-center gap-2">
       <span className="font-medium text-sm">Workspace settings</span>
       <Tooltip>
@@ -163,7 +188,7 @@ export const SupplementalInfo: Story = {
             </Button>
           }
         />
-        <TooltipContent>
+        <TooltipContent {...args}>
           Configure compute, access, and notifications.
         </TooltipContent>
       </Tooltip>
@@ -173,8 +198,8 @@ export const SupplementalInfo: Story = {
 
 export const WithShortcut: Story = {
   name: 'With shortcut',
-  parameters: { controls: { include: [] } },
-  render: () => (
+  parameters: { controls: { include: positioningControls } },
+  render: ({ children: _children, ...args }) => (
     <Tooltip>
       <TooltipTrigger
         render={<Button className={triggerButtonClassName} variant="outline" />}
@@ -182,7 +207,7 @@ export const WithShortcut: Story = {
         <CopyIcon />
         Copy
       </TooltipTrigger>
-      <TooltipContent>
+      <TooltipContent {...args}>
         Copy link
         <kbd data-slot="kbd">Ctrl+C</kbd>
       </TooltipContent>
@@ -191,8 +216,8 @@ export const WithShortcut: Story = {
 };
 
 export const Focus: Story = {
-  parameters: { controls: { include: [] } },
-  render: () => (
+  parameters: { controls: { include: positioningControls } },
+  render: ({ children: _children, ...args }) => (
     <Tooltip>
       <TooltipTrigger
         render={<Button className={triggerButtonClassName} variant="outline" />}
@@ -200,7 +225,7 @@ export const Focus: Story = {
         <CircleHelpIcon />
         Focus me
       </TooltipTrigger>
-      <TooltipContent>
+      <TooltipContent {...args}>
         Tooltips are available from keyboard focus, not only pointer hover.
       </TooltipContent>
     </Tooltip>

@@ -31,6 +31,41 @@ type DialogStoryArgs = ComponentProps<typeof DialogContent> &
     modal: keyof typeof MODAL_BY_KEY;
   };
 
+/**
+ * The knobs that live on `Dialog` (the root) rather than on `DialogContent`.
+ * Every story threads them so its controls stay live; `defaultOpen` additionally
+ * needs a `key` on the root, since it is only read on mount.
+ */
+type DialogRootProps = Pick<
+  ComponentProps<typeof Dialog>,
+  'defaultOpen' | 'disablePointerDismissal' | 'modal' | 'open'
+>;
+
+function dialogRootProps({
+  defaultOpen,
+  disablePointerDismissal,
+  modal,
+  open,
+}: Pick<
+  DialogStoryArgs,
+  'defaultOpen' | 'disablePointerDismissal' | 'modal' | 'open'
+>): DialogRootProps {
+  return {
+    defaultOpen,
+    disablePointerDismissal,
+    modal: modal === undefined ? undefined : MODAL_BY_KEY[modal],
+    open,
+  };
+}
+
+/** Applies to every story: the root state knobs plus the close button. */
+const dialogControls = [
+  'showCloseButton',
+  'defaultOpen',
+  'modal',
+  'disablePointerDismissal',
+];
+
 const meta = {
   title: 'Components/Dialog',
   component: DialogContent,
@@ -43,7 +78,12 @@ const meta = {
       },
     },
   },
-  args: { modal: 'true' },
+  args: {
+    defaultOpen: false,
+    disablePointerDismissal: false,
+    modal: 'true',
+    showCloseButton: true,
+  },
   argTypes: {
     showCloseButton: {
       description:
@@ -143,7 +183,7 @@ async function copyToClipboard(text: string) {
   }
 }
 
-function ShareWorkspaceDialog() {
+function ShareWorkspaceDialog(rootProps: DialogRootProps) {
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>(
     'idle',
   );
@@ -158,7 +198,7 @@ function ShareWorkspaceDialog() {
   }
 
   return (
-    <Dialog>
+    <Dialog {...rootProps}>
       <DialogTrigger render={<Button variant="outline" />}>Share</DialogTrigger>
       <DialogContent showCloseButton={false}>
         <DialogHeader>
@@ -229,11 +269,19 @@ export const Default: Story = {
 
 export const GenericDialog: Story = {
   name: 'Generic Dialog',
-  parameters: { controls: { include: [] } },
-  render: () => (
-    <Dialog>
+  parameters: { controls: { include: dialogControls } },
+  render: ({ defaultOpen, disablePointerDismissal, modal, open, ...args }) => (
+    <Dialog
+      key={String(defaultOpen)}
+      {...dialogRootProps({
+        defaultOpen,
+        disablePointerDismissal,
+        modal,
+        open,
+      })}
+    >
       <DialogTrigger render={<Button />}>Open Dialog</DialogTrigger>
-      <DialogContent>
+      <DialogContent {...args}>
         <DialogHeader>
           <DialogTitle>Dialog title</DialogTitle>
           <DialogDescription>
@@ -254,13 +302,21 @@ export const GenericDialog: Story = {
 
 export const DeleteConfirmation: Story = {
   name: 'Delete Confirmation',
-  parameters: { controls: { include: [] } },
-  render: () => (
-    <Dialog>
+  parameters: { controls: { include: dialogControls } },
+  render: ({ defaultOpen, disablePointerDismissal, modal, open, ...args }) => (
+    <Dialog
+      key={String(defaultOpen)}
+      {...dialogRootProps({
+        defaultOpen,
+        disablePointerDismissal,
+        modal,
+        open,
+      })}
+    >
       <DialogTrigger render={<Button variant="destructive" />}>
         Delete Environment
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent {...args}>
         <DialogHeader>
           <DialogTitle>Delete environment?</DialogTitle>
           <DialogDescription>
@@ -283,19 +339,45 @@ export const DeleteConfirmation: Story = {
 
 export const CustomCloseButton: Story = {
   name: 'Custom Close Button',
-  parameters: { controls: { include: [] } },
-  render: () => <ShareWorkspaceDialog />,
+  // The dialog fixes `showCloseButton={false}` — that is the story.
+  parameters: {
+    controls: {
+      include: dialogControls.filter((prop) => prop !== 'showCloseButton'),
+    },
+  },
+  render: ({ defaultOpen, disablePointerDismissal, modal, open }) => (
+    <ShareWorkspaceDialog
+      key={String(defaultOpen)}
+      {...dialogRootProps({
+        defaultOpen,
+        disablePointerDismissal,
+        modal,
+        open,
+      })}
+    />
+  ),
 };
 
 export const StickyFooter: Story = {
   name: 'Sticky Footer',
-  parameters: { controls: { include: [] } },
-  render: () => (
-    <Dialog>
+  parameters: { controls: { include: dialogControls } },
+  render: ({ defaultOpen, disablePointerDismissal, modal, open, ...args }) => (
+    <Dialog
+      key={String(defaultOpen)}
+      {...dialogRootProps({
+        defaultOpen,
+        disablePointerDismissal,
+        modal,
+        open,
+      })}
+    >
       <DialogTrigger render={<Button variant="outline" />}>
         Sticky Footer
       </DialogTrigger>
-      <DialogContent className="grid h-[min(calc(100vh-2rem),28rem)] grid-rows-[auto,minmax(0,1fr),auto] gap-0 p-0">
+      <DialogContent
+        {...args}
+        className="grid h-[min(calc(100vh-2rem),28rem)] grid-rows-[auto,minmax(0,1fr),auto] gap-0 p-0"
+      >
         <DialogHeader className="px-6 pt-6 pr-14 pb-4">
           <DialogTitle>Review environment changes</DialogTitle>
           <DialogDescription>
@@ -346,13 +428,24 @@ export const StickyFooter: Story = {
 
 export const ScrollableContent: Story = {
   name: 'Scrollable Content',
-  parameters: { controls: { include: [] } },
-  render: () => (
-    <Dialog>
+  parameters: { controls: { include: dialogControls } },
+  render: ({ defaultOpen, disablePointerDismissal, modal, open, ...args }) => (
+    <Dialog
+      key={String(defaultOpen)}
+      {...dialogRootProps({
+        defaultOpen,
+        disablePointerDismissal,
+        modal,
+        open,
+      })}
+    >
       <DialogTrigger render={<Button variant="outline" />}>
         Scrollable Content
       </DialogTrigger>
-      <DialogContent className="grid h-[min(calc(100vh-2rem),32rem)] grid-rows-[auto,minmax(0,1fr)]">
+      <DialogContent
+        {...args}
+        className="grid h-[min(calc(100vh-2rem),32rem)] grid-rows-[auto,minmax(0,1fr)]"
+      >
         <DialogHeader>
           <DialogTitle>Workspace activity</DialogTitle>
           <DialogDescription>
