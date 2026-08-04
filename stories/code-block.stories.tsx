@@ -66,6 +66,12 @@ const meta = {
       control: 'boolean',
       table: { defaultValue: { summary: 'false' } },
     },
+    children: {
+      description:
+        'Composed content — a `CodeBlockBody`, optionally preceded by a `CodeBlockHeader` carrying a label and a `CodeBlockCopyButton`.',
+      control: false,
+    },
+    className: { table: { disable: true } },
   },
 } satisfies Meta<typeof CodeBlock>;
 
@@ -74,7 +80,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  name: 'Default',
   parameters: {
     docs: {
       description: {
@@ -197,7 +202,6 @@ export const MaxLines: Story = {
 };
 
 export const Dark: Story = {
-  name: 'Dark',
   args: {
     code: multiLineSnippet,
     showLineNumbers: true,

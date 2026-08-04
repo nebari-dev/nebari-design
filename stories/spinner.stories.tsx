@@ -41,7 +41,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  name: 'Default',
   parameters: {
     docs: {
       description: {
@@ -53,7 +52,6 @@ export const Default: Story = {
 };
 
 export const Sizes: Story = {
-  name: 'Sizes',
   parameters: {
     // Every spinner fixes its own size, and `label` has its own story below.
     controls: { include: [] },
@@ -109,8 +107,6 @@ export const WithText: Story = {
     },
   },
   render: (args) => (
-    // The spinner is icon-only; pair it with text at the call site (this is how
-    // `Button` renders its `loadingText`).
     <span className="inline-flex items-center gap-2 text-muted-foreground text-sm">
       <Spinner {...args} />
       Fetching data…

@@ -42,7 +42,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  name: 'Default',
   parameters: {
     docs: {
       description: {
@@ -53,7 +52,6 @@ export const Default: Story = {
 };
 
 export const Variants: Story = {
-  name: 'Variants',
   parameters: {
     // Every badge fixes both its `variant` and its label, so no knob is live
     // here — use `Default` to play with a single badge.

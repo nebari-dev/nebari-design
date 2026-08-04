@@ -72,7 +72,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  name: 'Default',
   parameters: {
     docs: {
       description: {
@@ -93,7 +92,6 @@ export const Default: Story = {
 };
 
 export const Variants: Story = {
-  name: 'Variants',
   parameters: {
     // Each alert fixes its own `variant`, so only `role` stays live here.
     controls: { include: ['role'] },
@@ -208,7 +206,6 @@ export const WithAction: Story = {
 };
 
 export const Dismissible: Story = {
-  name: 'Dismissible',
   args: { variant: 'success' },
   parameters: {
     controls: { include: ['variant', 'role'] },

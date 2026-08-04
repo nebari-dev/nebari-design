@@ -7,10 +7,38 @@ type RadioGroupStoryArgs = ComponentProps<typeof RadioGroupItem> &
   Pick<ComponentProps<typeof RadioGroup>, 'orientation'>;
 
 const plans = [
-  { label: 'Starter', value: 'starter' },
-  { label: 'Pro', value: 'pro' },
-  { label: 'Team', value: 'team' },
+  {
+    label: 'Starter',
+    value: 'starter',
+    description: 'For individuals getting started.',
+  },
+  {
+    label: 'Pro',
+    value: 'pro',
+    description: 'For growing teams that need more.',
+  },
+  { label: 'Team', value: 'team', description: 'For organizations at scale.' },
 ];
+
+/** The three plan options, so each story only supplies the knobs it exposes. */
+function PlanOptions({
+  showDescriptions = false,
+  ...itemProps
+}: Omit<
+  ComponentProps<typeof RadioGroupItem>,
+  'children' | 'description' | 'value'
+> & { showDescriptions?: boolean }) {
+  return plans.map((plan) => (
+    <RadioGroupItem
+      {...itemProps}
+      description={showDescriptions ? plan.description : undefined}
+      key={plan.value}
+      value={plan.value}
+    >
+      {plan.label}
+    </RadioGroupItem>
+  ));
+}
 
 const meta = {
   title: 'Components/Radio Group',
@@ -100,11 +128,7 @@ export const Default: Story = {
         defaultValue="pro"
         orientation={orientation}
       >
-        {plans.map((plan) => (
-          <RadioGroupItem {...args} key={plan.value} value={plan.value}>
-            {plan.label}
-          </RadioGroupItem>
-        ))}
+        <PlanOptions {...args} />
       </RadioGroup>
     </div>
   ),
@@ -122,33 +146,12 @@ export const WithDescription: Story = {
   render: ({ disabled, readOnly, variant }) => (
     <div className="w-72">
       <RadioGroup aria-label="Plan" defaultValue="pro">
-        <RadioGroupItem
-          description="For individuals getting started."
+        <PlanOptions
           disabled={disabled}
           readOnly={readOnly}
-          value="starter"
+          showDescriptions
           variant={variant}
-        >
-          Starter
-        </RadioGroupItem>
-        <RadioGroupItem
-          description="For growing teams that need more."
-          disabled={disabled}
-          readOnly={readOnly}
-          value="pro"
-          variant={variant}
-        >
-          Pro
-        </RadioGroupItem>
-        <RadioGroupItem
-          description="For organizations at scale."
-          disabled={disabled}
-          readOnly={readOnly}
-          value="team"
-          variant={variant}
-        >
-          Team
-        </RadioGroupItem>
+        />
       </RadioGroup>
     </div>
   ),
@@ -170,16 +173,7 @@ export const Horizontal: Story = {
         defaultValue="pro"
         orientation={orientation}
       >
-        {plans.map((plan) => (
-          <RadioGroupItem
-            disabled={disabled}
-            key={plan.value}
-            value={plan.value}
-            variant={variant}
-          >
-            {plan.label}
-          </RadioGroupItem>
-        ))}
+        <PlanOptions disabled={disabled} variant={variant} />
       </RadioGroup>
     </div>
   ),
@@ -195,33 +189,12 @@ export const Box: Story = {
   render: ({ disabled, readOnly, variant }) => (
     <div className="w-72">
       <RadioGroup aria-label="Plan" defaultValue="pro">
-        <RadioGroupItem
-          description="For individuals getting started."
+        <PlanOptions
           disabled={disabled}
           readOnly={readOnly}
-          value="starter"
+          showDescriptions
           variant={variant}
-        >
-          Starter
-        </RadioGroupItem>
-        <RadioGroupItem
-          description="For growing teams that need more."
-          disabled={disabled}
-          readOnly={readOnly}
-          value="pro"
-          variant={variant}
-        >
-          Pro
-        </RadioGroupItem>
-        <RadioGroupItem
-          description="For organizations at scale."
-          disabled={disabled}
-          readOnly={readOnly}
-          value="team"
-          variant={variant}
-        >
-          Team
-        </RadioGroupItem>
+        />
       </RadioGroup>
     </div>
   ),
@@ -259,15 +232,7 @@ export const Disabled: Story = {
           Entire group disabled
         </p>
         <RadioGroup aria-label="Plan" defaultValue="pro" disabled>
-          {plans.map((plan) => (
-            <RadioGroupItem
-              key={plan.value}
-              value={plan.value}
-              variant={variant}
-            >
-              {plan.label}
-            </RadioGroupItem>
-          ))}
+          <PlanOptions variant={variant} />
         </RadioGroup>
       </div>
     </div>
@@ -279,7 +244,6 @@ export const Disabled: Story = {
  * optional description, and the radio group — all associated for accessibility.
  */
 export const WithField: Story = {
-  name: 'With Field',
   parameters: { controls: { include: ['variant', 'disabled'] } },
   render: ({ disabled, variant }) => (
     <Field className="w-80">
@@ -292,16 +256,7 @@ export const WithField: Story = {
         aria-labelledby="wf-label"
         defaultValue="pro"
       >
-        {plans.map((plan) => (
-          <RadioGroupItem
-            disabled={disabled}
-            key={plan.value}
-            value={plan.value}
-            variant={variant}
-          >
-            {plan.label}
-          </RadioGroupItem>
-        ))}
+        <PlanOptions disabled={disabled} variant={variant} />
       </RadioGroup>
     </Field>
   ),
@@ -333,11 +288,7 @@ export const Invalid: Story = {
         aria-labelledby="inv-label"
         required
       >
-        {plans.map((plan) => (
-          <RadioGroupItem key={plan.value} value={plan.value} variant={variant}>
-            {plan.label}
-          </RadioGroupItem>
-        ))}
+        <PlanOptions variant={variant} />
       </RadioGroup>
       <FieldError id="inv-error" match>
         Please select a plan to continue.

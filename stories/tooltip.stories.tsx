@@ -121,54 +121,20 @@ export const Sides: Story = {
   },
   render: ({ children: _children, side: _side, ...args }) => (
     <div className="grid grid-cols-2 items-center justify-items-center gap-6 sm:grid-cols-4">
-      <Tooltip>
-        <TooltipTrigger
-          render={
-            <Button className={triggerButtonClassName} variant="outline" />
-          }
-        >
-          Left
-        </TooltipTrigger>
-        <TooltipContent {...args} side="left">
-          Left Tooltip
-        </TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger
-          render={
-            <Button className={triggerButtonClassName} variant="outline" />
-          }
-        >
-          Top
-        </TooltipTrigger>
-        <TooltipContent {...args} side="top">
-          Top Tooltip
-        </TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger
-          render={
-            <Button className={triggerButtonClassName} variant="outline" />
-          }
-        >
-          Bottom
-        </TooltipTrigger>
-        <TooltipContent {...args} side="bottom">
-          Bottom Tooltip
-        </TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger
-          render={
-            <Button className={triggerButtonClassName} variant="outline" />
-          }
-        >
-          Right
-        </TooltipTrigger>
-        <TooltipContent {...args} side="right">
-          Right Tooltip
-        </TooltipContent>
-      </Tooltip>
+      {(['left', 'top', 'bottom', 'right'] as const).map((side) => (
+        <Tooltip key={side}>
+          <TooltipTrigger
+            render={
+              <Button className={triggerButtonClassName} variant="outline" />
+            }
+          >
+            <span className="capitalize">{side}</span>
+          </TooltipTrigger>
+          <TooltipContent {...args} side={side}>
+            <span className="capitalize">{side}</span> Tooltip
+          </TooltipContent>
+        </Tooltip>
+      ))}
     </div>
   ),
 };

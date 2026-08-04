@@ -51,17 +51,22 @@ const timezones = [
 type SelectTriggerProps = ComponentProps<typeof SelectTrigger>;
 type SelectContentProps = ComponentProps<typeof SelectContent>;
 
+type SelectStoryArgs = SelectTriggerProps &
+  Pick<
+    SelectContentProps,
+    'align' | 'alignItemWithTrigger' | 'side' | 'sideOffset'
+  > & {
+    invalid?: boolean;
+  };
+
 interface SelectPreviewProps {
+  args: SelectStoryArgs;
   label: string;
   placeholder: string;
   options?: readonly SelectOption[];
-  defaultValue?: string;
   children?: ReactNode;
   helperText?: ReactNode;
-  invalid?: boolean;
   contentClassName?: string;
-  contentProps?: Omit<SelectContentProps, 'children'>;
-  triggerProps?: Omit<SelectTriggerProps, 'children'>;
 }
 
 function findOptionLabel(
@@ -72,31 +77,38 @@ function findOptionLabel(
   return options.find((option) => option.value === value)?.label ?? placeholder;
 }
 
+/**
+ * Splits the flat story args across the two components they belong to — the
+ * positioning knobs onto `SelectContent`, everything else onto `SelectTrigger`.
+ */
 function SelectPreview({
+  args: { align, alignItemWithTrigger, invalid, side, sideOffset, ...trigger },
   label,
   placeholder,
   options = frameworks,
-  defaultValue,
   children,
   helperText = 'Select one option.',
-  invalid = false,
   contentClassName,
-  contentProps,
-  triggerProps,
 }: SelectPreviewProps) {
   return (
-    <Field className="w-64" disabled={triggerProps?.disabled} invalid={invalid}>
+    <Field className="w-64" disabled={trigger.disabled} invalid={invalid}>
       <FieldLabel>{label}</FieldLabel>
-      <Select defaultValue={defaultValue} items={options} modal={false}>
+      <Select items={options} modal={false}>
         <SelectTrigger
-          {...triggerProps}
-          aria-invalid={invalid || triggerProps?.['aria-invalid']}
+          {...trigger}
+          aria-invalid={invalid || trigger['aria-invalid']}
         >
           <SelectValue>
             {(value) => findOptionLabel(options, value, placeholder)}
           </SelectValue>
         </SelectTrigger>
-        <SelectContent {...contentProps} className={contentClassName}>
+        <SelectContent
+          align={align}
+          alignItemWithTrigger={alignItemWithTrigger}
+          className={contentClassName}
+          side={side}
+          sideOffset={sideOffset}
+        >
           {children ??
             options.map((option) => (
               <SelectItem
@@ -121,14 +133,6 @@ function SelectPreview({
     </Field>
   );
 }
-
-type SelectStoryArgs = SelectTriggerProps &
-  Pick<
-    SelectContentProps,
-    'align' | 'alignItemWithTrigger' | 'side' | 'sideOffset'
-  > & {
-    invalid?: boolean;
-  };
 
 const meta = {
   title: 'Components/Select',
@@ -208,20 +212,11 @@ export default meta;
 type Story = StoryObj<SelectStoryArgs>;
 
 export const Default: Story = {
-  render: ({
-    align,
-    alignItemWithTrigger,
-    invalid,
-    side,
-    sideOffset,
-    ...triggerProps
-  }) => (
+  render: (args) => (
     <SelectPreview
-      contentProps={{ align, alignItemWithTrigger, side, sideOffset }}
-      invalid={invalid}
+      args={args}
       label="Framework"
       placeholder="Select a framework"
-      triggerProps={triggerProps}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -261,21 +256,12 @@ export const Groups: Story = {
       include: ['side', 'align', 'sideOffset', 'alignItemWithTrigger'],
     },
   },
-  render: ({
-    align,
-    alignItemWithTrigger,
-    invalid,
-    side,
-    sideOffset,
-    ...triggerProps
-  }) => (
+  render: (args) => (
     <SelectPreview
-      contentProps={{ align, alignItemWithTrigger, side, sideOffset }}
-      invalid={invalid}
+      args={args}
       label="Deployment target"
       options={[...frameworks, ...regions]}
       placeholder="Select a target"
-      triggerProps={triggerProps}
     >
       <SelectGroup>
         <SelectLabel>Frameworks</SelectLabel>
@@ -306,22 +292,13 @@ export const Scrollable: Story = {
       include: ['side', 'align', 'sideOffset', 'alignItemWithTrigger'],
     },
   },
-  render: ({
-    align,
-    alignItemWithTrigger,
-    invalid,
-    side,
-    sideOffset,
-    ...triggerProps
-  }) => (
+  render: (args) => (
     <SelectPreview
+      args={args}
       contentClassName="max-h-56"
-      contentProps={{ align, alignItemWithTrigger, side, sideOffset }}
-      invalid={invalid}
       label="Timezone"
       options={timezones}
       placeholder="Select a timezone"
-      triggerProps={triggerProps}
     />
   ),
 };
@@ -329,21 +306,12 @@ export const Scrollable: Story = {
 export const Disabled: Story = {
   args: { disabled: true },
   parameters: { controls: { include: ['disabled'] } },
-  render: ({
-    align,
-    alignItemWithTrigger,
-    invalid,
-    side,
-    sideOffset,
-    ...triggerProps
-  }) => (
+  render: (args) => (
     <SelectPreview
-      contentProps={{ align, alignItemWithTrigger, side, sideOffset }}
+      args={args}
       helperText="This select is unavailable."
-      invalid={invalid}
       label="Framework"
       placeholder="Select a framework"
-      triggerProps={triggerProps}
     />
   ),
 };
@@ -351,21 +319,12 @@ export const Disabled: Story = {
 export const Invalid: Story = {
   args: { invalid: true },
   parameters: { controls: { include: ['invalid'] } },
-  render: ({
-    align,
-    alignItemWithTrigger,
-    invalid,
-    side,
-    sideOffset,
-    ...triggerProps
-  }) => (
+  render: (args) => (
     <SelectPreview
-      contentProps={{ align, alignItemWithTrigger, side, sideOffset }}
+      args={args}
       helperText="Please select a framework."
-      invalid={invalid}
       label="Framework"
       placeholder="Select a framework"
-      triggerProps={triggerProps}
     />
   ),
 };

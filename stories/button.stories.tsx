@@ -89,7 +89,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  name: 'Default',
   parameters: {
     docs: {
       description: {
@@ -100,7 +99,6 @@ export const Default: Story = {
 };
 
 export const Variants: Story = {
-  name: 'Variants',
   parameters: {
     // The grid fixes `variant` and each label; the remaining axes stay live.
     controls: { include: ['size', 'loading', 'disabled'] },
@@ -136,7 +134,6 @@ export const Variants: Story = {
 };
 
 export const Sizes: Story = {
-  name: 'Sizes',
   parameters: {
     controls: { include: ['variant', 'loading', 'disabled'] },
     docs: {
@@ -225,7 +222,6 @@ export const WithIcon: Story = {
 };
 
 export const Loading: Story = {
-  name: 'Loading',
   args: { loading: true },
   parameters: {
     // `loading` is the subject and stays live — toggle it off to compare each
@@ -260,7 +256,6 @@ export const Loading: Story = {
 };
 
 export const Disabled: Story = {
-  name: 'Disabled',
   parameters: {
     controls: { include: ['disabled', 'variant', 'size'] },
     docs: {

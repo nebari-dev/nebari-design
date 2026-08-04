@@ -109,7 +109,6 @@ function NotificationsMenu() {
 }
 
 export const Default: Story = {
-  name: 'Default',
   render: (args) => <NavLink icon={<Home />} {...args} />,
 };
 

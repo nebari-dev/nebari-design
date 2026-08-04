@@ -1,6 +1,6 @@
 // biome-ignore-all lint/a11y/noNoninteractiveTabindex: dialog scroll containers need keyboard access.
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { useState } from 'react';
 import { expect, userEvent, within } from 'storybook/test';
 import { Button } from '@/ui/button';
@@ -32,30 +32,26 @@ type DialogStoryArgs = ComponentProps<typeof DialogContent> &
   };
 
 /**
- * The knobs that live on `Dialog` (the root) rather than on `DialogContent`.
- * Every story threads them so its controls stay live; `defaultOpen` additionally
- * needs a `key` on the root, since it is only read on mount.
+ * Applies the knobs that live on `Dialog` (the root) rather than on
+ * `DialogContent`, so every story keeps them live off a plain `{...args}`.
  */
-type DialogRootProps = Pick<
-  ComponentProps<typeof Dialog>,
-  'defaultOpen' | 'disablePointerDismissal' | 'modal' | 'open'
->;
-
-function dialogRootProps({
+function DialogRoot({
+  children,
   defaultOpen,
   disablePointerDismissal,
   modal,
   open,
-}: Pick<
-  DialogStoryArgs,
-  'defaultOpen' | 'disablePointerDismissal' | 'modal' | 'open'
->): DialogRootProps {
-  return {
-    defaultOpen,
-    disablePointerDismissal,
-    modal: modal === undefined ? undefined : MODAL_BY_KEY[modal],
-    open,
-  };
+}: DialogStoryArgs & { children: ReactNode }) {
+  return (
+    <Dialog
+      defaultOpen={defaultOpen}
+      disablePointerDismissal={disablePointerDismissal}
+      modal={MODAL_BY_KEY[modal]}
+      open={open}
+    >
+      {children}
+    </Dialog>
+  );
 }
 
 /** Applies to every story: the root state knobs plus the close button. */
@@ -133,6 +129,11 @@ const meta = {
     viewportClassName: { table: { disable: true } },
     overlayClassName: { table: { disable: true } },
   },
+  decorators: [
+    // `defaultOpen` is read once on mount, so key the story on it to remount
+    // when the control changes — otherwise the knob would silently do nothing.
+    (Story, { args }) => <Story key={String(args.defaultOpen)} />,
+  ],
 } satisfies Meta<DialogStoryArgs>;
 
 export default meta;
@@ -183,7 +184,7 @@ async function copyToClipboard(text: string) {
   }
 }
 
-function ShareWorkspaceDialog(rootProps: DialogRootProps) {
+function ShareWorkspaceDialog(args: DialogStoryArgs) {
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>(
     'idle',
   );
@@ -198,7 +199,7 @@ function ShareWorkspaceDialog(rootProps: DialogRootProps) {
   }
 
   return (
-    <Dialog {...rootProps}>
+    <DialogRoot {...args}>
       <DialogTrigger render={<Button variant="outline" />}>Share</DialogTrigger>
       <DialogContent showCloseButton={false}>
         <DialogHeader>
@@ -226,23 +227,15 @@ function ShareWorkspaceDialog(rootProps: DialogRootProps) {
           </Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
+    </DialogRoot>
   );
 }
 
 export const Default: Story = {
-  // `defaultOpen` is read once on mount, so key the dialog on it to remount
-  // when the control changes — otherwise the knob would silently do nothing.
-  render: ({ defaultOpen, disablePointerDismissal, modal, open, ...args }) => (
-    <Dialog
-      key={String(defaultOpen)}
-      defaultOpen={defaultOpen}
-      disablePointerDismissal={disablePointerDismissal}
-      modal={MODAL_BY_KEY[modal]}
-      open={open}
-    >
+  render: (args) => (
+    <DialogRoot {...args}>
       <DialogTrigger render={<Button />}>Open Dialog</DialogTrigger>
-      <DialogContent {...args}>
+      <DialogContent showCloseButton={args.showCloseButton}>
         <DialogHeader>
           <DialogTitle>Are you absolutely sure?</DialogTitle>
           <DialogDescription>
@@ -251,7 +244,7 @@ export const Default: Story = {
           </DialogDescription>
         </DialogHeader>
       </DialogContent>
-    </Dialog>
+    </DialogRoot>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -268,20 +261,11 @@ export const Default: Story = {
 };
 
 export const GenericDialog: Story = {
-  name: 'Generic Dialog',
   parameters: { controls: { include: dialogControls } },
-  render: ({ defaultOpen, disablePointerDismissal, modal, open, ...args }) => (
-    <Dialog
-      key={String(defaultOpen)}
-      {...dialogRootProps({
-        defaultOpen,
-        disablePointerDismissal,
-        modal,
-        open,
-      })}
-    >
+  render: (args) => (
+    <DialogRoot {...args}>
       <DialogTrigger render={<Button />}>Open Dialog</DialogTrigger>
-      <DialogContent {...args}>
+      <DialogContent showCloseButton={args.showCloseButton}>
         <DialogHeader>
           <DialogTitle>Dialog title</DialogTitle>
           <DialogDescription>
@@ -296,27 +280,18 @@ export const GenericDialog: Story = {
           <DialogClose render={<Button />}>Confirm</DialogClose>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
+    </DialogRoot>
   ),
 };
 
 export const DeleteConfirmation: Story = {
-  name: 'Delete Confirmation',
   parameters: { controls: { include: dialogControls } },
-  render: ({ defaultOpen, disablePointerDismissal, modal, open, ...args }) => (
-    <Dialog
-      key={String(defaultOpen)}
-      {...dialogRootProps({
-        defaultOpen,
-        disablePointerDismissal,
-        modal,
-        open,
-      })}
-    >
+  render: (args) => (
+    <DialogRoot {...args}>
       <DialogTrigger render={<Button variant="destructive" />}>
         Delete Environment
       </DialogTrigger>
-      <DialogContent {...args}>
+      <DialogContent showCloseButton={args.showCloseButton}>
         <DialogHeader>
           <DialogTitle>Delete environment?</DialogTitle>
           <DialogDescription>
@@ -333,50 +308,30 @@ export const DeleteConfirmation: Story = {
           </DialogClose>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
+    </DialogRoot>
   ),
 };
 
 export const CustomCloseButton: Story = {
-  name: 'Custom Close Button',
   // The dialog fixes `showCloseButton={false}` — that is the story.
   parameters: {
     controls: {
       include: dialogControls.filter((prop) => prop !== 'showCloseButton'),
     },
   },
-  render: ({ defaultOpen, disablePointerDismissal, modal, open }) => (
-    <ShareWorkspaceDialog
-      key={String(defaultOpen)}
-      {...dialogRootProps({
-        defaultOpen,
-        disablePointerDismissal,
-        modal,
-        open,
-      })}
-    />
-  ),
+  render: (args) => <ShareWorkspaceDialog {...args} />,
 };
 
 export const StickyFooter: Story = {
-  name: 'Sticky Footer',
   parameters: { controls: { include: dialogControls } },
-  render: ({ defaultOpen, disablePointerDismissal, modal, open, ...args }) => (
-    <Dialog
-      key={String(defaultOpen)}
-      {...dialogRootProps({
-        defaultOpen,
-        disablePointerDismissal,
-        modal,
-        open,
-      })}
-    >
+  render: (args) => (
+    <DialogRoot {...args}>
       <DialogTrigger render={<Button variant="outline" />}>
         Sticky Footer
       </DialogTrigger>
       <DialogContent
-        {...args}
         className="grid h-[min(calc(100vh-2rem),28rem)] grid-rows-[auto,minmax(0,1fr),auto] gap-0 p-0"
+        showCloseButton={args.showCloseButton}
       >
         <DialogHeader className="px-6 pt-6 pr-14 pb-4">
           <DialogTitle>Review environment changes</DialogTitle>
@@ -406,7 +361,7 @@ export const StickyFooter: Story = {
           <Button>Rebuild image</Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
+    </DialogRoot>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -427,24 +382,15 @@ export const StickyFooter: Story = {
 };
 
 export const ScrollableContent: Story = {
-  name: 'Scrollable Content',
   parameters: { controls: { include: dialogControls } },
-  render: ({ defaultOpen, disablePointerDismissal, modal, open, ...args }) => (
-    <Dialog
-      key={String(defaultOpen)}
-      {...dialogRootProps({
-        defaultOpen,
-        disablePointerDismissal,
-        modal,
-        open,
-      })}
-    >
+  render: (args) => (
+    <DialogRoot {...args}>
       <DialogTrigger render={<Button variant="outline" />}>
         Scrollable Content
       </DialogTrigger>
       <DialogContent
-        {...args}
         className="grid h-[min(calc(100vh-2rem),32rem)] grid-rows-[auto,minmax(0,1fr)]"
+        showCloseButton={args.showCloseButton}
       >
         <DialogHeader>
           <DialogTitle>Workspace activity</DialogTitle>
@@ -465,7 +411,7 @@ export const ScrollableContent: Story = {
           ))}
         </section>
       </DialogContent>
-    </Dialog>
+    </DialogRoot>
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);

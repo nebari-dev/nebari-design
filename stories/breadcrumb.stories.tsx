@@ -257,7 +257,6 @@ async function verifyCollapsedMenu(
 }
 
 export const Default: Story = {
-  name: 'Default',
   parameters: {
     docs: {
       description: {
@@ -285,7 +284,6 @@ export const Default: Story = {
 };
 
 export const Ellipsis: Story = {
-  name: 'Ellipsis',
   parameters: {
     // Fixed composition with a pinned source snippet — the `variant` preview
     // knob belongs to `Default`, so nothing is adjustable here.
@@ -308,7 +306,6 @@ export const Ellipsis: Story = {
 };
 
 export const Dropdown: Story = {
-  name: 'Dropdown',
   parameters: {
     // Fixed composition with a pinned source snippet.
     controls: { include: [] },

@@ -78,6 +78,11 @@ const meta = {
       control: false,
     },
   },
+  decorators: [
+    // `defaultValue` is read once on mount, so key the story on it to remount
+    // when the control changes — otherwise the knob would silently do nothing.
+    (Story, { args }) => <Story key={String(args.defaultValue)} />,
+  ],
 } satisfies Meta<TabsStoryArgs>;
 
 export default meta;
@@ -166,7 +171,6 @@ function ExampleTabs({
 }
 
 export const Default: Story = {
-  name: 'Default',
   parameters: {
     docs: {
       description: {
@@ -175,13 +179,10 @@ export const Default: Story = {
       },
     },
   },
-  // `defaultValue` is read once on mount, so key the tabs on it to remount when
-  // the control changes — otherwise the knob would silently do nothing.
-  render: (args) => <ExampleTabs key={String(args.defaultValue)} {...args} />,
+  render: (args) => <ExampleTabs {...args} />,
 };
 
 export const Underline: Story = {
-  name: 'Underline',
   args: { variant: 'underline' },
   parameters: {
     controls: { include: ['variant', 'icons', 'disabled'] },
@@ -192,11 +193,10 @@ export const Underline: Story = {
       },
     },
   },
-  render: (args) => <ExampleTabs key={String(args.defaultValue)} {...args} />,
+  render: (args) => <ExampleTabs {...args} />,
 };
 
 export const Vertical: Story = {
-  name: 'Vertical',
   args: { orientation: 'vertical' },
   parameters: {
     controls: { include: ['orientation', 'variant', 'icons'] },
@@ -207,11 +207,10 @@ export const Vertical: Story = {
       },
     },
   },
-  render: (args) => <ExampleTabs key={String(args.defaultValue)} {...args} />,
+  render: (args) => <ExampleTabs {...args} />,
 };
 
 export const Disabled: Story = {
-  name: 'Disabled',
   args: { disabled: true },
   parameters: {
     controls: { include: ['disabled', 'variant'] },
@@ -222,11 +221,10 @@ export const Disabled: Story = {
       },
     },
   },
-  render: (args) => <ExampleTabs key={String(args.defaultValue)} {...args} />,
+  render: (args) => <ExampleTabs {...args} />,
 };
 
 export const Icons: Story = {
-  name: 'Icons',
   args: { icons: true },
   parameters: {
     controls: { include: ['icons', 'variant'] },
@@ -237,5 +235,5 @@ export const Icons: Story = {
       },
     },
   },
-  render: (args) => <ExampleTabs key={String(args.defaultValue)} {...args} />,
+  render: (args) => <ExampleTabs {...args} />,
 };

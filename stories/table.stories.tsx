@@ -41,13 +41,6 @@ type TableStoryArgs = {
   showFooter: boolean;
 };
 
-const tableStoryDefaults = {
-  caption: '',
-  empty: false,
-  showActions: false,
-  showFooter: false,
-} satisfies TableStoryArgs;
-
 function TableFrame({ children }: { children: ReactNode }) {
   return <div className="w-[44rem] max-w-[calc(100vw-3rem)]">{children}</div>;
 }
@@ -110,11 +103,11 @@ function EnvironmentRows({ actions = false }: { actions?: boolean }) {
 }
 
 function EnvironmentTable({
-  caption,
-  empty,
-  showActions,
-  showFooter,
-}: TableStoryArgs) {
+  caption = '',
+  empty = false,
+  showActions = false,
+  showFooter = false,
+}: Partial<TableStoryArgs>) {
   const columnCount = showActions ? 5 : 4;
 
   return (
@@ -159,7 +152,7 @@ const meta = {
       },
     },
   },
-  args: tableStoryDefaults,
+  args: { caption: '', empty: false, showActions: false, showFooter: false },
   argTypes: {
     caption: {
       control: 'text',
@@ -193,7 +186,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: (args) => (
     <TableFrame>
-      <EnvironmentTable {...tableStoryDefaults} {...args} />
+      <EnvironmentTable {...args} />
     </TableFrame>
   ),
 };
@@ -207,7 +200,7 @@ export const WithFooter: Story = {
   },
   render: (args) => (
     <TableFrame>
-      <EnvironmentTable {...tableStoryDefaults} {...args} />
+      <EnvironmentTable {...args} />
     </TableFrame>
   ),
 };
@@ -219,7 +212,7 @@ export const Actions: Story = {
   },
   render: (args) => (
     <TableFrame>
-      <EnvironmentTable {...tableStoryDefaults} {...args} />
+      <EnvironmentTable {...args} />
     </TableFrame>
   ),
 };
@@ -233,7 +226,7 @@ export const EmptyState: Story = {
   },
   render: (args) => (
     <TableFrame>
-      <EnvironmentTable {...tableStoryDefaults} {...args} />
+      <EnvironmentTable {...args} />
     </TableFrame>
   ),
 };

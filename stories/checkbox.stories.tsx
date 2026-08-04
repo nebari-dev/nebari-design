@@ -135,6 +135,11 @@ const meta = {
       control: false,
     },
   },
+  decorators: [
+    // `defaultChecked` is read once on mount, so key the story on it to remount
+    // when the control changes — otherwise the knob would silently do nothing.
+    (Story, { args }) => <Story key={String(args.defaultChecked)} />,
+  ],
 } satisfies Meta<typeof Checkbox>;
 
 export default meta;
@@ -146,11 +151,9 @@ type Story = StoryObj<typeof meta>;
  * are enough context for a single boolean choice.
  */
 export const Default: Story = {
-  // `defaultChecked` is read once on mount, so key the checkbox on it to
-  // remount when the control changes.
   render: (args) => (
     <div className="w-72">
-      <Checkbox key={String(args.defaultChecked)} {...args} />
+      <Checkbox {...args} />
     </div>
   ),
 };
@@ -167,7 +170,7 @@ export const WithDescription: Story = {
   },
   render: (args) => (
     <div className="w-72">
-      <Checkbox key={String(args.defaultChecked)} {...args} />
+      <Checkbox {...args} />
     </div>
   ),
 };
@@ -214,9 +217,7 @@ export const Box: Story = {
   },
   render: (args) => (
     <div className="w-80">
-      <Checkbox key={String(args.defaultChecked)} {...args}>
-        Allow environment cloning
-      </Checkbox>
+      <Checkbox {...args}>Allow environment cloning</Checkbox>
     </div>
   ),
 };
@@ -245,7 +246,6 @@ export const Disabled: Story = {
  * description separate from the checkbox's own inline label.
  */
 export const WithField: Story = {
-  name: 'With Field',
   parameters: { controls: { include: ['variant', 'disabled'] } },
   render: ({ disabled, variant }) => (
     <Field className="w-80">

@@ -330,11 +330,13 @@ paint. Eight rules, applied by every story under `Components/*`
    every interactive knob is live.
 5. **Every knob is seeded in meta `args`.** Storybook's boolean, number, and
    object controls render a click-to-reveal "Set …" button while their value is
-   `undefined`, so an unseeded knob costs a click before it can be used. Seed
-   every declared knob with the value that reproduces the component's default
-   rendering — `false` for booleans, the documented default for selects, the
-   effective default for numbers — so seeding never changes what the story looks
-   like. Seed in meta, not per story: rule 4 keeps `Default` free of own args.
+   `undefined`, so an unseeded knob costs a click before it can be used. Default
+   to seeding with the component's own default — `false` for booleans, the
+   documented default for selects, the effective default for numbers. Where that
+   would make a dull playground, seed the state the playground is better off
+   opening in instead (`defaultChecked: true` on checkbox and switch,
+   `defaultValue: 33` on slider) and let `table.defaultValue` carry the real
+   default. Seed in meta, not per story: rule 4 keeps `Default` free of own args.
    Optional free-text knobs (`loadingText`, `htmlFor`) need no seed; a text
    control always renders an input.
 
@@ -377,8 +379,14 @@ paint. Eight rules, applied by every story under `Components/*`
    re-renders into a cached React root on an args change; it never remounts. So
    a mount-only prop (`defaultChecked`, `defaultValue`, `defaultOpen`) exposed
    as a live control would silently do nothing. Keep the control and key the
-   component on that prop so the knob forces a remount:
-   `<Switch key={String(args.defaultChecked)} {...args} />`. Its controlled
+   story on that prop from a meta decorator, so every story in the file gets the
+   remount for free instead of repeating a `key` in each `render`:
+
+   ```tsx
+   decorators: [(Story, { args }) => <Story key={String(args.defaultChecked)} />],
+   ```
+
+   Its controlled
    counterpart (`checked`, `value`, `open`) gets `control: false` with a
    "left as a docs-only row here so the playground stays interactive" note —
    a live controlled knob with no state wiring freezes the component the moment

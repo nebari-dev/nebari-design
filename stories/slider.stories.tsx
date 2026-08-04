@@ -117,6 +117,11 @@ const meta = {
       control: false,
     },
   },
+  decorators: [
+    // `defaultValue` is read once on mount, so key the story on it to remount
+    // when the control changes — otherwise the knob would silently do nothing.
+    (Story, { args }) => <Story key={String(args.defaultValue)} />,
+  ],
 } satisfies Meta<typeof Slider>;
 
 export default meta;
@@ -125,15 +130,9 @@ type Story = StoryObj<typeof meta>;
 
 /** The default slider selects a single value from a bounded range. */
 export const Default: Story = {
-  // `defaultValue` is read once on mount, so key the slider on it to remount
-  // when the control changes.
   render: (args) => (
     <div className={args.orientation === 'vertical' ? 'h-52' : 'w-80'}>
-      <Slider
-        key={String(args.defaultValue)}
-        {...args}
-        getThumbAriaLabel={() => 'Resource limit'}
-      />
+      <Slider {...args} getThumbAriaLabel={() => 'Resource limit'} />
     </div>
   ),
 };
@@ -167,7 +166,6 @@ export const Range: Story = {
 
 /** Use an array with more values for multiple thumbs. */
 export const MultipleThumbs: Story = {
-  name: 'Multiple Thumbs',
   parameters: {
     controls: {
       include: ['min', 'max', 'step', 'showValueTooltip', 'disabled'],
@@ -201,11 +199,7 @@ export const Vertical: Story = {
     <Field className="items-center gap-3">
       <FieldLabel>Resource limit</FieldLabel>
       <div className={args.orientation === 'vertical' ? 'h-52' : 'w-80'}>
-        <Slider
-          key={String(args.defaultValue)}
-          {...args}
-          getThumbAriaLabel={() => 'Resource limit'}
-        />
+        <Slider {...args} getThumbAriaLabel={() => 'Resource limit'} />
       </div>
     </Field>
   ),
@@ -228,11 +222,7 @@ export const Disabled: Story = {
   },
   render: ({ orientation: _orientation, ...args }) => (
     <div className="w-80">
-      <Slider
-        key={String(args.defaultValue)}
-        {...args}
-        getThumbAriaLabel={() => 'Storage quota'}
-      />
+      <Slider {...args} getThumbAriaLabel={() => 'Storage quota'} />
     </div>
   ),
 };
