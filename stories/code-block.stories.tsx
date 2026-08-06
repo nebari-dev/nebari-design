@@ -95,16 +95,13 @@ export const Default: Story = {
   ),
 };
 
-/** Excludes `showCopyButton`: it adds a second, floating button, not hides one. */
-const composedCopyButtonControls = ['code', 'showLineNumbers', 'dark'];
-
 export const HorizontalScroll: Story = {
   name: 'Horizontal scroll',
   args: { code: longLineSnippet },
   parameters: {
     // Header-less, so the floating copy button is the one on screen.
     controls: {
-      include: ['code', 'showCopyButton', 'showLineNumbers', 'dark'],
+      include: [],
     },
     docs: {
       description: {
@@ -123,7 +120,7 @@ export const HorizontalScroll: Story = {
 export const WithHeader: Story = {
   name: 'With header',
   parameters: {
-    controls: { include: composedCopyButtonControls },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -150,7 +147,7 @@ export const WithLineNumbers: Story = {
     showLineNumbers: true,
   },
   parameters: {
-    controls: { include: composedCopyButtonControls },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -176,7 +173,7 @@ export const MaxLines: Story = {
     showLineNumbers: false,
   },
   parameters: {
-    controls: { include: composedCopyButtonControls },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -202,7 +199,7 @@ export const Dark: Story = {
     dark: true,
   },
   parameters: {
-    controls: { include: composedCopyButtonControls },
+    controls: { include: [] },
     docs: {
       description: {
         story:

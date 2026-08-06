@@ -100,7 +100,7 @@ export const Default: Story = {
 
 export const Variants: Story = {
   parameters: {
-    controls: { include: ['size', 'loading', 'disabled'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -134,7 +134,7 @@ export const Variants: Story = {
 
 export const Sizes: Story = {
   parameters: {
-    controls: { include: ['variant', 'loading', 'disabled'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -164,7 +164,7 @@ export const IconSizes: Story = {
   name: 'Icon sizes',
   parameters: {
     // `loadingText` is ignored at icon-only sizes, so it is left out here.
-    controls: { include: ['variant', 'loading', 'disabled'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -193,7 +193,7 @@ export const IconSizes: Story = {
 export const WithIcon: Story = {
   name: 'With icon',
   parameters: {
-    controls: { include: ['size', 'loading', 'disabled'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -223,7 +223,7 @@ export const Loading: Story = {
   args: { loading: true },
   parameters: {
     // The last button fixes `size` to show the icon-only collapse.
-    controls: { include: ['loading', 'variant', 'disabled'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -253,7 +253,7 @@ export const Loading: Story = {
 
 export const Disabled: Story = {
   parameters: {
-    controls: { include: ['disabled', 'variant', 'size'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -267,7 +267,7 @@ export const Disabled: Story = {
 export const AsLink: Story = {
   name: 'Render as link',
   parameters: {
-    controls: { include: ['variant', 'size', 'disabled'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:

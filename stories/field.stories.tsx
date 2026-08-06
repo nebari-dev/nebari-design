@@ -57,7 +57,7 @@ export const Default: Story = {
 
 /** Inline layout — label and description on the left, control on the right. */
 export const Inline: Story = {
-  parameters: { controls: { include: ['disabled', 'invalid'] } },
+  parameters: { controls: { include: [] } },
   render: (args) => (
     <Field
       {...args}

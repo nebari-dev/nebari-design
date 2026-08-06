@@ -64,14 +64,14 @@ const meta = {
     variant: {
       description:
         'Option layout. `default` is an inline radio; `box` turns each option into a bordered, fully clickable card.',
-      control: 'inline-radio',
+      control: 'select',
       options: ['default', 'box'],
       table: { defaultValue: { summary: 'default' } },
     },
     orientation: {
       description:
         'Set on `RadioGroup`, not the item — stacks options vertically or wraps them in a row.',
-      control: 'inline-radio',
+      control: 'select',
       options: ['vertical', 'horizontal'],
       table: { defaultValue: { summary: 'vertical' } },
     },
@@ -139,8 +139,7 @@ export const Default: Story = {
  */
 export const WithDescription: Story = {
   name: 'With description',
-  // Each option carries its own description text, so that knob drops out.
-  parameters: { controls: { include: ['variant', 'disabled', 'readOnly'] } },
+  parameters: { controls: { include: [] } },
   render: ({ disabled, readOnly, variant }) => (
     <div className="w-72">
       <RadioGroup aria-label="Plan" defaultValue="pro">
@@ -162,7 +161,7 @@ export const WithDescription: Story = {
 export const Horizontal: Story = {
   args: { orientation: 'horizontal' },
   parameters: {
-    controls: { include: ['orientation', 'variant', 'disabled'] },
+    controls: { include: [] },
   },
   render: ({ disabled, orientation, variant }) => (
     <div className={orientation === 'horizontal' ? 'w-[28rem]' : 'w-72'}>
@@ -183,7 +182,7 @@ export const Horizontal: Story = {
  */
 export const Box: Story = {
   args: { variant: 'box' },
-  parameters: { controls: { include: ['variant', 'disabled', 'readOnly'] } },
+  parameters: { controls: { include: [] } },
   render: ({ disabled, readOnly, variant }) => (
     <div className="w-72">
       <RadioGroup aria-label="Plan" defaultValue="pro">
@@ -203,7 +202,7 @@ export const Box: Story = {
  * the whole group can be disabled at once.
  */
 export const Disabled: Story = {
-  parameters: { controls: { include: ['variant'] } },
+  parameters: { controls: { include: [] } },
   render: ({ variant }) => (
     <div className="flex flex-col gap-8">
       <div className="flex w-72 flex-col gap-3">
@@ -240,7 +239,7 @@ export const Disabled: Story = {
  * optional description, and the radio group — all associated for accessibility.
  */
 export const WithField: Story = {
-  parameters: { controls: { include: ['variant', 'disabled'] } },
+  parameters: { controls: { include: [] } },
   render: ({ disabled, variant }) => (
     <Field className="w-80">
       <FieldLabel id="wf-label">Choose a plan</FieldLabel>
@@ -273,7 +272,7 @@ export const WithField: Story = {
  * the radios. The cue clears as soon as the user selects an option.
  */
 export const Invalid: Story = {
-  parameters: { controls: { include: ['variant'] } },
+  parameters: { controls: { include: [] } },
   render: ({ variant }) => (
     <Field className="w-80" invalid>
       <FieldLabel id="inv-label">Choose a plan</FieldLabel>

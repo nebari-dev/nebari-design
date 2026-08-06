@@ -87,14 +87,6 @@ type Story = StoryObj<typeof meta>;
 
 const triggerButtonClassName = 'min-w-24 leading-none';
 
-const positioningControls = [
-  'side',
-  'align',
-  'sideOffset',
-  'alignOffset',
-  'showArrow',
-];
-
 export const Default: Story = {
   render: ({ children, ...args }) => (
     <Tooltip>
@@ -111,7 +103,7 @@ export const Default: Story = {
 export const Sides: Story = {
   parameters: {
     controls: {
-      include: positioningControls.filter((prop) => prop !== 'side'),
+      include: [],
     },
   },
   render: ({ children: _children, side: _side, ...args }) => (
@@ -136,7 +128,7 @@ export const Sides: Story = {
 
 export const SupplementalInfo: Story = {
   name: 'Supplemental info',
-  parameters: { controls: { include: positioningControls } },
+  parameters: { controls: { include: [] } },
   render: ({ children: _children, ...args }) => (
     <div className="flex items-center gap-2">
       <span className="font-medium text-sm">Workspace settings</span>
@@ -159,7 +151,7 @@ export const SupplementalInfo: Story = {
 
 export const WithShortcut: Story = {
   name: 'With shortcut',
-  parameters: { controls: { include: positioningControls } },
+  parameters: { controls: { include: [] } },
   render: ({ children: _children, ...args }) => (
     <Tooltip>
       <TooltipTrigger
@@ -177,7 +169,7 @@ export const WithShortcut: Story = {
 };
 
 export const Focus: Story = {
-  parameters: { controls: { include: positioningControls } },
+  parameters: { controls: { include: [] } },
   render: ({ children: _children, ...args }) => (
     <Tooltip>
       <TooltipTrigger

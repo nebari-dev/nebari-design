@@ -169,7 +169,7 @@ export const Sizes: Story = {
 
 export const WithAction: Story = {
   name: 'With action',
-  parameters: { controls: { include: ['size'] } },
+  parameters: { controls: { include: [] } },
   render: ({ showFooter: _showFooter, showHeader: _showHeader, ...args }) => (
     <Card {...args} className={singleCardClassName}>
       <CardHeader>
@@ -203,7 +203,7 @@ export const WithAction: Story = {
 
 export const HeaderExamples: Story = {
   name: 'Header examples',
-  parameters: { controls: { include: ['size'] } },
+  parameters: { controls: { include: [] } },
   render: ({ showFooter: _showFooter, showHeader: _showHeader, ...args }) => (
     <div className={responsiveThreeCardGridClassName}>
       <Card {...args} className={rowCardClassName}>
@@ -237,7 +237,7 @@ export const HeaderExamples: Story = {
 
 export const FooterExamples: Story = {
   name: 'Footer examples',
-  parameters: { controls: { include: ['size'] } },
+  parameters: { controls: { include: [] } },
   render: ({ showFooter: _showFooter, showHeader: _showHeader, ...args }) => (
     <div className={responsiveThreeCardGridClassName}>
       <Card {...args} className={rowCardClassName}>
@@ -281,7 +281,6 @@ export const FooterExamples: Story = {
 
 export const CustomSpacing: Story = {
   name: 'Custom spacing',
-  // `className` overrides `--card-spacing`, so a `size` knob would be inert.
   parameters: { controls: { include: [] } },
   render: () => (
     <div className={responsiveThreeCardGridClassName}>
@@ -317,7 +316,7 @@ export const CustomSpacing: Story = {
 
 export const EdgeToEdgeContent: Story = {
   name: 'Edge-to-edge content',
-  parameters: { controls: { include: ['size'] } },
+  parameters: { controls: { include: [] } },
   render: ({ showFooter: _showFooter, showHeader: _showHeader, ...args }) => (
     <Card {...args} className={singleCardClassName}>
       <img

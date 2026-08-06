@@ -78,12 +78,12 @@ export const Default: Story = {};
 
 export const Filled: Story = {
   args: { defaultValue: 'you@nebari.dev' },
-  parameters: { controls: { include: ['defaultValue', 'type'] } },
+  parameters: { controls: { include: [] } },
 };
 
 export const Disabled: Story = {
   args: { disabled: true },
-  parameters: { controls: { include: ['disabled', 'defaultValue'] } },
+  parameters: { controls: { include: [] } },
 };
 
 /**
@@ -93,7 +93,7 @@ export const Disabled: Story = {
  */
 export const WithError: Story = {
   args: { 'aria-invalid': true, defaultValue: 'invalid@email' },
-  parameters: { controls: { include: ['aria-invalid', 'defaultValue'] } },
+  parameters: { controls: { include: [] } },
   render: (args) => (
     <Field>
       <FieldLabel>Email</FieldLabel>
@@ -107,7 +107,7 @@ export const WithError: Story = {
 export const WithField: Story = {
   args: { placeholder: 'you@nebari.dev' },
   parameters: {
-    controls: { include: ['placeholder', 'disabled', 'required'] },
+    controls: { include: [] },
   },
   render: (args) => (
     <Field>

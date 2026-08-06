@@ -8,10 +8,14 @@ import { describe, expect, it } from 'vitest';
  * table — so without this test a missing `controls.include` or a typo in an
  * `include` list fails silently.
  *
+ * `Default` is the only playground: it exposes the full prop surface, and every
+ * other story narrows to `include: []` unless it declares its own story-only
+ * `argTypes`.
+ *
  * Review-time concerns, not statically derivable: an omitted prop (`cva()` does
  * not expose its config at runtime, so there is no full prop surface to diff
- * against), whether a render *uses* the args it takes, whether an `include` list
- * is the right set, and rule 8's remount keying.
+ * against), whether a render *uses* the args it takes, and rule 8's remount
+ * keying.
  */
 
 type StoryModule = {
@@ -78,16 +82,8 @@ function controlType(argType: unknown): string | undefined {
   return undefined;
 }
 
-/**
- * `controls.include` is matched by Storybook against `argType.name || key`. No
- * story sets a custom `name`, so comparing keys is correct — revisit if one does.
- */
-function documentedProps(mod: StoryModule, story: Story): Set<string> {
-  return new Set([
-    ...Object.keys(mod.default?.argTypes ?? {}),
-    ...Object.keys(story.argTypes ?? {}),
-  ]);
-}
+/** Radio widgets are not used; every union is a `select`. */
+const BANNED_CONTROLS = new Set(['radio', 'inline-radio']);
 
 it('finds every component story', () => {
   // Fails loudly if the glob breaks rather than silently asserting nothing.
@@ -140,39 +136,6 @@ describe.each(componentStories)('$path', ({ mod }) => {
     expect(unseeded).toEqual([]);
   });
 
-  it('exposes every prop a story pins in its own args', () => {
-    // Otherwise the reader cannot tell what makes the story different.
-    const offenders = stories
-      .filter(([name]) => name !== 'Default')
-      .flatMap(([name, story]) => {
-        const include = story.parameters?.controls?.include;
-
-        if (!Array.isArray(include)) {
-          return [];
-        }
-
-        return Object.keys(story.args ?? {})
-          .filter((prop) => !include.includes(prop))
-          .map((prop) => `${name}: ${prop}`);
-      });
-
-    expect(offenders).toEqual([]);
-  });
-
-  it('leaves no args-consuming story without a control', () => {
-    // A story that genuinely fixes everything should take no args at all.
-    const dead = stories
-      .filter(([name]) => name !== 'Default')
-      .filter(([, story]) => (renderArity(story) ?? 0) > 0)
-      .filter(([, story]) => {
-        const include = story.parameters?.controls?.include;
-        return Array.isArray(include) && include.length === 0;
-      })
-      .map(([name]) => name);
-
-    expect(dead).toEqual([]);
-  });
-
   it('narrows controls on every non-Default story', () => {
     const offenders = stories
       .filter(([name]) => name !== 'Default')
@@ -184,21 +147,45 @@ describe.each(componentStories)('$path', ({ mod }) => {
     expect(offenders).toEqual([]);
   });
 
-  it('only includes props that are documented in argTypes', () => {
-    const unknownProps = stories.flatMap(([name, story]) => {
-      const include = story.parameters?.controls?.include;
-      if (!Array.isArray(include)) {
-        return [];
-      }
+  it('shows only controls that belong to the story exclusively', () => {
+    // Meta argTypes are the `Default` playground's surface. A non-Default story
+    // may expose a knob only if it declares that knob itself.
+    const shared = stories
+      .filter(([name]) => name !== 'Default')
+      .flatMap(([name, story]) => {
+        const include = story.parameters?.controls?.include;
 
-      const documented = documentedProps(mod, story);
-      return include
-        .filter((prop): prop is string => typeof prop === 'string')
-        .filter((prop) => !documented.has(prop))
-        .map((prop) => `${name}: ${prop}`);
-    });
+        if (!Array.isArray(include)) {
+          return [];
+        }
 
-    expect(unknownProps).toEqual([]);
+        const own = new Set(Object.keys(story.argTypes ?? {}));
+        return include
+          .filter((prop): prop is string => typeof prop === 'string')
+          .filter((prop) => !own.has(prop))
+          .map((prop) => `${name}: ${prop}`);
+      });
+
+    expect(shared).toEqual([]);
+  });
+
+  it('uses no radio controls', () => {
+    const radios = [
+      ...Object.entries(mod.default?.argTypes ?? {}).map(
+        ([prop, argType]) => ['meta', prop, argType] as const,
+      ),
+      ...stories.flatMap(([name, story]) =>
+        Object.entries(story.argTypes ?? {}).map(
+          ([prop, argType]) => [name, prop, argType] as const,
+        ),
+      ),
+    ]
+      .filter(([, , argType]) =>
+        BANNED_CONTROLS.has(controlType(argType) ?? ''),
+      )
+      .map(([owner, prop]) => `${owner}: ${prop}`);
+
+    expect(radios).toEqual([]);
   });
 
   it('documents the controlled counterpart of every uncontrolled default', () => {

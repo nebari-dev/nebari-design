@@ -177,7 +177,7 @@ const meta = {
     align: {
       description:
         'Set on `SelectContent` — how the popup aligns along the trigger on the chosen side.',
-      control: 'inline-radio',
+      control: 'select',
       options: ['start', 'center', 'end'],
       table: { defaultValue: { summary: 'center' } },
     },
@@ -252,7 +252,7 @@ export const Groups: Story = {
   // `disabled` is left out — it would hide what the story shows.
   parameters: {
     controls: {
-      include: ['side', 'align', 'sideOffset', 'alignItemWithTrigger'],
+      include: [],
     },
   },
   render: (args) => (
@@ -286,7 +286,7 @@ export const Groups: Story = {
 export const Scrollable: Story = {
   parameters: {
     controls: {
-      include: ['side', 'align', 'sideOffset', 'alignItemWithTrigger'],
+      include: [],
     },
   },
   render: (args) => (
@@ -302,7 +302,7 @@ export const Scrollable: Story = {
 
 export const Disabled: Story = {
   args: { disabled: true },
-  parameters: { controls: { include: ['disabled'] } },
+  parameters: { controls: { include: [] } },
   render: (args) => (
     <SelectPreview
       args={args}
@@ -315,7 +315,7 @@ export const Disabled: Story = {
 
 export const Invalid: Story = {
   args: { invalid: true },
-  parameters: { controls: { include: ['invalid'] } },
+  parameters: { controls: { include: [] } },
   render: (args) => (
     <SelectPreview
       args={args}

@@ -48,7 +48,7 @@ const meta = {
     role: {
       description:
         'ARIA live-region role. `auto` (the default) derives it from `variant` — `alert` (assertive) for `warning` and `destructive`, `status` (polite) otherwise — and an explicit role overrides that when the alert is rendered before the user acts.',
-      control: 'inline-radio',
+      control: 'select',
       options: ['auto', 'status', 'alert'],
       table: {
         type: { summary: "'status' | 'alert'" },
@@ -90,8 +90,7 @@ export const Default: Story = {
 
 export const Variants: Story = {
   parameters: {
-    // Each alert fixes its own `variant`, so only `role` stays live here.
-    controls: { include: ['role'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -138,7 +137,7 @@ export const Variants: Story = {
 export const TitleOnly: Story = {
   name: 'Title only',
   parameters: {
-    controls: { include: ['variant', 'role'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -157,7 +156,7 @@ export const TitleOnly: Story = {
 export const WithoutIcon: Story = {
   name: 'Without icon',
   parameters: {
-    controls: { include: ['variant', 'role'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -178,7 +177,7 @@ export const WithoutIcon: Story = {
 export const WithAction: Story = {
   name: 'With action',
   parameters: {
-    controls: { include: ['variant', 'role'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -205,7 +204,7 @@ export const WithAction: Story = {
 export const Dismissible: Story = {
   args: { variant: 'success' },
   parameters: {
-    controls: { include: ['variant', 'role'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:

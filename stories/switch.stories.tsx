@@ -66,17 +66,17 @@ export const Default: Story = {};
 
 export const Off: Story = {
   args: { defaultChecked: false },
-  parameters: { controls: { include: ['defaultChecked'] } },
+  parameters: { controls: { include: [] } },
 };
 
 export const Disabled: Story = {
   args: { defaultChecked: true, disabled: true },
-  parameters: { controls: { include: ['defaultChecked', 'disabled'] } },
+  parameters: { controls: { include: [] } },
 };
 
 export const DisabledOff: Story = {
   args: { defaultChecked: false, disabled: true },
-  parameters: { controls: { include: ['defaultChecked', 'disabled'] } },
+  parameters: { controls: { include: [] } },
 };
 
 /**
@@ -86,7 +86,7 @@ export const DisabledOff: Story = {
  * manual `id` / `aria-labelledby` wiring is needed.
  */
 export const WithLabel: Story = {
-  parameters: { controls: { include: ['defaultChecked', 'disabled'] } },
+  parameters: { controls: { include: [] } },
   // `Field` supplies the accessible name, so `aria-label` is dropped here.
   render: ({ 'aria-label': _ariaLabel, ...args }) => (
     <Field className="w-64 flex-row items-start justify-between gap-4">
@@ -106,7 +106,7 @@ export const WithLabel: Story = {
  * clicking anywhere toggles the switch.
  */
 export const Box: Story = {
-  parameters: { controls: { include: ['defaultChecked', 'disabled'] } },
+  parameters: { controls: { include: [] } },
   render: ({ 'aria-label': _ariaLabel, ...args }) => (
     <Field>
       <FieldLabel className="flex w-64 cursor-pointer items-center justify-between gap-4 rounded-md border border-border bg-background p-4 hover:bg-muted">

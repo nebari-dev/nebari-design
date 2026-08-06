@@ -133,7 +133,7 @@ export const WithTrailingIcon: Story = {
 export const AsLink: Story = {
   name: 'Render as link',
   parameters: {
-    controls: { include: ['variant'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:

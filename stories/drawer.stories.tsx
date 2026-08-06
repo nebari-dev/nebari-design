@@ -27,8 +27,6 @@ type DrawerStoryArgs = {
   side: DrawerSide;
 };
 
-const drawerControls = ['side', 'showCloseButton', 'showSwipeHandle'];
-
 const meta = {
   title: 'Components/Drawer',
   parameters: {
@@ -59,7 +57,7 @@ const meta = {
       table: { defaultValue: { summary: 'true' } },
     },
     showSwipeHandle: {
-      control: 'inline-radio',
+      control: 'select',
       description:
         'Shows the grab handle. `auto` leaves it to the drawer — shown for bottom drawers, hidden for side drawers.',
       options: ['auto', 'shown', 'hidden'],
@@ -228,7 +226,7 @@ export const Default: Story = {
 
 export const BottomSheet: Story = {
   name: 'Bottom sheet',
-  parameters: { controls: { include: drawerControls } },
+  parameters: { controls: { include: [] } },
   args: {
     side: 'bottom',
   },
@@ -244,7 +242,7 @@ export const BottomSheet: Story = {
 
 export const LongContent: Story = {
   name: 'Long content',
-  parameters: { controls: { include: drawerControls } },
+  parameters: { controls: { include: [] } },
   render: ({ showCloseButton, showSwipeHandle, side }) => (
     <Drawer {...drawerProps({ showSwipeHandle, side })}>
       <DrawerTrigger render={<Button variant="outline" />}>
@@ -310,7 +308,7 @@ export const LongContent: Story = {
 
 export const NestedDrawer: Story = {
   name: 'Multi nested drawer',
-  parameters: { controls: { include: drawerControls } },
+  parameters: { controls: { include: [] } },
   render: ({ showCloseButton, showSwipeHandle, side }) => (
     <Drawer {...drawerProps({ showSwipeHandle, side })}>
       <DrawerTrigger render={<Button variant="outline" />}>

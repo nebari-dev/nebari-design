@@ -53,13 +53,6 @@ function DialogRoot({
   );
 }
 
-const dialogControls = [
-  'showCloseButton',
-  'defaultOpen',
-  'modal',
-  'disablePointerDismissal',
-];
-
 const meta = {
   title: 'Components/Dialog',
   component: DialogContent,
@@ -258,7 +251,7 @@ export const Default: Story = {
 };
 
 export const GenericDialog: Story = {
-  parameters: { controls: { include: dialogControls } },
+  parameters: { controls: { include: [] } },
   render: (args) => (
     <DialogRoot {...args}>
       <DialogTrigger render={<Button />}>Open Dialog</DialogTrigger>
@@ -282,7 +275,7 @@ export const GenericDialog: Story = {
 };
 
 export const DeleteConfirmation: Story = {
-  parameters: { controls: { include: dialogControls } },
+  parameters: { controls: { include: [] } },
   render: (args) => (
     <DialogRoot {...args}>
       <DialogTrigger render={<Button variant="destructive" />}>
@@ -312,14 +305,14 @@ export const DeleteConfirmation: Story = {
 export const CustomCloseButton: Story = {
   parameters: {
     controls: {
-      include: dialogControls.filter((prop) => prop !== 'showCloseButton'),
+      include: [],
     },
   },
   render: (args) => <ShareWorkspaceDialog {...args} />,
 };
 
 export const StickyFooter: Story = {
-  parameters: { controls: { include: dialogControls } },
+  parameters: { controls: { include: [] } },
   render: (args) => (
     <DialogRoot {...args}>
       <DialogTrigger render={<Button variant="outline" />}>
@@ -378,7 +371,7 @@ export const StickyFooter: Story = {
 };
 
 export const ScrollableContent: Story = {
-  parameters: { controls: { include: dialogControls } },
+  parameters: { controls: { include: [] } },
   render: (args) => (
     <DialogRoot {...args}>
       <DialogTrigger render={<Button variant="outline" />}>

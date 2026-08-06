@@ -44,7 +44,7 @@ const meta = {
     orientation: {
       description:
         'Tab layout orientation managed by Base UI. `vertical` puts the list beside the panels.',
-      control: 'inline-radio',
+      control: 'select',
       options: ['horizontal', 'vertical'],
       table: { defaultValue: { summary: 'horizontal' } },
     },
@@ -184,7 +184,7 @@ export const Default: Story = {
 export const Underline: Story = {
   args: { variant: 'underline' },
   parameters: {
-    controls: { include: ['variant', 'icons', 'disabled'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -198,7 +198,7 @@ export const Underline: Story = {
 export const Vertical: Story = {
   args: { orientation: 'vertical' },
   parameters: {
-    controls: { include: ['orientation', 'variant', 'icons'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -212,7 +212,7 @@ export const Vertical: Story = {
 export const Disabled: Story = {
   args: { disabled: true },
   parameters: {
-    controls: { include: ['disabled', 'variant'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -226,7 +226,7 @@ export const Disabled: Story = {
 export const Icons: Story = {
   args: { icons: true },
   parameters: {
-    controls: { include: ['icons', 'variant'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:

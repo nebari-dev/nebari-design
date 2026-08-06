@@ -296,17 +296,19 @@ Create `stories/<name>.stories.tsx` (CSF3, one story per meaningful variant).
 
 ### Controls convention (required)
 
-`Default` is the interactive playground; every other story shows only the props
-that apply to it, and every control it shows is a populated widget from first
-paint. Eight rules, applied by every story under `Components/*`
+`Default` is the interactive playground and the only story with controls; every
+other story shows an empty panel unless it owns a knob outright, and every
+control `Default` shows is a populated widget from first paint. Eight rules,
+applied by every story under `Components/*`
 (`tests/story-controls.test.ts` enforces what is statically checkable):
 
 1. **Meta declares the full documented prop surface.** Each prop gets a
    `description`, a `control`, `options` for unions, and `table.defaultValue`
    when the component has a real default (omit it for props with none, like
-   `children` or `placeholder`). Consumer-facing props that cannot be
-   represented by a knob, especially Base UI's `render` prop, stay visible with
-   `control: false`.
+   `children` or `placeholder`). Unions always use `control: 'select'` — `radio`
+   and `inline-radio` are not used, whatever the option count. Consumer-facing
+   props that cannot be represented by a knob, especially Base UI's `render`
+   prop, stay visible with `control: false`.
 2. **Depth = own props + key state props.** The component's own props and cva
    variant keys, plus the inherited Base UI/HTML props a playground needs
    (`open`/`defaultOpen`, `checked`/`defaultChecked`, `disabled`, `placeholder`,
@@ -347,28 +349,24 @@ paint. Eight rules, applied by every story under `Components/*`
    ```tsx
    // stories/drawer.stories.tsx
    const SWIPE_HANDLE_BY_KEY = { auto: undefined, shown: true, hidden: false } as const;
-   // argTypes: control 'inline-radio', options ['auto', 'shown', 'hidden']
+   // argTypes: control 'select', options ['auto', 'shown', 'hidden']
    // args: { showSwipeHandle: 'auto' }
    ```
 
    Without it the knob is both click-to-reveal *and* a one-way door: once
    touched, there is no way back to the automatic behavior.
-6. **Every other story sets `parameters.controls.include` to the props that
-   apply to it.** Derive the list:
-   - Express the story's subject through its own `args` whenever it is one prop
+6. **Every other story sets `parameters.controls.include: []`.** The full prop
+   surface is adjustable in exactly one place — `Default` — and repeating a
+   slice of it under every story only invites the reader to knob a story out of
+   the state it exists to show.
+   - A story may list a prop in `include` only if it declares that prop in its
+     own per-story `argTypes` as a story-only knob. That is the one case where a
+     control belongs to a single story; see `CompleteNavbar` in
+     `stories/navigation-menu.stories.tsx`.
+   - The story's subject still goes through its own `args` when it is one prop
      on one instance (`args: { variant: 'underline' }`, not
-     `<ExampleTabs variant="underline" />`), so the subject is a live control.
-     Every prop a story pins in `args` must appear in its `include`.
-   - Thread `args` into the rendered component(s) and add the knobs that stay
-     live — typically the variant/size axes and state flags.
-   - Drop what the story fixes per instance (the axis a showcase grid
-     enumerates, the labels it supplies), what its composition makes inert
-     (`loadingText` at icon-only sizes, `size` where `className` overrides the
-     spacing it sets), and what would hide the point of the story (`disabled` on
-     a story about an open popup).
-   - `include: []` is correct only when nothing is left to adjust. Then the
-     render must not take `args` either — an args-consuming render with an empty
-     `include` is a dead panel. Say why in a comment.
+     `<ExampleTabs variant="underline" />`) — it is simply pinned rather than
+     live, and the render can keep threading `args`.
 7. **Composite components use the story-args pattern.** When the knobs span
    subcomponents (tabs' `variant` lives on `TabsList`, dialog's `defaultOpen` on
    the root), declare a local `<Name>StoryArgs` type with those props plus any
@@ -447,17 +445,17 @@ type Story = StoryObj<typeof meta>;
 // Playground: no own args, no controls param — every prop is a live control.
 export const Default: Story = {};
 
-// Subject expressed through args, so `loading` stays live and can be toggled
-// off to compare against the resting state. Style axes come along.
+// Subject pinned through args; the panel stays empty because `loading` is
+// already a live knob on `Default`.
 export const Loading: Story = {
   args: { loading: true },
-  parameters: { controls: { include: ['loading', 'variant', 'size'] } },
+  parameters: { controls: { include: [] } },
 };
 
-// Showcase grid: it fixes `variant` and each label, so those drop out and the
-// remaining axes stay live.
+// Showcase grid. It still threads `args` for the meta baseline, but nothing
+// here is adjustable.
 export const Variants: Story = {
-  parameters: { controls: { include: ['size', 'loading', 'disabled'] } },
+  parameters: { controls: { include: [] } },
   render: (args) => (
     <div className="flex flex-wrap items-center gap-3">
       <Button {...args} variant="default">Default</Button>
@@ -468,9 +466,8 @@ export const Variants: Story = {
 };
 ```
 
-For the `include: []` end of the spectrum — a story where nothing is left to
-adjust, so its render takes no args — see `Variants` in
-`stories/badge.stories.tsx` (every badge fixes both its variant and its label).
+For the one exception — a story that owns its knobs and so keeps a populated
+panel — see `CompleteNavbar` in `stories/navigation-menu.stories.tsx`.
 
 To preview dark mode, wrap a story in `<div className="dark bg-background p-8">`.
 

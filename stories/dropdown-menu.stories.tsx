@@ -106,7 +106,7 @@ export const Default: Story = {
 
 export const WithCheckboxItems: Story = {
   parameters: {
-    controls: { include: ['variant', 'showExpandIcon', 'disabled'] },
+    controls: { include: [] },
   },
   render: ({ children: _children, ...args }) => {
     const [showLineNumbers, setShowLineNumbers] = useState(true);
@@ -141,7 +141,7 @@ export const WithCheckboxItems: Story = {
 
 export const WithSubmenu: Story = {
   parameters: {
-    controls: { include: ['variant', 'showExpandIcon', 'disabled'] },
+    controls: { include: [] },
   },
   render: ({ children: _children, ...args }) => (
     <DropdownMenu>
@@ -164,7 +164,7 @@ export const WithSubmenu: Story = {
 };
 
 export const TriggerVariants: Story = {
-  parameters: { controls: { include: ['disabled'] } },
+  parameters: { controls: { include: [] } },
   render: ({ disabled }) => (
     <div className="flex items-center gap-6">
       <DropdownMenu>

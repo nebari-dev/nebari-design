@@ -74,7 +74,7 @@ export const CustomColor: Story = {
   name: 'Custom color',
   args: { size: 'lg' },
   parameters: {
-    controls: { include: ['size'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -95,7 +95,7 @@ export const WithText: Story = {
   name: 'With visible text',
   args: { size: 'sm' },
   parameters: {
-    controls: { include: ['size'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -114,7 +114,7 @@ export const WithText: Story = {
 export const CustomLabel: Story = {
   name: 'Custom accessible label',
   parameters: {
-    controls: { include: ['size', 'label'] },
+    controls: { include: [] },
     docs: {
       description: {
         story:

@@ -83,7 +83,7 @@ const meta = {
     variant: {
       description:
         'Field layout. `default` is an inline checkbox; `box` turns the label and description into a bordered, fully clickable card.',
-      control: 'inline-radio',
+      control: 'select',
       options: ['default', 'box'],
       table: { defaultValue: { summary: 'default' } },
     },
@@ -165,7 +165,7 @@ export const WithDescription: Story = {
   name: 'With description',
   args: { description: 'Run updates when a newer image is available.' },
   parameters: {
-    controls: { include: ['description', 'variant', 'defaultChecked'] },
+    controls: { include: [] },
   },
   render: (args) => (
     <div className="w-72">
@@ -179,7 +179,7 @@ export const WithDescription: Story = {
  * checkbox fields in a wrapping row.
  */
 export const Horizontal: Story = {
-  parameters: { controls: { include: ['variant', 'disabled'] } },
+  parameters: { controls: { include: [] } },
   render: ({ disabled, variant }) => (
     <CheckboxGroup aria-label="Workspace features" orientation="horizontal">
       <Checkbox
@@ -210,7 +210,7 @@ export const Box: Story = {
     variant: 'box',
   },
   parameters: {
-    controls: { include: ['variant', 'description', 'defaultChecked'] },
+    controls: { include: [] },
   },
   render: (args) => (
     <div className="w-80">
@@ -225,7 +225,7 @@ export const Box: Story = {
  */
 export const Disabled: Story = {
   args: { disabled: true },
-  parameters: { controls: { include: ['disabled'] } },
+  parameters: { controls: { include: [] } },
   render: ({ disabled }) => (
     <div className="flex w-80 flex-col gap-4">
       <Checkbox disabled={disabled}>Enable usage reporting</Checkbox>
@@ -241,7 +241,7 @@ export const Disabled: Story = {
  * description separate from the checkbox's own inline label.
  */
 export const WithField: Story = {
-  parameters: { controls: { include: ['variant', 'disabled'] } },
+  parameters: { controls: { include: [] } },
   render: ({ disabled, variant }) => (
     <Field className="w-80">
       <FieldLabel id="notifications-label">Notifications</FieldLabel>
@@ -266,7 +266,7 @@ export const WithField: Story = {
  * cue. The error clears as soon as the user checks the box.
  */
 export const Invalid: Story = {
-  parameters: { controls: { include: ['variant'] } },
+  parameters: { controls: { include: [] } },
   render: ({ variant }) => (
     <InvalidCheckboxExample variant={variant ?? 'default'} />
   ),

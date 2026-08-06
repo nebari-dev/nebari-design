@@ -89,7 +89,7 @@ const meta = {
       table: { defaultValue: { summary: '0' } },
     },
     orientation: {
-      control: 'inline-radio',
+      control: 'select',
       description:
         'Track direction. `vertical` fills from the bottom up and needs a fixed-height wrapper.',
       options: ['horizontal', 'vertical'],
@@ -138,10 +138,9 @@ export const Default: Story = {
 
 /** Use an array with two values for a range slider. */
 export const Range: Story = {
-  // `defaultValue` is an array here, so the single-number knob drops out.
   parameters: {
     controls: {
-      include: ['min', 'max', 'step', 'showValueTooltip', 'disabled'],
+      include: [],
     },
   },
   render: ({
@@ -166,7 +165,7 @@ export const Range: Story = {
 export const MultipleThumbs: Story = {
   parameters: {
     controls: {
-      include: ['min', 'max', 'step', 'showValueTooltip', 'disabled'],
+      include: [],
     },
   },
   render: ({
@@ -190,7 +189,7 @@ export const Vertical: Story = {
   args: { defaultValue: 60, orientation: 'vertical' },
   parameters: {
     controls: {
-      include: ['orientation', 'defaultValue', 'showValueTooltip', 'disabled'],
+      include: [],
     },
   },
   render: (args) => (
@@ -205,7 +204,7 @@ export const Vertical: Story = {
 
 /** Control the slider value when another part of the UI depends on it. */
 export const Controlled: Story = {
-  parameters: { controls: { include: ['showValueTooltip', 'disabled'] } },
+  parameters: { controls: { include: [] } },
   render: ({ disabled, showValueTooltip }) => (
     <ControlledSlider disabled={disabled} showValueTooltip={showValueTooltip} />
   ),
@@ -215,7 +214,7 @@ export const Controlled: Story = {
 export const Disabled: Story = {
   args: { defaultValue: 50, disabled: true },
   parameters: {
-    controls: { include: ['disabled', 'defaultValue', 'showValueTooltip'] },
+    controls: { include: [] },
   },
   render: ({ orientation: _orientation, ...args }) => (
     <div className="w-80">

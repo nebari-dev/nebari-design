@@ -31,7 +31,7 @@ export const Default: Story = {};
 export const WithInput: Story = {
   args: { children: 'Username' },
   // `htmlFor` stays pinned to the input's `id` — that pairing is the story.
-  parameters: { controls: { include: ['children'] } },
+  parameters: { controls: { include: [] } },
   render: (args) => (
     <div className="flex w-64 flex-col gap-1.5">
       <Label {...args} htmlFor="username" />

@@ -78,13 +78,13 @@ export const Default: Story = {};
 
 export const Filled: Story = {
   args: { defaultValue: 'A short description of this environment.' },
-  parameters: { controls: { include: ['defaultValue', 'rows'] } },
+  parameters: { controls: { include: [] } },
 };
 
 /** Disabled is dimmed, non-interactive, and cannot be resized. */
 export const Disabled: Story = {
   args: { disabled: true },
-  parameters: { controls: { include: ['disabled', 'defaultValue'] } },
+  parameters: { controls: { include: [] } },
 };
 
 /**
@@ -94,7 +94,7 @@ export const Disabled: Story = {
  */
 export const WithError: Story = {
   args: { 'aria-invalid': true },
-  parameters: { controls: { include: ['aria-invalid', 'rows'] } },
+  parameters: { controls: { include: [] } },
   render: (args) => (
     <Field>
       <FieldLabel>Description</FieldLabel>
@@ -108,7 +108,7 @@ export const WithError: Story = {
 export const WithField: Story = {
   args: { placeholder: 'Describe this environment…' },
   parameters: {
-    controls: { include: ['placeholder', 'rows', 'disabled', 'required'] },
+    controls: { include: [] },
   },
   render: (args) => (
     <Field>
