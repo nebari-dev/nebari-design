@@ -90,7 +90,7 @@ rules that are easy to get wrong:
 - **`cn()` merging.** Always `cn(xVariants({...}), className)` so a caller's
   `className` wins. Import `cn` from `@/lib/utils`.
 - **Composition uses Base UI's `render` prop**, via `useRender` from
-  `@base-ui-components/react/use-render` — this is the project's equivalent of
+  `@base-ui/react/use-render` — this is the project's equivalent of
   Radix `asChild`. Do **not** introduce Radix or an `asChild` API. Give `render`
   a sensible default element and type with `useRender.ComponentProps<'tag'>`.
   Plain styled wrappers with no element-swapping can skip `useRender` and use
@@ -103,12 +103,16 @@ rules that are easy to get wrong:
 ### `registry.json` entry
 
 - `dependencies` = npm packages the component imports (e.g.
-  `@base-ui-components/react`, `class-variance-authority`, `lucide-react`). Do
+  `@base-ui/react`, `class-variance-authority`, `lucide-react`). Do
   **not** list `react`/`react-dom`, `tailwindcss`, or `clsx`/`tailwind-merge`
   (those belong to the `utils` item).
 - `registryDependencies` = other registry items. Anything that calls `cn()` must
-  list `"utils"`; if it depends on tokens that may be absent, also list
-  `"theme"`. Reference in-repo items by bare name.
+  list `"@nebari/utils"`; if it depends on tokens that may be absent, also list
+  `"@nebari/theme"`. **Reference in-repo items by their `@nebari/<name>`
+  namespace, not by bare name** — the shadcn CLI resolves a bare `"theme"`
+  against the default registry's `styles/<style>/theme.json` (a 404 that aborts
+  `shadcn add` for consumers), whereas `"@nebari/theme"` resolves through the
+  `@nebari` registry the consumer already has configured.
 
 ## Styling &amp; theming
 

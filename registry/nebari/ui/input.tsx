@@ -1,4 +1,4 @@
-import { Input as InputPrimitive } from '@base-ui-components/react/input';
+import { Input as InputPrimitive } from '@base-ui/react/input';
 import { TriangleAlert } from 'lucide-react';
 import type { ComponentProps } from 'react';
 import { cn } from '@/lib/utils';

@@ -21,7 +21,7 @@
       "title": "Spinner",
       "description": "Animated loading spinner built on lucide-react.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["utils"],
+      "registryDependencies": ["@nebari/utils"],
       "files": [
         {
           "path": "registry/nebari/ui/spinner.tsx",
@@ -35,11 +35,15 @@
       "title": "Button",
       "description": "Button with variants, sizes, a loading state, and polymorphic render-prop composition.",
       "dependencies": [
-        "@base-ui-components/react",
+        "@base-ui/react",
         "class-variance-authority",
         "lucide-react"
       ],
-      "registryDependencies": ["utils", "spinner", "theme"],
+      "registryDependencies": [
+        "@nebari/utils",
+        "@nebari/spinner",
+        "@nebari/theme"
+      ],
       "files": [
         {
           "path": "registry/nebari/ui/button.tsx",
@@ -52,11 +56,25 @@
       "type": "registry:ui",
       "title": "Switch",
       "description": "Toggle a single setting on or off with immediate effect, built on Base UI's Switch.",
-      "dependencies": ["@base-ui-components/react"],
-      "registryDependencies": ["utils", "theme"],
+      "dependencies": ["@base-ui/react"],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
       "files": [
         {
           "path": "registry/nebari/ui/switch.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "slider",
+      "type": "registry:ui",
+      "title": "Slider",
+      "description": "Bounded numeric input with single-value and range behavior, keyboard navigation, and Nebari track and thumb styling.",
+      "dependencies": ["@base-ui/react"],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/slider.tsx",
           "type": "registry:ui"
         }
       ]
@@ -67,11 +85,11 @@
       "title": "Checkbox",
       "description": "Labeled checkbox with default and boxed variants, checked, unchecked, and indeterminate states, validation feedback, and Base UI behavior.",
       "dependencies": [
-        "@base-ui-components/react",
+        "@base-ui/react",
         "class-variance-authority",
         "lucide-react"
       ],
-      "registryDependencies": ["utils", "theme"],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
       "files": [
         {
           "path": "registry/nebari/ui/checkbox.tsx",
@@ -84,8 +102,8 @@
       "type": "registry:ui",
       "title": "Radio Group",
       "description": "Mutually exclusive radio group with default and boxed item variants, stable selected targets, and group-level validation feedback.",
-      "dependencies": ["@base-ui-components/react", "class-variance-authority"],
-      "registryDependencies": ["utils", "theme"],
+      "dependencies": ["@base-ui/react", "class-variance-authority"],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
       "files": [
         {
           "path": "registry/nebari/ui/radio-group.tsx",
@@ -98,8 +116,8 @@
       "type": "registry:ui",
       "title": "Field",
       "description": "Groups a control with its label, description, and validation message, wiring accessible-name and description associations automatically. Built on Base UI's Field.",
-      "dependencies": ["@base-ui-components/react"],
-      "registryDependencies": ["utils"],
+      "dependencies": ["@base-ui/react"],
+      "registryDependencies": ["@nebari/utils"],
       "files": [
         {
           "path": "registry/nebari/ui/field.tsx",
@@ -112,8 +130,8 @@
       "type": "registry:ui",
       "title": "Input",
       "description": "Single-line text-entry field with hover, focus, disabled, and invalid states, built on Base UI's Input and auto-wired to Field.",
-      "dependencies": ["@base-ui-components/react", "lucide-react"],
-      "registryDependencies": ["utils", "theme"],
+      "dependencies": ["@base-ui/react", "lucide-react"],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
       "files": [
         {
           "path": "registry/nebari/ui/input.tsx",
@@ -126,7 +144,7 @@
       "type": "registry:ui",
       "title": "Label",
       "description": "Accessible label for a form control, paired via htmlFor or composed with Field.",
-      "registryDependencies": ["utils"],
+      "registryDependencies": ["@nebari/utils"],
       "files": [
         {
           "path": "registry/nebari/ui/label.tsx",
@@ -140,10 +158,23 @@
       "title": "Textarea",
       "description": "Multi-line text-entry field — a styled native textarea mirroring Input's border, focus ring, disabled, and invalid states.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["utils", "theme"],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
       "files": [
         {
           "path": "registry/nebari/ui/textarea.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "table",
+      "type": "registry:ui",
+      "title": "Table",
+      "description": "Responsive data table with Nebari header, cell, row, footer, caption, and hover styling.",
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/table.tsx",
           "type": "registry:ui"
         }
       ]
@@ -154,7 +185,7 @@
       "title": "Alert",
       "description": "Inline status message with default, success, warning, and destructive variants, composed of Alert, AlertTitle, AlertDescription, and AlertAction.",
       "dependencies": ["class-variance-authority", "lucide-react"],
-      "registryDependencies": ["utils", "theme"],
+      "registryDependencies": ["@nebari/utils"],
       "files": [
         {
           "path": "registry/nebari/ui/alert.tsx",
@@ -168,7 +199,7 @@
       "title": "Sidebar",
       "description": "Collapsible app-shell sidebar with provider-managed state and composable navigation parts.",
       "dependencies": ["class-variance-authority", "lucide-react"],
-      "registryDependencies": ["utils", "theme"],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
       "files": [
         {
           "path": "registry/nebari/ui/sidebar.tsx",
@@ -181,11 +212,75 @@
       "type": "registry:ui",
       "title": "Badge",
       "description": "Small status/label chip with variants, composable via Base UI's render prop.",
-      "dependencies": ["@base-ui-components/react", "class-variance-authority"],
-      "registryDependencies": ["utils"],
+      "dependencies": ["@base-ui/react", "class-variance-authority"],
+      "registryDependencies": ["@nebari/utils"],
       "files": [
         {
           "path": "registry/nebari/ui/badge.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "breadcrumb",
+      "type": "registry:ui",
+      "title": "Breadcrumb",
+      "description": "Hierarchy navigation trail with default, ellipsis-triggered, and current-route dropdown compositions.",
+      "dependencies": ["@base-ui/react", "lucide-react"],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/breadcrumb.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "title": "Card",
+      "description": "Static content surface composed from header, title, description, action, content, and footer sections.",
+      "dependencies": ["class-variance-authority"],
+      "registryDependencies": ["@nebari/utils"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/card.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog",
+      "description": "Modal dialog with overlay, close control, header, footer, title, and description parts, built on Base UI's Dialog.",
+      "dependencies": ["@base-ui/react", "lucide-react"],
+      "registryDependencies": [
+        "@nebari/utils",
+        "@nebari/button",
+        "@nebari/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/nebari/ui/dialog.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "drawer",
+      "type": "registry:ui",
+      "title": "Drawer",
+      "description": "Edge-anchored panel for secondary tasks, contextual detail, or short forms, with right-side and bottom-sheet variants built on Base UI Drawer.",
+      "dependencies": ["@base-ui/react", "lucide-react"],
+      "registryDependencies": [
+        "@nebari/utils",
+        "@nebari/button",
+        "@nebari/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/nebari/ui/drawer.tsx",
           "type": "registry:ui"
         }
       ]
@@ -195,8 +290,8 @@
       "type": "registry:ui",
       "title": "Tabs",
       "description": "Tabs for switching between related panels, with pill and underline variants built on Base UI.",
-      "dependencies": ["@base-ui-components/react", "class-variance-authority"],
-      "registryDependencies": ["utils"],
+      "dependencies": ["@base-ui/react", "class-variance-authority"],
+      "registryDependencies": ["@nebari/utils"],
       "files": [
         {
           "path": "registry/nebari/ui/tabs.tsx",
@@ -209,11 +304,75 @@
       "type": "registry:ui",
       "title": "Select",
       "description": "Accessible standard-size select menu with grouped labels, separators, validation states, and anchored popup positioning.",
-      "dependencies": ["@base-ui-components/react", "lucide-react"],
-      "registryDependencies": ["utils", "theme"],
+      "dependencies": ["@base-ui/react", "lucide-react"],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
       "files": [
         {
           "path": "registry/nebari/ui/select.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "navigation-menu",
+      "type": "registry:ui",
+      "title": "Navigation Menu",
+      "description": "Application navigation bar with anchor-first NavLink items, NavDropdownMenu composition, and brand/actions slots.",
+      "dependencies": ["@base-ui/react", "class-variance-authority"],
+      "registryDependencies": [
+        "@nebari/dropdown-menu",
+        "@nebari/utils",
+        "@nebari/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/nebari/ui/navigation-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "dropdown-menu",
+      "type": "registry:ui",
+      "title": "Dropdown Menu",
+      "description": "Action menu triggered by a button, with grouped items, labels, separators, checkbox items, and nested submenus.",
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/dropdown-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "title": "Tooltip",
+      "description": "Compact supplemental information shown on hover or keyboard focus, with anchored positioning and optional arrow. Touch devices don't trigger tooltips so critical information shouldn't live only in a tooltip.",
+      "dependencies": ["@base-ui/react"],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/tooltip.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "code-block",
+      "type": "registry:ui",
+      "title": "Code Block",
+      "description": "Formatted, monospaced code snippet with an optional language/filename header, a copy-to-clipboard button, and optional line numbers. Composed of CodeBlock, CodeBlockHeader, CodeBlockBody, and CodeBlockCopyButton.",
+      "dependencies": ["class-variance-authority", "lucide-react"],
+      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
+      "files": [
+        {
+          "path": "registry/nebari/ui/code-block.tsx",
           "type": "registry:ui"
         }
       ]
@@ -270,6 +429,7 @@
         "light": {
           "background": "oklch(97.91% 0 0)",
           "foreground": "oklch(26.94% 0.0037 286.15)",
+          "scrim": "rgba(0, 0, 0, 0.5)",
           "card": "oklch(100% 0 0)",
           "card-foreground": "oklch(26.94% 0.0037 286.15)",
           "popover": "oklch(100% 0 0)",
@@ -311,6 +471,7 @@
         "dark": {
           "background": "oklch(26.94% 0.0037 286.15)",
           "foreground": "oklch(97.91% 0 0)",
+          "scrim": "rgba(0, 0, 0, 0.6)",
           "card": "oklch(33.01% 0.0052 286.11)",
           "card-foreground": "oklch(97.91% 0 0)",
           "popover": "oklch(26.94% 0.0037 286.15)",

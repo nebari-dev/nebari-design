@@ -23,7 +23,7 @@ Conventions that are easy to get wrong, encoded once here:
 - Components live in `registry/nebari/ui/<name>.tsx` (kebab-case file name).
 - The `@/*` path alias resolves to `registry/nebari/*`; `@/ui` → `registry/nebari/ui`,
   `@/lib` → `registry/nebari/lib`.
-- Composition uses **Base UI's `render` prop** (`@base-ui-components/react`), not
+- Composition uses **Base UI's `render` prop** (`@base-ui/react`), not
   Radix `asChild`.
 - Stories live in top-level `stories/<name>.stories.tsx`, tests in top-level
   `tests/<name>.test.tsx` — **not** co-located with the component.
@@ -43,7 +43,7 @@ Figma variables onto the existing Nebari theme tokens in
 Create `registry/nebari/ui/<name>.tsx`. The canonical pattern (Button shown):
 
 ```tsx
-import { useRender } from '@base-ui-components/react/use-render';
+import { useRender } from '@base-ui/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
@@ -113,7 +113,7 @@ The rules this encodes:
 - **`cn()` merging.** Always merge with `cn(componentVariants(...), className)`
   so a caller's `className` wins over the defaults. Import from `@/lib/utils`.
 - **Base UI `render`-prop composition.** Use `useRender` from
-  `@base-ui-components/react/use-render` to let callers swap the rendered element
+  `@base-ui/react/use-render` to let callers swap the rendered element
   (e.g. `<Button render={<a href="…" />}>`). Give `render` a sensible default
   element, type props with `useRender.ComponentProps<'tag'>`, and spread the
   merged `props` into `useRender`. This replaces Radix's `asChild`.
@@ -143,8 +143,8 @@ Add an item to the `items` array:
   "type": "registry:ui",
   "title": "Button",
   "description": "Button with variant and size options, composable via Base UI's render prop.",
-  "dependencies": ["@base-ui-components/react", "class-variance-authority"],
-  "registryDependencies": ["utils"],
+  "dependencies": ["@base-ui/react", "class-variance-authority"],
+  "registryDependencies": ["@nebari/utils"],
   "files": [
     {
       "path": "registry/nebari/ui/button.tsx",
@@ -156,7 +156,7 @@ Add an item to the `items` array:
 
 **`dependencies`** = npm packages the component imports.
 
-- List `@base-ui-components/react`, `class-variance-authority`, `lucide-react`,
+- List `@base-ui/react`, `class-variance-authority`, `lucide-react`,
   etc. — anything resolved from `node_modules`.
 - Do **not** list `react` / `react-dom` (assumed peers), nor `clsx` /
   `tailwind-merge` (those are dependencies of the `utils` item, not the
@@ -165,13 +165,17 @@ Add an item to the `items` array:
 **`registryDependencies`** = other items the component needs from a registry.
 
 - Any component that calls `cn()` imports `@/lib/utils`, so it **must** list
-  `"utils"`.
-- Reference items in *this* registry by bare name (`"utils"`, `"theme"`); reference
-  the upstream shadcn registry by URL or `@scope/name`.
-- If the component relies on tokens that aren't guaranteed present, list `"theme"`
-  too. **Any component that uses motion tokens (`--duration-*`, `--ease-*`,
-  `--animate-*`) must list `"theme"` in `registryDependencies`** so `shadcn add`
-  installs those variables automatically.
+  `"@nebari/utils"`.
+- **Reference items in *this* registry by their `@nebari/<name>` namespace, not
+  by bare name** (`"@nebari/utils"`, `"@nebari/theme"`); reference the upstream
+  shadcn registry by URL or `@scope/name`. A bare `"theme"` makes the shadcn CLI
+  resolve against the default registry's `styles/<style>/theme.json` — a 404 that
+  aborts `shadcn add` for consumers — whereas `"@nebari/theme"` resolves through
+  the `@nebari` registry the consumer already has configured.
+- If the component relies on tokens that aren't guaranteed present, list
+  `"@nebari/theme"` too. **Any component that uses motion tokens (`--duration-*`,
+  `--ease-*`, `--animate-*`) must list `"@nebari/theme"` in `registryDependencies`**
+  so `shadcn add` installs those variables automatically.
 
 ## Motion
 
@@ -280,10 +284,10 @@ For panels that slide in from an edge (drawer, sheet), swap `translate-y-1` for
 ### `registry.json` reminder
 
 A component that references motion tokens (`--duration-*`, `--ease-*`,
-`--animate-*`) must list `"theme"` in `registryDependencies`:
+`--animate-*`) must list `"@nebari/theme"` in `registryDependencies`:
 
 ```json
-"registryDependencies": ["utils", "theme"]
+"registryDependencies": ["@nebari/utils", "@nebari/theme"]
 ```
 
 ## Step 3 — the story
