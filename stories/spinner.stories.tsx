@@ -59,7 +59,7 @@ export const Sizes: Story = {
       },
     },
   },
-  render: () => (
+  render: (_args) => (
     <div className="flex items-center gap-4">
       <Spinner size="xs" />
       <Spinner size="sm" />

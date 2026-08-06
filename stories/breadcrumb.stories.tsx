@@ -297,7 +297,7 @@ export const Ellipsis: Story = {
       },
     },
   },
-  render: () => <CollapsedBreadcrumb variant="ellipsis" />,
+  render: (_args) => <CollapsedBreadcrumb variant="ellipsis" />,
   play: async ({ canvasElement }) => {
     await verifyCollapsedMenu(canvasElement, 'Show more breadcrumbs');
   },
@@ -317,7 +317,7 @@ export const Dropdown: Story = {
       },
     },
   },
-  render: () => <CollapsedBreadcrumb variant="dropdown" />,
+  render: (_args) => <CollapsedBreadcrumb variant="dropdown" />,
   play: async ({ canvasElement }) => {
     await verifyCollapsedMenu(canvasElement, 'Breadcrumb');
   },
@@ -334,7 +334,7 @@ export const RenderAsLink: Story = {
       },
     },
   },
-  render: () => (
+  render: (_args) => (
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>

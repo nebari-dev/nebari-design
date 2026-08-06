@@ -278,7 +278,7 @@ export const Invalid: Story = {
  */
 export const Indeterminate: Story = {
   parameters: { controls: { include: [] } },
-  render: () => (
+  render: (_args) => (
     <div className="grid w-[38rem] grid-cols-2 items-start gap-6">
       {variantRows.map((row) => (
         <div className="space-y-3" key={row.label}>

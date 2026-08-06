@@ -115,7 +115,7 @@ export const Default: Story = {
 export const SettingsDropdown: Story = {
   name: 'Settings dropdown',
   parameters: { controls: { include: [] } },
-  render: () => <SettingsMenu />,
+  render: (_args) => <SettingsMenu />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const page = within(canvasElement.ownerDocument.body);
@@ -136,7 +136,7 @@ export const SettingsDropdown: Story = {
 export const NavItemVariants: Story = {
   name: 'Nav item variants',
   parameters: { controls: { include: [] } },
-  render: () => (
+  render: (_args) => (
     <div className="flex flex-wrap items-center gap-2">
       <NavLink href="/default" icon={<Home />}>
         Default

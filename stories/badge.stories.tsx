@@ -61,7 +61,7 @@ export const Variants: Story = {
       },
     },
   },
-  render: () => (
+  render: (_args) => (
     <div className="flex flex-wrap items-center gap-3">
       <Badge variant="default">Default</Badge>
       <Badge variant="secondary">Secondary</Badge>
@@ -83,7 +83,7 @@ export const WithLeadingIcon: Story = {
       },
     },
   },
-  render: () => (
+  render: (_args) => (
     <div className="flex flex-wrap items-center gap-3">
       <Badge variant="outline">
         <Circle className="fill-current" />
@@ -112,7 +112,7 @@ export const WithTrailingIcon: Story = {
       },
     },
   },
-  render: () => (
+  render: (_args) => (
     <div className="flex flex-wrap items-center gap-3">
       <Badge variant="outline">
         Verified

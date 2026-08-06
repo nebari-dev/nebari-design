@@ -8,10 +8,6 @@ import { describe, expect, it } from 'vitest';
  * table — so without this test a missing `controls.include` or a typo in an
  * `include` list fails silently.
  *
- * `Default` is the only playground: it exposes the full prop surface, and every
- * other story narrows to `include: []` unless it declares its own story-only
- * `argTypes`.
- *
  * Review-time concerns, not statically derivable: an omitted prop (`cva()` does
  * not expose its config at runtime, so there is no full prop surface to diff
  * against), whether a render *uses* the args it takes, and rule 8's remount
@@ -41,9 +37,9 @@ type Story = StoryObj<unknown> & {
 };
 
 /**
- * A `render` declared as `() => …` cannot receive args, so any control the story
- * exposes is unreachable. `undefined` means the component renders with args
- * directly, which is always fine.
+ * Storybook derives `__isArgsStory` from `render && render.length > 0`, and
+ * skips `controls.include` when it is false. `undefined` means the renderer
+ * supplies an args-taking default render, which is always fine.
  */
 function renderArity(story: Story): number | undefined {
   return typeof story.render === 'function' ? story.render.length : undefined;
@@ -82,7 +78,6 @@ function controlType(argType: unknown): string | undefined {
   return undefined;
 }
 
-/** Radio widgets are not used; every union is a `select`. */
 const BANNED_CONTROLS = new Set(['radio', 'inline-radio']);
 
 it('finds every component story', () => {
@@ -108,16 +103,12 @@ describe.each(componentStories)('$path', ({ mod }) => {
     expect(Object.keys(story?.args ?? {})).toEqual([]);
   });
 
-  it('routes every exposed control into the render', () => {
-    const unreachable = stories
-      .filter(([, story]) => {
-        const include = story.parameters?.controls?.include;
-        return Array.isArray(include) && include.length > 0;
-      })
+  it('keeps every render args-aware so controls.include applies', () => {
+    const unfiltered = stories
       .filter(([, story]) => renderArity(story) === 0)
       .map(([name]) => name);
 
-    expect(unreachable).toEqual([]);
+    expect(unfiltered).toEqual([]);
   });
 
   it('seeds every knob whose control would otherwise need a click', () => {
@@ -148,8 +139,6 @@ describe.each(componentStories)('$path', ({ mod }) => {
   });
 
   it('shows only controls that belong to the story exclusively', () => {
-    // Meta argTypes are the `Default` playground's surface. A non-Default story
-    // may expose a knob only if it declares that knob itself.
     const shared = stories
       .filter(([name]) => name !== 'Default')
       .flatMap(([name, story]) => {

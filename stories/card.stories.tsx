@@ -129,7 +129,7 @@ export const Default: Story = {
 export const Sizes: Story = {
   name: 'Size',
   parameters: { controls: { include: [] } },
-  render: () => (
+  render: (_args) => (
     <div className={responsiveTwoCardGridClassName}>
       <Card className={rowCardClassName}>
         <CardHeader>
@@ -282,7 +282,7 @@ export const FooterExamples: Story = {
 export const CustomSpacing: Story = {
   name: 'Custom spacing',
   parameters: { controls: { include: [] } },
-  render: () => (
+  render: (_args) => (
     <div className={responsiveThreeCardGridClassName}>
       {[
         {

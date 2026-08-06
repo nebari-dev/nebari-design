@@ -359,10 +359,15 @@ applied by every story under `Components/*`
    surface is adjustable in exactly one place — `Default` — and repeating a
    slice of it under every story only invites the reader to knob a story out of
    the state it exists to show.
-   - A story may list a prop in `include` only if it declares that prop in its
-     own per-story `argTypes` as a story-only knob. That is the one case where a
-     control belongs to a single story; see `CompleteNavbar` in
-     `stories/navigation-menu.stories.tsx`.
+   - A control may live on at most one non-Default story, and only if it applies
+     to that story and to no other. In practice that means a story-only knob the
+     story declares in its own per-story `argTypes`; see `CompleteNavbar` in
+     `stories/navigation-menu.stories.tsx`. A prop that would be relevant to two
+     or more stories belongs to `Default` alone.
+   - **Every `render` must take an args parameter, `_args` if it ignores them.**
+     Storybook computes `__isArgsStory` as `render && render.length > 0` and
+     skips the `include` filter entirely when it is false, so an `() => …` render
+     silently shows the whole meta surface no matter what `include` says.
    - The story's subject still goes through its own `args` when it is one prop
      on one instance (`args: { variant: 'underline' }`, not
      `<ExampleTabs variant="underline" />`) — it is simply pinned rather than
@@ -402,8 +407,6 @@ const meta = {
     layout: 'centered',
     docs: { description: { component: 'One paragraph on what it is and when to use it.' } },
   },
-  // Every knob is seeded with the component's own default (rule 5), so no
-  // control opens as a "Set boolean" button.
   args: { children: 'Button', disabled: false, loading: false, size: 'default', variant: 'default' },
   argTypes: {
     variant: {
@@ -442,18 +445,13 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-// Playground: no own args, no controls param — every prop is a live control.
 export const Default: Story = {};
 
-// Subject pinned through args; the panel stays empty because `loading` is
-// already a live knob on `Default`.
 export const Loading: Story = {
   args: { loading: true },
   parameters: { controls: { include: [] } },
 };
 
-// Showcase grid. It still threads `args` for the meta baseline, but nothing
-// here is adjustable.
 export const Variants: Story = {
   parameters: { controls: { include: [] } },
   render: (args) => (
