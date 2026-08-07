@@ -41,13 +41,6 @@ type TableStoryArgs = {
   showFooter: boolean;
 };
 
-const tableStoryDefaults = {
-  caption: '',
-  empty: false,
-  showActions: false,
-  showFooter: false,
-} satisfies TableStoryArgs;
-
 function TableFrame({ children }: { children: ReactNode }) {
   return <div className="w-[44rem] max-w-[calc(100vw-3rem)]">{children}</div>;
 }
@@ -110,11 +103,11 @@ function EnvironmentRows({ actions = false }: { actions?: boolean }) {
 }
 
 function EnvironmentTable({
-  caption,
-  empty,
-  showActions,
-  showFooter,
-}: TableStoryArgs) {
+  caption = '',
+  empty = false,
+  showActions = false,
+  showFooter = false,
+}: Partial<TableStoryArgs>) {
   const columnCount = showActions ? 5 : 4;
 
   return (
@@ -159,24 +152,29 @@ const meta = {
       },
     },
   },
-  args: tableStoryDefaults,
+  args: { caption: '', empty: false, showActions: false, showFooter: false },
   argTypes: {
     caption: {
       control: 'text',
       description:
-        'Optional visible `TableCaption` text. Leave empty to omit the caption.',
-    },
-    empty: {
-      control: 'boolean',
-      description: 'Shows the table empty state instead of data rows.',
-    },
-    showActions: {
-      control: 'boolean',
-      description: 'Adds a copy/delete action column.',
+        'Story-only toggle. Optional visible `TableCaption` text — leave empty to omit the caption.',
+      table: { defaultValue: { summary: '(none)' } },
     },
     showFooter: {
       control: 'boolean',
-      description: 'Adds a summary footer row.',
+      description: 'Story-only toggle. Adds a summary `TableFooter` row.',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    showActions: {
+      control: 'boolean',
+      description: 'Story-only toggle. Adds a copy/delete action column.',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    empty: {
+      control: 'boolean',
+      description:
+        'Story-only toggle. Shows the table empty state instead of data rows.',
+      table: { defaultValue: { summary: 'false' } },
     },
   },
 } satisfies Meta<TableStoryArgs>;
@@ -188,42 +186,47 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: (args) => (
     <TableFrame>
-      <EnvironmentTable {...tableStoryDefaults} {...args} />
+      <EnvironmentTable {...args} />
     </TableFrame>
   ),
 };
 
 export const WithFooter: Story = {
   name: 'With footer',
+  // The footer row spans the data columns, so the actions column affects it.
+  parameters: { controls: { include: [] } },
   args: {
     showFooter: true,
   },
   render: (args) => (
     <TableFrame>
-      <EnvironmentTable {...tableStoryDefaults} {...args} />
+      <EnvironmentTable {...args} />
     </TableFrame>
   ),
 };
 
 export const Actions: Story = {
+  parameters: { controls: { include: [] } },
   args: {
     showActions: true,
   },
   render: (args) => (
     <TableFrame>
-      <EnvironmentTable {...tableStoryDefaults} {...args} />
+      <EnvironmentTable {...args} />
     </TableFrame>
   ),
 };
 
 export const EmptyState: Story = {
   name: 'Empty state',
+  // The placeholder cell's `colSpan` tracks the actions column.
+  parameters: { controls: { include: [] } },
   args: {
     empty: true,
   },
   render: (args) => (
     <TableFrame>
-      <EnvironmentTable {...tableStoryDefaults} {...args} />
+      <EnvironmentTable {...args} />
     </TableFrame>
   ),
 };

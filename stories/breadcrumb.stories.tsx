@@ -146,7 +146,11 @@ const meta = {
       options: ['default', 'ellipsis', 'dropdown'],
       table: { defaultValue: { summary: 'default' } },
     },
-    children: { table: { disable: true } },
+    children: {
+      description:
+        'Composed content — a `BreadcrumbList` of `BreadcrumbItem`s separated by `BreadcrumbSeparator`, ending in a `BreadcrumbPage` for the current route.',
+      control: false,
+    },
     className: { table: { disable: true } },
   },
 } satisfies Meta<BreadcrumbStoryArgs>;
@@ -253,12 +257,7 @@ async function verifyCollapsedMenu(
 }
 
 export const Default: Story = {
-  name: 'Default',
-  args: {
-    variant: 'default',
-  },
   parameters: {
-    controls: { include: ['variant'] },
     docs: {
       description: {
         story:
@@ -285,12 +284,8 @@ export const Default: Story = {
 };
 
 export const Ellipsis: Story = {
-  name: 'Ellipsis',
-  args: {
-    variant: 'ellipsis',
-  },
   parameters: {
-    controls: { disable: true },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -302,19 +297,15 @@ export const Ellipsis: Story = {
       },
     },
   },
-  render: () => <CollapsedBreadcrumb variant="ellipsis" />,
+  render: (_args) => <CollapsedBreadcrumb variant="ellipsis" />,
   play: async ({ canvasElement }) => {
     await verifyCollapsedMenu(canvasElement, 'Show more breadcrumbs');
   },
 };
 
 export const Dropdown: Story = {
-  name: 'Dropdown',
-  args: {
-    variant: 'dropdown',
-  },
   parameters: {
-    controls: { disable: true },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -326,7 +317,7 @@ export const Dropdown: Story = {
       },
     },
   },
-  render: () => <CollapsedBreadcrumb variant="dropdown" />,
+  render: (_args) => <CollapsedBreadcrumb variant="dropdown" />,
   play: async ({ canvasElement }) => {
     await verifyCollapsedMenu(canvasElement, 'Breadcrumb');
   },
@@ -335,7 +326,7 @@ export const Dropdown: Story = {
 export const RenderAsLink: Story = {
   name: 'Render as link',
   parameters: {
-    controls: { disable: true },
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -343,7 +334,7 @@ export const RenderAsLink: Story = {
       },
     },
   },
-  render: () => (
+  render: (_args) => (
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
