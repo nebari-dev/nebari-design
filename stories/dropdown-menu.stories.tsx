@@ -27,6 +27,7 @@ const meta = {
   },
   args: {
     children: 'Open',
+    disabled: false,
     showExpandIcon: false,
     variant: 'default',
   },
@@ -34,10 +35,6 @@ const meta = {
     children: {
       control: 'text',
       description: 'Visible trigger label.',
-    },
-    showExpandIcon: {
-      control: 'boolean',
-      description: 'Shows trailing expand icon on trigger.',
     },
     variant: {
       control: 'select',
@@ -49,7 +46,31 @@ const meta = {
         'ghost',
         'link',
       ],
-      description: 'Trigger visual style variant.',
+      description:
+        'Trigger visual style variant. Every variant other than `default` defers to the matching `Button` variant.',
+      table: { defaultValue: { summary: 'default' } },
+    },
+    showExpandIcon: {
+      control: 'boolean',
+      description:
+        'Shows the trailing chevron expand icon on the trigger, and adds the gap for it.',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    expandIcon: {
+      control: false,
+      description:
+        'Replaces the default `chevrons-up-down` icon shown when `showExpandIcon` is set.',
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Disables the trigger so the menu can no longer be opened.',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    className: { table: { disable: true } },
+    render: {
+      description:
+        'Base UI render-prop composition. Swap the trigger element while preserving its behavior, styling, and slot attributes.',
+      control: false,
     },
   },
 } satisfies Meta<typeof DropdownMenuTrigger>;
@@ -84,13 +105,16 @@ export const Default: Story = {
 };
 
 export const WithCheckboxItems: Story = {
-  render: () => {
+  parameters: {
+    controls: { include: [] },
+  },
+  render: ({ children: _children, ...args }) => {
     const [showLineNumbers, setShowLineNumbers] = useState(true);
     const [wrapLines, setWrapLines] = useState(false);
 
     return (
       <DropdownMenu>
-        <DropdownMenuTrigger>Options</DropdownMenuTrigger>
+        <DropdownMenuTrigger {...args}>Options</DropdownMenuTrigger>
         <DropdownMenuPortal>
           <DropdownMenuContent>
             <DropdownMenuGroup>
@@ -116,9 +140,12 @@ export const WithCheckboxItems: Story = {
 };
 
 export const WithSubmenu: Story = {
-  render: () => (
+  parameters: {
+    controls: { include: [] },
+  },
+  render: ({ children: _children, ...args }) => (
     <DropdownMenu>
-      <DropdownMenuTrigger>File</DropdownMenuTrigger>
+      <DropdownMenuTrigger {...args}>File</DropdownMenuTrigger>
       <DropdownMenuPortal>
         <DropdownMenuContent>
           <DropdownMenuItem>New file</DropdownMenuItem>
@@ -137,10 +164,13 @@ export const WithSubmenu: Story = {
 };
 
 export const TriggerVariants: Story = {
-  render: () => (
+  parameters: { controls: { include: [] } },
+  render: ({ disabled }) => (
     <div className="flex items-center gap-6">
       <DropdownMenu>
-        <DropdownMenuTrigger showExpandIcon>Open</DropdownMenuTrigger>
+        <DropdownMenuTrigger disabled={disabled} showExpandIcon>
+          Open
+        </DropdownMenuTrigger>
         <DropdownMenuPortal>
           <DropdownMenuContent>
             <DropdownMenuItem>Dropdown Menu Item Text</DropdownMenuItem>
@@ -149,7 +179,7 @@ export const TriggerVariants: Story = {
       </DropdownMenu>
 
       <DropdownMenu>
-        <DropdownMenuTrigger showExpandIcon variant="ghost">
+        <DropdownMenuTrigger disabled={disabled} showExpandIcon variant="ghost">
           Open
         </DropdownMenuTrigger>
         <DropdownMenuPortal>

@@ -35,7 +35,7 @@ function InteractiveIndeterminateCheckbox({
   );
 }
 
-function InvalidCheckboxExample() {
+function InvalidCheckboxExample({ variant }: { variant: CheckboxVariant }) {
   const [checked, setChecked] = useState(false);
   const isInvalid = !checked;
 
@@ -48,6 +48,7 @@ function InvalidCheckboxExample() {
           setChecked(nextChecked);
         }}
         required
+        variant={variant}
       >
         I agree to the terms and conditions
       </Checkbox>
@@ -71,19 +72,73 @@ const meta = {
     },
   },
   args: {
-    children: 'Checkbox Text',
+    children: 'Enable automatic updates',
+    defaultChecked: true,
+    disabled: false,
+    indeterminate: false,
+    required: false,
+    variant: 'default',
   },
   argTypes: {
     variant: {
+      description:
+        'Field layout. `default` is an inline checkbox; `box` turns the label and description into a bordered, fully clickable card.',
       control: 'select',
       options: ['default', 'box'],
       table: { defaultValue: { summary: 'default' } },
     },
-    defaultChecked: { control: 'boolean' },
-    disabled: { control: 'boolean' },
-    indeterminate: { control: 'boolean' },
-    description: { control: 'text' },
+    children: {
+      description: 'The visible and accessible checkbox label.',
+      control: 'text',
+    },
+    description: {
+      description:
+        "Supplementary text beneath the label, exposed as the checkbox's accessible description.",
+      control: 'text',
+    },
+    defaultChecked: {
+      description: 'Initial state when the checkbox is uncontrolled.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    checked: {
+      description:
+        'Controlled state. Pair it with `onCheckedChange`; left as a docs-only row here so the playground stays interactive.',
+      control: false,
+    },
+    indeterminate: {
+      description:
+        'Renders the mixed state (a dash instead of a check) for a partially-selected group of children. Clicking resolves it to checked or unchecked.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    disabled: {
+      description:
+        'Mutes the label and fills the control with `muted`; a checked or indeterminate box keeps a `muted-foreground` fill with a `background`-colored mark. Blocks pointer and keyboard interaction.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    required: {
+      description:
+        'Marks the checkbox as required for Base UI `Field` validation — it must be checked to pass.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    onCheckedChange: {
+      description: 'Called with the next checked state on every toggle.',
+      action: 'checked changed',
+      control: false,
+    },
+    render: {
+      description:
+        'Base UI render-prop composition. Swap the rendered element while preserving checkbox behavior, styling, and slot attributes.',
+      control: false,
+    },
   },
+  decorators: [
+    // `defaultChecked` is mount-only, so the key forces a remount when it changes.
+    (Story, { args }) => <Story key={String(args.defaultChecked)} />,
+  ],
 } satisfies Meta<typeof Checkbox>;
 
 export default meta;
@@ -95,9 +150,9 @@ type Story = StoryObj<typeof meta>;
  * are enough context for a single boolean choice.
  */
 export const Default: Story = {
-  render: () => (
+  render: (args) => (
     <div className="w-72">
-      <Checkbox defaultChecked>Enable automatic updates</Checkbox>
+      <Checkbox {...args} />
     </div>
   ),
 };
@@ -108,11 +163,13 @@ export const Default: Story = {
  */
 export const WithDescription: Story = {
   name: 'With description',
-  render: () => (
+  args: { description: 'Run updates when a newer image is available.' },
+  parameters: {
+    controls: { include: [] },
+  },
+  render: (args) => (
     <div className="w-72">
-      <Checkbox description="Run updates when a newer image is available.">
-        Enable automatic updates
-      </Checkbox>
+      <Checkbox {...args} />
     </div>
   ),
 };
@@ -122,13 +179,23 @@ export const WithDescription: Story = {
  * checkbox fields in a wrapping row.
  */
 export const Horizontal: Story = {
-  render: () => (
+  parameters: { controls: { include: [] } },
+  render: ({ disabled, variant }) => (
     <CheckboxGroup aria-label="Workspace features" orientation="horizontal">
-      <Checkbox defaultChecked value="notebooks">
+      <Checkbox
+        defaultChecked
+        disabled={disabled}
+        value="notebooks"
+        variant={variant}
+      >
         Notebooks
       </Checkbox>
-      <Checkbox value="dashboards">Dashboards</Checkbox>
-      <Checkbox value="jobs">Jobs</Checkbox>
+      <Checkbox disabled={disabled} value="dashboards" variant={variant}>
+        Dashboards
+      </Checkbox>
+      <Checkbox disabled={disabled} value="jobs" variant={variant}>
+        Jobs
+      </Checkbox>
     </CheckboxGroup>
   ),
 };
@@ -138,14 +205,16 @@ export const Horizontal: Story = {
  * Reach for it when the choice needs more visual weight or descriptive copy.
  */
 export const Box: Story = {
-  render: () => (
+  args: {
+    description: 'Allow collaborators to duplicate this environment.',
+    variant: 'box',
+  },
+  parameters: {
+    controls: { include: [] },
+  },
+  render: (args) => (
     <div className="w-80">
-      <Checkbox
-        description="Allow collaborators to duplicate this environment."
-        variant="box"
-      >
-        Allow environment cloning
-      </Checkbox>
+      <Checkbox {...args}>Allow environment cloning</Checkbox>
     </div>
   ),
 };
@@ -155,10 +224,12 @@ export const Box: Story = {
  * not accept interaction.
  */
 export const Disabled: Story = {
-  render: () => (
+  args: { disabled: true },
+  parameters: { controls: { include: [] } },
+  render: ({ disabled }) => (
     <div className="flex w-80 flex-col gap-4">
-      <Checkbox disabled>Enable usage reporting</Checkbox>
-      <Checkbox defaultChecked disabled variant="box">
+      <Checkbox disabled={disabled}>Enable usage reporting</Checkbox>
+      <Checkbox defaultChecked disabled={disabled} variant="box">
         Required by your organization
       </Checkbox>
     </div>
@@ -170,8 +241,8 @@ export const Disabled: Story = {
  * description separate from the checkbox's own inline label.
  */
 export const WithField: Story = {
-  name: 'With Field',
-  render: () => (
+  parameters: { controls: { include: [] } },
+  render: ({ disabled, variant }) => (
     <Field className="w-80">
       <FieldLabel id="notifications-label">Notifications</FieldLabel>
       <FieldDescription id="notifications-desc">
@@ -180,6 +251,8 @@ export const WithField: Story = {
       <Checkbox
         aria-describedby="notifications-desc"
         aria-labelledby="notifications-label"
+        disabled={disabled}
+        variant={variant}
       >
         Email me product updates
       </Checkbox>
@@ -193,7 +266,10 @@ export const WithField: Story = {
  * cue. The error clears as soon as the user checks the box.
  */
 export const Invalid: Story = {
-  render: () => <InvalidCheckboxExample />,
+  parameters: { controls: { include: [] } },
+  render: ({ variant }) => (
+    <InvalidCheckboxExample variant={variant ?? 'default'} />
+  ),
 };
 
 /**
@@ -201,7 +277,8 @@ export const Invalid: Story = {
  * resolves it to a normal checked or unchecked state.
  */
 export const Indeterminate: Story = {
-  render: () => (
+  parameters: { controls: { include: [] } },
+  render: (_args) => (
     <div className="grid w-[38rem] grid-cols-2 items-start gap-6">
       {variantRows.map((row) => (
         <div className="space-y-3" key={row.label}>

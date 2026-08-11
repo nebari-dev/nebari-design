@@ -1,6 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { BarChart3, Code2, Eye, Settings } from 'lucide-react';
+import type { ComponentProps } from 'react';
 import { Tabs, TabsIndicator, TabsList, TabsPanel, TabsTab } from '@/ui/tabs';
+
+type TabsVariant = NonNullable<ComponentProps<typeof TabsList>['variant']>;
+
+type TabsStoryArgs = Pick<
+  ComponentProps<typeof Tabs>,
+  'defaultValue' | 'onValueChange' | 'orientation' | 'value'
+> & {
+  disabled?: boolean;
+  icons?: boolean;
+  variant: TabsVariant;
+};
 
 const meta = {
   title: 'Components/Tabs',
@@ -14,35 +26,67 @@ const meta = {
       },
     },
   },
+  args: {
+    defaultValue: 'overview',
+    disabled: false,
+    icons: false,
+    orientation: 'horizontal',
+    variant: 'pill',
+  },
   argTypes: {
+    variant: {
+      description:
+        'Visual style, set on `TabsList` and propagated to `TabsTab` and `TabsIndicator` through context. `pill` is a bordered card-colored pill; `underline` and `line` use an underline indicator; `toggle` renders a segmented control.',
+      control: 'select',
+      options: ['pill', 'underline', 'line', 'toggle'],
+      table: { defaultValue: { summary: 'pill' } },
+    },
+    orientation: {
+      description:
+        'Tab layout orientation managed by Base UI. `vertical` puts the list beside the panels.',
+      control: 'select',
+      options: ['horizontal', 'vertical'],
+      table: { defaultValue: { summary: 'horizontal' } },
+    },
     defaultValue: {
       description:
-        'Initial active tab value when the component is uncontrolled.',
-      control: 'text',
+        'Initial active tab value when the component is uncontrolled. This story uses named tab values; Base UI falls back to the tab index.',
+      control: 'select',
+      options: ['overview', 'analytics', 'settings', 'logs'],
       table: { defaultValue: { summary: '0' } },
     },
+    icons: {
+      description:
+        'Story-only toggle. Renders a leading `lucide-react` icon in each tab.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    disabled: {
+      description:
+        'Story-only toggle. Disables the last tab — a disabled `TabsTab` stays visible but cannot be focused or selected.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
     value: {
-      description: 'Controlled active tab value.',
-      control: 'text',
+      description:
+        'Controlled active tab value. Pair it with `onValueChange`; left as a docs-only row here so the playground stays interactive.',
+      control: false,
     },
     onValueChange: {
       description: 'Called when the active tab changes.',
       action: 'value changed',
       control: false,
     },
-    orientation: {
-      description: 'Tab layout orientation managed by Base UI.',
-      control: 'select',
-      options: ['horizontal', 'vertical'],
-      table: { defaultValue: { summary: 'horizontal' } },
-    },
   },
-} satisfies Meta<typeof Tabs>;
+  decorators: [
+    // `defaultValue` is mount-only, so the key forces a remount when it changes.
+    (Story, { args }) => <Story key={String(args.defaultValue)} />,
+  ],
+} satisfies Meta<TabsStoryArgs>;
 
 export default meta;
 
-type Story = StoryObj<typeof meta>;
-type TabsVariant = 'pill' | 'underline';
+type Story = StoryObj<TabsStoryArgs>;
 
 function PanelCard({ children, title }: { children: string; title: string }) {
   return (
@@ -54,22 +98,20 @@ function PanelCard({ children, title }: { children: string; title: string }) {
 }
 
 function ExampleTabs({
+  defaultValue = 'overview',
   disabled = false,
   icons = false,
+  onValueChange,
   orientation = 'horizontal',
   variant,
-}: {
-  disabled?: boolean;
-  icons?: boolean;
-  orientation?: 'horizontal' | 'vertical';
-  variant: TabsVariant;
-}) {
+}: TabsStoryArgs) {
   const isVertical = orientation === 'vertical';
 
   return (
     <Tabs
       className={isVertical ? 'w-[620px]' : 'w-[520px]'}
-      defaultValue="overview"
+      defaultValue={defaultValue}
+      onValueChange={onValueChange}
       orientation={orientation}
     >
       <TabsList aria-label="Project sections" variant={variant}>
@@ -127,22 +169,22 @@ function ExampleTabs({
   );
 }
 
-export const Pill: Story = {
-  name: 'Pill',
+export const Default: Story = {
   parameters: {
     docs: {
       description: {
         story:
-          'The default pill style. Each tab is a bordered card-colored pill; disabled pills keep the same sizing and switch to the muted background.',
+          'The default pill style. Each tab is a bordered card-colored pill; disabled pills keep the same sizing and switch to the muted background. Use the controls to preview every variant, orientation, and the icon and disabled states.',
       },
     },
   },
-  render: () => <ExampleTabs variant="pill" />,
+  render: (args) => <ExampleTabs {...args} />,
 };
 
 export const Underline: Story = {
-  name: 'Underline',
+  args: { variant: 'underline' },
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -150,12 +192,13 @@ export const Underline: Story = {
       },
     },
   },
-  render: () => <ExampleTabs variant="underline" />,
+  render: (args) => <ExampleTabs {...args} />,
 };
 
 export const Vertical: Story = {
-  name: 'Vertical',
+  args: { orientation: 'vertical' },
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -163,12 +206,13 @@ export const Vertical: Story = {
       },
     },
   },
-  render: () => <ExampleTabs orientation="vertical" variant="pill" />,
+  render: (args) => <ExampleTabs {...args} />,
 };
 
 export const Disabled: Story = {
-  name: 'Disabled',
+  args: { disabled: true },
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -176,12 +220,13 @@ export const Disabled: Story = {
       },
     },
   },
-  render: () => <ExampleTabs disabled variant="pill" />,
+  render: (args) => <ExampleTabs {...args} />,
 };
 
 export const Icons: Story = {
-  name: 'Icons',
+  args: { icons: true },
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -189,5 +234,5 @@ export const Icons: Story = {
       },
     },
   },
-  render: () => <ExampleTabs icons variant="pill" />,
+  render: (args) => <ExampleTabs {...args} />,
 };

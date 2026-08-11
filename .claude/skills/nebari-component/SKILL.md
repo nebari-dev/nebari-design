@@ -292,7 +292,109 @@ A component that references motion tokens (`--duration-*`, `--ease-*`,
 
 ## Step 3 — the story
 
-Create `stories/<name>.stories.tsx` (CSF3, one story per meaningful variant):
+Create `stories/<name>.stories.tsx` (CSF3, one story per meaningful variant).
+
+### Controls convention (required)
+
+`Default` is the interactive playground and the only story with controls; every
+other story shows an empty panel unless it owns a knob outright, and every
+control `Default` shows is a populated widget from first paint. Eight rules,
+applied by every story under `Components/*`
+(`tests/story-controls.test.ts` enforces what is statically checkable):
+
+1. **Meta declares the full documented prop surface.** Each prop gets a
+   `description`, a `control`, `options` for unions, and `table.defaultValue`
+   when the component has a real default (omit it for props with none, like
+   `children` or `placeholder`). Unions always use `control: 'select'` — `radio`
+   and `inline-radio` are not used, whatever the option count. Consumer-facing
+   props that cannot be represented by a knob, especially Base UI's `render`
+   prop, stay visible with `control: false`.
+2. **Depth = own props + key state props.** The component's own props and cva
+   variant keys, plus the inherited Base UI/HTML props a playground needs
+   (`open`/`defaultOpen`, `checked`/`defaultChecked`, `disabled`, `placeholder`,
+   `aria-invalid`, …). Not the whole inherited surface.
+3. **Hide plumbing; document everything else.** Two distinct tools:
+   - `table: { disable: true }` — implementation plumbing and callbacks only:
+     `className`, `style`, `id`, `portalProps`, `viewportClassName`,
+     `overlayClassName`, `validate`, `onValueChange`, and props the component
+     hardcodes (e.g. tooltip's `role`).
+   - `control: false` plus a `description` — consumer APIs that cannot be a
+     knob: Base UI's `render`, `children` when the component is composed from
+     subcomponents (the knob would be meaningless JSX), and controlled-state
+     props (see rule 8). These stay visible in the props table because
+     consumers need them.
+
+   Never use either for per-story narrowing; that always uses
+   `controls.include`.
+4. **`Default` is the playground.** Name it exactly `Default` and give it no
+   prop-fixing per-story `args` (baseline meta `args` are fine) and no
+   `parameters.controls`. Its `render` must thread `args` into the component so
+   every interactive knob is live.
+5. **Every knob is seeded in meta `args`.** Storybook's boolean, number, and
+   object controls render a click-to-reveal "Set …" button while their value is
+   `undefined`, so an unseeded knob costs a click before it can be used. Default
+   to seeding with the component's own default — `false` for booleans, the
+   documented default for selects, the effective default for numbers. Where that
+   would make a dull playground, seed the state the playground is better off
+   opening in instead (`defaultChecked: true` on checkbox and switch,
+   `defaultValue: 33` on slider) and let `table.defaultValue` carry the real
+   default. Seed in meta, not per story: rule 4 keeps `Default` free of own args.
+   Optional free-text knobs (`loadingText`, `htmlFor`) need no seed; a text
+   control always renders an input.
+
+   Where an unset prop is itself a meaningful state, model it as an explicit
+   `auto` option rather than leaving the arg undefined — a story-args union plus
+   a lookup back to the real value, the pattern dialog already uses for `modal`:
+
+   ```tsx
+   // stories/drawer.stories.tsx
+   const SWIPE_HANDLE_BY_KEY = { auto: undefined, shown: true, hidden: false } as const;
+   // argTypes: control 'select', options ['auto', 'shown', 'hidden']
+   // args: { showSwipeHandle: 'auto' }
+   ```
+
+   Without it the knob is both click-to-reveal *and* a one-way door: once
+   touched, there is no way back to the automatic behavior.
+6. **Every other story sets `parameters.controls.include: []`.** The full prop
+   surface is adjustable in exactly one place — `Default` — and repeating a
+   slice of it under every story only invites the reader to knob a story out of
+   the state it exists to show.
+   - A control may live on at most one non-Default story, and only if it applies
+     to that story and to no other. In practice that means a story-only knob the
+     story declares in its own per-story `argTypes`; see `CompleteNavbar` in
+     `stories/navigation-menu.stories.tsx`. A prop that would be relevant to two
+     or more stories belongs to `Default` alone.
+   - **Every `render` must take an args parameter, `_args` if it ignores them.**
+     Storybook computes `__isArgsStory` as `render && render.length > 0` and
+     skips the `include` filter entirely when it is false, so an `() => …` render
+     silently shows the whole meta surface no matter what `include` says.
+   - The story's subject still goes through its own `args` when it is one prop
+     on one instance (`args: { variant: 'underline' }`, not
+     `<ExampleTabs variant="underline" />`) — it is simply pinned rather than
+     live, and the render can keep threading `args`.
+7. **Composite components use the story-args pattern.** When the knobs span
+   subcomponents (tabs' `variant` lives on `TabsList`, dialog's `defaultOpen` on
+   the root), declare a local `<Name>StoryArgs` type with those props plus any
+   story-only toggles, use `satisfies Meta<NameStoryArgs>`, and label each
+   synthetic knob "Story-only toggle" in its description. See
+   `stories/card.stories.tsx`, `stories/tabs.stories.tsx`.
+8. **No no-op knobs — mind mount-only and controlled props.** Storybook
+   re-renders into a cached React root on an args change; it never remounts. So
+   a mount-only prop (`defaultChecked`, `defaultValue`, `defaultOpen`) exposed
+   as a live control would silently do nothing. Keep the control and key the
+   story on that prop from a meta decorator, so every story in the file gets the
+   remount for free instead of repeating a `key` in each `render`:
+
+   ```tsx
+   decorators: [(Story, { args }) => <Story key={String(args.defaultChecked)} />],
+   ```
+
+   Its controlled
+   counterpart (`checked`, `value`, `open`) gets `control: false` with a
+   "left as a docs-only row here so the playground stays interactive" note —
+   a live controlled knob with no state wiring freezes the component the moment
+   it is touched. Use `control: false`, not `table: { disable: true }`: these
+   are real consumer APIs and belong in the props table.
 
 ```tsx
 import type { Meta, StoryObj } from '@storybook/react-vite';
@@ -301,8 +403,42 @@ import { Button } from '@/ui/button';
 const meta = {
   title: 'Components/Button',
   component: Button,
-  parameters: { layout: 'centered' },
-  args: { children: 'Button' },
+  parameters: {
+    layout: 'centered',
+    docs: { description: { component: 'One paragraph on what it is and when to use it.' } },
+  },
+  args: { children: 'Button', disabled: false, loading: false, size: 'default', variant: 'default' },
+  argTypes: {
+    variant: {
+      description: 'Visual style of the button. `link` uses the foreground text color and no fill.',
+      control: 'select',
+      options: ['default', 'destructive', 'outline', 'secondary', 'ghost', 'link'],
+      table: { defaultValue: { summary: 'default' } },
+    },
+    size: {
+      description: 'Height and padding preset. The `icon-*` sizes are square.',
+      control: 'select',
+      options: ['xs', 'sm', 'default', 'lg', 'icon-xs', 'icon-sm', 'icon', 'icon-lg'],
+      table: { defaultValue: { summary: 'default' } },
+    },
+    loading: {
+      description: 'Renders a `Spinner`, sets `aria-busy`, and disables the button.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    disabled: {
+      description: 'Disables the button and collapses it to the muted look.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    children: { description: 'Button content.', control: 'text' },
+    render: {
+      description: 'Base UI render-prop composition for swapping the rendered element.',
+      control: false,
+      table: { defaultValue: { summary: '<button type="button" />' } },
+    },
+    className: { table: { disable: true } },
+  },
 } satisfies Meta<typeof Button>;
 
 export default meta;
@@ -310,18 +446,33 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
-export const Secondary: Story = { args: { variant: 'secondary' } };
-export const Outline: Story = { args: { variant: 'outline' } };
-export const Small: Story = { args: { size: 'sm' } };
+
+export const Loading: Story = {
+  args: { loading: true },
+  parameters: { controls: { include: [] } },
+};
+
+export const Variants: Story = {
+  parameters: { controls: { include: [] } },
+  render: (args) => (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button {...args} variant="default">Default</Button>
+      <Button {...args} variant="secondary">Secondary</Button>
+      <Button {...args} variant="ghost">Ghost</Button>
+    </div>
+  ),
+};
 ```
 
-To preview dark mode, wrap a story in `<div className="dark bg-background p-8">`
-(see `stories/Welcome.stories.tsx`).
+For the one exception — a story that owns its knobs and so keeps a populated
+panel — see `CompleteNavbar` in `stories/navigation-menu.stories.tsx`.
+
+To preview dark mode, wrap a story in `<div className="dark bg-background p-8">`.
 
 Where feasible, include a story that exercises the component's interactive or
-animated states — for example a `Playground` story with all props exposed via
-controls, or an `Interactive` story with a `play` function that focuses, hovers,
-or clicks the element. Vitest/jsdom has no layout engine and cannot assert CSS
+animated states — `Default` already covers the all-props-exposed case, so add an
+`Interactive` story with a `play` function that focuses, hovers, or clicks the
+element. Vitest/jsdom has no layout engine and cannot assert CSS
 transitions; Storybook stories are the right place to visually verify motion.
 Add a comment in the test file where CSS transition coverage is intentionally
 absent (e.g. `// CSS transitions are not testable in jsdom; animated states are

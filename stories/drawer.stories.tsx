@@ -9,14 +9,21 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
-  type DrawerProps,
   type DrawerSide,
   DrawerTitle,
   DrawerTrigger,
 } from '@/ui/drawer';
 
-type DrawerStoryArgs = Pick<DrawerProps, 'showSwipeHandle'> & {
+// `auto` keeps the per-side default (shown for bottom) reachable from the knob.
+const SWIPE_HANDLE_BY_KEY = {
+  auto: undefined,
+  shown: true,
+  hidden: false,
+} as const;
+
+type DrawerStoryArgs = {
   showCloseButton: boolean;
+  showSwipeHandle: keyof typeof SWIPE_HANDLE_BY_KEY;
   side: DrawerSide;
 };
 
@@ -33,6 +40,7 @@ const meta = {
   },
   args: {
     showCloseButton: true,
+    showSwipeHandle: 'auto',
     side: 'right',
   },
   argTypes: {
@@ -49,17 +57,21 @@ const meta = {
       table: { defaultValue: { summary: 'true' } },
     },
     showSwipeHandle: {
-      control: 'boolean',
+      control: 'select',
       description:
-        'Shows the grab handle. Defaults to true for bottom drawers and false for side drawers.',
-      table: { defaultValue: { summary: 'auto' } },
+        'Shows the grab handle. `auto` leaves it to the drawer — shown for bottom drawers, hidden for side drawers.',
+      options: ['auto', 'shown', 'hidden'],
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'auto' },
+      },
     },
   },
 } satisfies Meta<DrawerStoryArgs>;
 
 export default meta;
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<DrawerStoryArgs>;
 
 const LONG_CONTENT_SECTIONS = [
   [
@@ -110,12 +122,14 @@ const LONG_CONTENT_SECTIONS = [
 ];
 
 function drawerProps({
-  showSwipeHandle,
+  showSwipeHandle = 'auto',
   side = 'right',
 }: Partial<Pick<DrawerStoryArgs, 'showSwipeHandle' | 'side'>>) {
+  const resolved = SWIPE_HANDLE_BY_KEY[showSwipeHandle];
+
   return {
     side,
-    ...(showSwipeHandle === undefined ? {} : { showSwipeHandle }),
+    ...(resolved === undefined ? {} : { showSwipeHandle: resolved }),
   };
 }
 
@@ -212,6 +226,7 @@ export const Default: Story = {
 
 export const BottomSheet: Story = {
   name: 'Bottom sheet',
+  parameters: { controls: { include: [] } },
   args: {
     side: 'bottom',
   },
@@ -227,11 +242,8 @@ export const BottomSheet: Story = {
 
 export const LongContent: Story = {
   name: 'Long content',
-  render: ({
-    showCloseButton = true,
-    showSwipeHandle,
-    side = 'right',
-  }: Partial<DrawerStoryArgs>) => (
+  parameters: { controls: { include: [] } },
+  render: ({ showCloseButton, showSwipeHandle, side }) => (
     <Drawer {...drawerProps({ showSwipeHandle, side })}>
       <DrawerTrigger render={<Button variant="outline" />}>
         Review workspace
@@ -296,12 +308,13 @@ export const LongContent: Story = {
 
 export const NestedDrawer: Story = {
   name: 'Multi nested drawer',
-  render: () => (
-    <Drawer side="right">
+  parameters: { controls: { include: [] } },
+  render: ({ showCloseButton, showSwipeHandle, side }) => (
+    <Drawer {...drawerProps({ showSwipeHandle, side })}>
       <DrawerTrigger render={<Button variant="outline" />}>
         Environment settings
       </DrawerTrigger>
-      <DrawerContent>
+      <DrawerContent showCloseButton={showCloseButton}>
         <DrawerHeader>
           <div className="min-w-0 flex-1">
             <DrawerTitle>Environment settings</DrawerTitle>
@@ -322,7 +335,7 @@ export const NestedDrawer: Story = {
                 Collaborator access and invitation settings.
               </div>
             </div>
-            <Drawer side="right">
+            <Drawer {...drawerProps({ showSwipeHandle, side })}>
               <DrawerTrigger render={<Button variant="outline" />}>
                 Advanced settings
               </DrawerTrigger>
@@ -352,7 +365,7 @@ export const NestedDrawer: Story = {
                         </div>
                       </div>
                     ))}
-                    <Drawer side="right">
+                    <Drawer {...drawerProps({ showSwipeHandle, side })}>
                       <DrawerTrigger render={<Button variant="outline" />}>
                         Rebuild policy
                       </DrawerTrigger>
