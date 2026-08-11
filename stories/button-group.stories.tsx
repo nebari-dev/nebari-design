@@ -95,7 +95,11 @@ const meta = {
       options: ['horizontal', 'vertical'],
       table: { defaultValue: { summary: 'horizontal' } },
     },
-    children: { table: { disable: true } },
+    children: {
+      control: false,
+      description:
+        'Grouped controls and supporting content rendered inside the fieldset.',
+    },
     className: { table: { disable: true } },
   },
 } satisfies Meta<typeof ButtonGroup>;
@@ -166,7 +170,8 @@ export const Default: Story = {
 
 export const FigmaExamples: Story = {
   name: 'Examples',
-  render: () => (
+  parameters: { controls: { include: [] } },
+  render: (_args) => (
     <div className="flex flex-wrap items-start gap-12">
       <div className="grid gap-2">
         <span className="text-xs">Pagination</span>
@@ -228,6 +233,7 @@ export const Orientation: Story = {
   args: {
     orientation: 'vertical',
   },
+  parameters: { controls: { include: [] } },
   render: (args) => (
     <ButtonGroup {...args} aria-label="Zoom controls">
       <Button
@@ -251,7 +257,8 @@ export const Orientation: Story = {
 };
 
 export const Sizes: Story = {
-  render: () => (
+  parameters: { controls: { include: [] } },
+  render: (_args) => (
     <div className="grid gap-4">
       {(['sm', 'default', 'lg'] as const).map((size) => (
         <ButtonGroup aria-label={`${size} button group`} key={size}>
@@ -268,7 +275,8 @@ export const Sizes: Story = {
 };
 
 export const SupportingContent: Story = {
-  render: () => (
+  parameters: { controls: { include: [] } },
+  render: (_args) => (
     <ButtonGroup aria-label="Branch actions">
       <ButtonGroupText>Branch</ButtonGroupText>
       <Button variant="ghost">main</Button>
@@ -279,7 +287,8 @@ export const SupportingContent: Story = {
 };
 
 export const Nested: Story = {
-  render: () => (
+  parameters: { controls: { include: [] } },
+  render: (_args) => (
     <ButtonGroup aria-label="Editor actions">
       <ButtonGroup aria-label="History actions">
         <Button variant="outline">Undo</Button>
