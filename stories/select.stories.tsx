@@ -49,17 +49,24 @@ const timezones = [
 ] satisfies SelectOption[];
 
 type SelectTriggerProps = ComponentProps<typeof SelectTrigger>;
+type SelectContentProps = ComponentProps<typeof SelectContent>;
+
+type SelectStoryArgs = SelectTriggerProps &
+  Pick<
+    SelectContentProps,
+    'align' | 'alignItemWithTrigger' | 'side' | 'sideOffset'
+  > & {
+    invalid?: boolean;
+  };
 
 interface SelectPreviewProps {
+  args: SelectStoryArgs;
   label: string;
   placeholder: string;
   options?: readonly SelectOption[];
-  defaultValue?: string;
   children?: ReactNode;
   helperText?: ReactNode;
-  invalid?: boolean;
   contentClassName?: string;
-  triggerProps?: Omit<SelectTriggerProps, 'children'>;
 }
 
 function findOptionLabel(
@@ -70,30 +77,38 @@ function findOptionLabel(
   return options.find((option) => option.value === value)?.label ?? placeholder;
 }
 
+/**
+ * Splits the flat story args across the two components they belong to — the
+ * positioning knobs onto `SelectContent`, everything else onto `SelectTrigger`.
+ */
 function SelectPreview({
+  args: { align, alignItemWithTrigger, invalid, side, sideOffset, ...trigger },
   label,
   placeholder,
   options = frameworks,
-  defaultValue,
   children,
   helperText = 'Select one option.',
-  invalid = false,
   contentClassName,
-  triggerProps,
 }: SelectPreviewProps) {
   return (
-    <Field className="w-64" disabled={triggerProps?.disabled} invalid={invalid}>
+    <Field className="w-64" disabled={trigger.disabled} invalid={invalid}>
       <FieldLabel>{label}</FieldLabel>
-      <Select defaultValue={defaultValue} items={options} modal={false}>
+      <Select items={options} modal={false}>
         <SelectTrigger
-          {...triggerProps}
-          aria-invalid={invalid || triggerProps?.['aria-invalid']}
+          {...trigger}
+          aria-invalid={invalid || trigger['aria-invalid']}
         >
           <SelectValue>
             {(value) => findOptionLabel(options, value, placeholder)}
           </SelectValue>
         </SelectTrigger>
-        <SelectContent className={contentClassName}>
+        <SelectContent
+          align={align}
+          alignItemWithTrigger={alignItemWithTrigger}
+          className={contentClassName}
+          side={side}
+          sideOffset={sideOffset}
+        >
           {children ??
             options.map((option) => (
               <SelectItem
@@ -131,21 +146,77 @@ const meta = {
       },
     },
   },
-  argTypes: {
-    disabled: { control: 'boolean' },
+  args: {
+    align: 'center',
+    alignItemWithTrigger: false,
+    disabled: false,
+    invalid: false,
+    side: 'bottom',
+    sideOffset: 0,
   },
-} satisfies Meta<typeof SelectTrigger>;
+  argTypes: {
+    disabled: {
+      description:
+        'Disables the trigger — muted fill, no pointer or keyboard interaction, and the popup can no longer be opened.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    invalid: {
+      description:
+        'Story-only toggle. Marks the surrounding `Field` invalid and sets `aria-invalid` on the trigger, swapping the border and ring to `destructive` and the description for a `FieldError`.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    side: {
+      description:
+        'Set on `SelectContent` — which side of the trigger the popup is positioned against.',
+      control: 'select',
+      options: ['top', 'right', 'bottom', 'left'],
+      table: { defaultValue: { summary: 'bottom' } },
+    },
+    align: {
+      description:
+        'Set on `SelectContent` — how the popup aligns along the trigger on the chosen side.',
+      control: 'select',
+      options: ['start', 'center', 'end'],
+      table: { defaultValue: { summary: 'center' } },
+    },
+    sideOffset: {
+      description:
+        'Set on `SelectContent` — gap in pixels between the trigger and the popup.',
+      control: { type: 'number', min: 0, max: 24, step: 1 },
+      table: { defaultValue: { summary: '0' } },
+    },
+    alignItemWithTrigger: {
+      description:
+        'Set on `SelectContent`. When enabled the popup overlays the trigger so the selected item sits on top of it, instead of opening below.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    children: {
+      description:
+        'Trigger content — a `SelectValue`, whose render prop receives the selected value so it can resolve the matching option label.',
+      control: false,
+    },
+    className: { table: { disable: true } },
+    render: {
+      description:
+        'Base UI render-prop composition. Swap the trigger element while preserving select behavior, styling, and slot attributes.',
+      control: false,
+    },
+  },
+} satisfies Meta<SelectStoryArgs>;
 
 export default meta;
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<SelectStoryArgs>;
 
 export const Default: Story = {
   render: (args) => (
     <SelectPreview
+      args={args}
       label="Framework"
       placeholder="Select a framework"
-      triggerProps={args}
     />
   ),
   play: async ({ canvasElement }) => {
@@ -162,7 +233,9 @@ export const Default: Story = {
     await userEvent.click(trigger);
 
     const listbox = await page.findByRole('listbox');
-    await expect(listbox).toBeVisible();
+    await waitFor(() => {
+      expect(listbox).toBeVisible();
+    });
     await waitFor(() => {
       expect(listbox.getBoundingClientRect().top).toBeCloseTo(
         trigger.getBoundingClientRect().bottom,
@@ -176,8 +249,15 @@ export const Default: Story = {
 };
 
 export const Groups: Story = {
-  render: () => (
+  // `disabled` is left out — it would hide what the story shows.
+  parameters: {
+    controls: {
+      include: [],
+    },
+  },
+  render: (args) => (
     <SelectPreview
+      args={args}
       label="Deployment target"
       options={[...frameworks, ...regions]}
       placeholder="Select a target"
@@ -204,8 +284,14 @@ export const Groups: Story = {
 };
 
 export const Scrollable: Story = {
-  render: () => (
+  parameters: {
+    controls: {
+      include: [],
+    },
+  },
+  render: (args) => (
     <SelectPreview
+      args={args}
       contentClassName="max-h-56"
       label="Timezone"
       options={timezones}
@@ -215,21 +301,25 @@ export const Scrollable: Story = {
 };
 
 export const Disabled: Story = {
-  render: () => (
+  args: { disabled: true },
+  parameters: { controls: { include: [] } },
+  render: (args) => (
     <SelectPreview
+      args={args}
       helperText="This select is unavailable."
       label="Framework"
       placeholder="Select a framework"
-      triggerProps={{ disabled: true }}
     />
   ),
 };
 
 export const Invalid: Story = {
-  render: () => (
+  args: { invalid: true },
+  parameters: { controls: { include: [] } },
+  render: (args) => (
     <SelectPreview
+      args={args}
       helperText="Please select a framework."
-      invalid
       label="Framework"
       placeholder="Select a framework"
     />

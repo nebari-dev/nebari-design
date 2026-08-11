@@ -6,11 +6,65 @@ const meta = {
   title: 'Components/Input',
   component: Input,
   parameters: { layout: 'centered' },
-  args: { placeholder: 'Placeholder text' },
+  args: {
+    'aria-invalid': false,
+    disabled: false,
+    placeholder: 'Placeholder text',
+    readOnly: false,
+    required: false,
+    type: 'text',
+  },
+  argTypes: {
+    placeholder: {
+      description: 'Hint text shown while the input is empty.',
+      control: 'text',
+    },
+    defaultValue: {
+      description: 'Initial value when the input is uncontrolled.',
+      control: 'text',
+    },
+    value: {
+      description:
+        'Controlled value. Pair it with `onChange`; left as a docs-only row here so the playground stays interactive.',
+      control: false,
+    },
+    type: {
+      description:
+        'Native input type. Drives the on-screen keyboard and browser-level validation.',
+      control: 'select',
+      options: ['text', 'email', 'password', 'number', 'search', 'tel', 'url'],
+      table: { defaultValue: { summary: 'text' } },
+    },
+    disabled: {
+      description:
+        'Dims the input to `bg-muted`, blocks pointer events, and removes it from the tab order.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    required: {
+      description:
+        'Marks the input as required for native and Base UI `Field` validation.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    readOnly: {
+      description: 'Keeps the value focusable and selectable but not editable.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    'aria-invalid': {
+      description:
+        'Renders the invalid state — a 2px `destructive` outline plus a trailing `triangle-alert` icon.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    className: { table: { disable: true } },
+  },
   decorators: [
-    (Story) => (
+    // `defaultValue` is mount-only, so the key forces a remount when it changes.
+    (Story, { args }) => (
       <div className="w-64">
-        <Story />
+        <Story key={String(args.defaultValue)} />
       </div>
     ),
   ],
@@ -22,9 +76,15 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-export const Filled: Story = { args: { defaultValue: 'you@nebari.dev' } };
+export const Filled: Story = {
+  args: { defaultValue: 'you@nebari.dev' },
+  parameters: { controls: { include: [] } },
+};
 
-export const Disabled: Story = { args: { disabled: true } };
+export const Disabled: Story = {
+  args: { disabled: true },
+  parameters: { controls: { include: [] } },
+};
 
 /**
  * The error state pairs the 2px `destructive` outline with a trailing
@@ -32,10 +92,12 @@ export const Disabled: Story = { args: { disabled: true } };
  * than color alone (WCAG 1.4.1).
  */
 export const WithError: Story = {
-  render: () => (
+  args: { 'aria-invalid': true, defaultValue: 'invalid@email' },
+  parameters: { controls: { include: [] } },
+  render: (args) => (
     <Field>
       <FieldLabel>Email</FieldLabel>
-      <Input defaultValue="invalid@email" aria-invalid />
+      <Input {...args} />
       <FieldError match>Enter a valid email address.</FieldError>
     </Field>
   ),
@@ -43,10 +105,14 @@ export const WithError: Story = {
 
 /** Composed in a `Field` — label, description, and control auto-associate. */
 export const WithField: Story = {
-  render: () => (
+  args: { placeholder: 'you@nebari.dev' },
+  parameters: {
+    controls: { include: [] },
+  },
+  render: (args) => (
     <Field>
       <FieldLabel>Email</FieldLabel>
-      <Input placeholder="you@nebari.dev" />
+      <Input {...args} />
       <FieldDescription>We'll never share your email.</FieldDescription>
     </Field>
   ),

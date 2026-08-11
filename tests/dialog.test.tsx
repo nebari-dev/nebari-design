@@ -145,6 +145,12 @@ describe('Dialog', () => {
 
     const dialog = await screen.findByRole('dialog', { name: 'Invite user' });
 
+    // Base UI moves initial focus into the dialog asynchronously after the open
+    // transition, so wait for it to settle before exercising the tab order.
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus(),
+    );
+
     await user.tab();
     expect(screen.getByRole('button', { name: 'Send invite' })).toHaveFocus();
 
