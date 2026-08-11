@@ -1,12 +1,10 @@
+import { useRender } from '@base-ui/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { ChevronLeft, ChevronRight, ChevronsUpDown } from 'lucide-react';
+import { PanelLeft } from 'lucide-react';
 import {
   type ComponentProps,
-  cloneElement,
   createContext,
-  isValidElement,
-  type KeyboardEvent,
-  type ReactElement,
+  type MouseEvent,
   type ReactNode,
   useCallback,
   useContext,
@@ -16,13 +14,6 @@ import {
 import { cn } from '@/lib/utils';
 
 type SidebarState = 'expanded' | 'collapsed';
-type DataAttributes = { [key: `data-${string}`]: string | boolean | undefined };
-type RenderElement = ReactElement<Record<string, unknown>>;
-
-type SidebarStateProps = {
-  collapsed?: boolean;
-  state?: SidebarState;
-};
 
 type SidebarContextValue = {
   collapsed: boolean;
@@ -31,16 +22,12 @@ type SidebarContextValue = {
   toggle: () => void;
 };
 
-const DEFAULT_SIDEBAR_CONTEXT: SidebarContextValue = {
+const SidebarContext = createContext<SidebarContextValue>({
   collapsed: false,
   setCollapsed: () => {},
   state: 'expanded',
   toggle: () => {},
-};
-
-const SidebarContext = createContext<SidebarContextValue>(
-  DEFAULT_SIDEBAR_CONTEXT,
-);
+});
 
 type SidebarProviderProps = {
   children: ReactNode;
@@ -96,21 +83,8 @@ function useSidebar() {
   return useContext(SidebarContext);
 }
 
-function resolveSidebarState(
-  { collapsed, state }: SidebarStateProps,
-  contextState: SidebarState,
-): SidebarState {
-  if (state !== undefined) {
-    return state;
-  }
-  if (collapsed !== undefined) {
-    return collapsed ? 'collapsed' : 'expanded';
-  }
-  return contextState;
-}
-
 const sidebarVariants = cva(
-  'flex h-full shrink-0 flex-col overflow-hidden rounded-lg border border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200 ease-[var(--ease-standard)]',
+  'group/sidebar flex h-full shrink-0 flex-col overflow-hidden rounded-lg bg-sidebar text-sidebar-foreground data-[state=collapsed]:w-16 data-[state=expanded]:w-64 motion-safe:transition-[width] motion-safe:duration-[--duration-base] motion-safe:ease-[--ease-standard]',
   {
     variants: {
       variant: {
@@ -125,209 +99,73 @@ const sidebarVariants = cva(
 );
 
 type SidebarProps = ComponentProps<'aside'> &
-  VariantProps<typeof sidebarVariants> &
-  SidebarStateProps;
+  VariantProps<typeof sidebarVariants>;
 
-function Sidebar({
-  className,
-  collapsed,
-  state,
-  variant,
-  ...props
-}: SidebarProps) {
-  const { state: contextState } = useSidebar();
-  const resolvedState = resolveSidebarState({ collapsed, state }, contextState);
+function Sidebar({ className, variant, ...props }: SidebarProps) {
+  const { state } = useSidebar();
 
   return (
     <aside
-      className={cn(
-        sidebarVariants({ variant }),
-        resolvedState === 'collapsed' ? 'w-[72px]' : 'w-64',
-        className,
-      )}
+      className={cn(sidebarVariants({ variant }), className)}
       data-slot="sidebar"
-      data-state={resolvedState}
+      data-state={state}
+      data-variant={variant ?? 'default'}
       {...props}
     />
   );
 }
 
-type SidebarTriggerProps = ComponentProps<'button'> & {
-  onToggle?: () => void;
-  render?: RenderElement;
-} & SidebarStateProps;
+type SidebarTriggerProps = useRender.ComponentProps<'button'>;
 
 function SidebarTrigger({
-  collapsed,
   className,
   onClick,
-  onKeyDown,
-  onToggle,
-  render,
-  state,
+  ref,
+  render = <button type="button" />,
   ...props
 }: SidebarTriggerProps) {
-  const { state: contextState, toggle } = useSidebar();
-  const resolvedState = resolveSidebarState({ collapsed, state }, contextState);
-  const handleToggle = onToggle ?? toggle;
+  const { state, toggle } = useSidebar();
 
-  const triggerProps: ComponentProps<'button'> & DataAttributes = {
-    'aria-label':
-      resolvedState === 'collapsed' ? 'Expand sidebar' : 'Collapse sidebar',
-    'aria-expanded': resolvedState === 'expanded',
-    className: cn(
-      'inline-flex size-4 shrink-0 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar',
-      className,
-    ),
-    'data-slot': 'sidebar-trigger',
-    'data-state': resolvedState,
-    onClick: (event) => {
-      onClick?.(event);
-      if (!event.defaultPrevented) {
-        handleToggle();
-      }
-    },
-    onKeyDown: (event) => {
-      onKeyDown?.(event);
-      if (event.defaultPrevented) {
-        return;
-      }
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        handleToggle();
-      }
-    },
-    type: 'button',
-    ...props,
-  };
+  return useRender({
+    render,
+    ref,
+    props: {
+      'aria-expanded': state === 'expanded',
+      'aria-label':
+        state === 'collapsed' ? 'Expand sidebar' : 'Collapse sidebar',
+      children: <PanelLeft className="size-5" />,
+      className: cn(
+        'inline-flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-sidebar hover:text-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-safe:transition-[color,background-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]',
+        className,
+      ),
+      'data-slot': 'sidebar-trigger',
+      'data-state': state,
+      onClick: (event: MouseEvent<HTMLButtonElement>) => {
+        onClick?.(event);
 
-  if (render && isValidElement<Record<string, unknown>>(render)) {
-    const renderProps = render.props as {
-      className?: string;
-      onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-      onKeyDown?: (event: KeyboardEvent<HTMLButtonElement>) => void;
-    };
-
-    return cloneElement(render, {
-      ...triggerProps,
-      ...renderProps,
-      className: cn(triggerProps.className, renderProps.className),
-      onClick: (event: React.MouseEvent<HTMLButtonElement>) => {
-        renderProps.onClick?.(event);
-        triggerProps.onClick?.(event);
+        if (!event.defaultPrevented) {
+          toggle();
+        }
       },
-      onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => {
-        renderProps.onKeyDown?.(event);
-        triggerProps.onKeyDown?.(event);
-      },
-    });
-  }
-
-  return (
-    <button {...triggerProps}>
-      <SidebarCollapseIcon
-        direction="horizontal"
-        expanded={resolvedState === 'expanded'}
-      />
-    </button>
-  );
+      ...props,
+    },
+  });
 }
 
-type SidebarSectionProps = ComponentProps<'div'> & SidebarStateProps;
-
-function SidebarHeader({
-  className,
-  collapsed,
-  state,
-  ...props
-}: SidebarSectionProps) {
-  const { state: contextState } = useSidebar();
-  const resolvedState = resolveSidebarState({ collapsed, state }, contextState);
+function SidebarHeader({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
-      className={cn('flex w-full items-center gap-2 p-2', className)}
+      className={cn(
+        'flex w-full items-center gap-2 p-2 group-data-[state=collapsed]/sidebar:justify-center',
+        className,
+      )}
       data-slot="sidebar-header"
-      data-state={resolvedState}
       {...props}
     />
   );
 }
 
-type SidebarHeaderBrandProps = SidebarSectionProps & {
-  icon?: ReactNode;
-  title?: ReactNode;
-  description?: ReactNode;
-  triggerClassName?: string;
-};
-
-function SidebarHeaderBrand({
-  className,
-  collapsed,
-  description,
-  icon,
-  state,
-  title,
-  triggerClassName,
-  ...props
-}: SidebarHeaderBrandProps) {
-  const { state: contextState } = useSidebar();
-  const resolvedState = resolveSidebarState({ collapsed, state }, contextState);
-
-  return (
-    <div
-      className={cn(
-        'flex w-full items-center gap-2 rounded-lg px-2 py-2',
-        className,
-      )}
-      data-slot="sidebar-header-brand"
-      data-state={resolvedState}
-      {...props}
-    >
-      {icon && (
-        <span
-          className="inline-flex size-8 min-w-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground"
-          data-slot="sidebar-header-brand-icon"
-        >
-          {icon}
-        </span>
-      )}
-      {(title || description) && (
-        <span
-          className="min-w-0 flex-1 data-[state=collapsed]:sr-only"
-          data-slot="sidebar-header-brand-text"
-          data-state={resolvedState}
-        >
-          {title && (
-            <span
-              className="block truncate text-sm leading-5 font-medium"
-              data-slot="sidebar-menu-label"
-            >
-              {title}
-            </span>
-          )}
-          {description && (
-            <span
-              className="block truncate text-xs leading-4 text-muted-foreground"
-              data-slot="sidebar-menu-description"
-            >
-              {description}
-            </span>
-          )}
-        </span>
-      )}
-      <SidebarTrigger className={cn('text-foreground', triggerClassName)} />
-    </div>
-  );
-}
-
-function SidebarContent({
-  className,
-  collapsed,
-  state,
-  ...props
-}: SidebarSectionProps) {
-  const { state: contextState } = useSidebar();
-  const resolvedState = resolveSidebarState({ collapsed, state }, contextState);
+function SidebarContent({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       className={cn(
@@ -335,117 +173,69 @@ function SidebarContent({
         className,
       )}
       data-slot="sidebar-content"
-      data-state={resolvedState}
       {...props}
     />
   );
 }
 
-function SidebarFooter({
-  className,
-  collapsed,
-  state,
-  ...props
-}: SidebarSectionProps) {
-  const { state: contextState } = useSidebar();
-  const resolvedState = resolveSidebarState({ collapsed, state }, contextState);
+function SidebarFooter({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       className={cn('mt-auto w-full bg-muted p-2', className)}
       data-slot="sidebar-footer"
-      data-state={resolvedState}
       {...props}
     />
   );
 }
 
-function SidebarGroup({
-  className,
-  collapsed,
-  state,
-  ...props
-}: SidebarSectionProps) {
-  const { state: contextState } = useSidebar();
-  const resolvedState = resolveSidebarState({ collapsed, state }, contextState);
+function SidebarGroup({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       className={cn('flex w-full flex-col', className)}
       data-slot="sidebar-group"
-      data-state={resolvedState}
       {...props}
     />
   );
 }
 
-function SidebarGroupLabel({
-  className,
-  collapsed,
-  state,
-  ...props
-}: SidebarSectionProps) {
-  const { state: contextState } = useSidebar();
-  const resolvedState = resolveSidebarState({ collapsed, state }, contextState);
+function SidebarGroupLabel({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'flex h-6 items-center rounded-sm px-2 py-1 text-[11px] font-medium tracking-[0.3px] text-muted-foreground-strong uppercase',
-        resolvedState === 'collapsed' && 'sr-only',
+        'flex h-6 items-center rounded-sm px-2 py-1 text-[11px] font-medium tracking-[0.3px] text-muted-foreground-strong uppercase group-data-[state=collapsed]/sidebar:sr-only',
         className,
       )}
       data-slot="sidebar-group-label"
-      data-state={resolvedState}
       {...props}
     />
   );
 }
 
-type SidebarMenuProps = ComponentProps<'ul'> & SidebarStateProps;
-
-function SidebarMenu({
-  className,
-  collapsed,
-  state,
-  ...props
-}: SidebarMenuProps) {
-  const { state: contextState } = useSidebar();
-  const resolvedState = resolveSidebarState({ collapsed, state }, contextState);
+function SidebarMenu({ className, ...props }: ComponentProps<'ul'>) {
   return (
     <ul
-      className={cn('m-0 flex list-none flex-col gap-0.5 p-0', className)}
+      className={cn(
+        'm-0 flex list-none flex-col gap-0.5 p-0 group-data-[state=collapsed]/sidebar:items-center',
+        className,
+      )}
       data-slot="sidebar-menu"
-      data-state={resolvedState}
       {...props}
     />
   );
 }
 
-type SidebarMenuItemProps = ComponentProps<'li'> &
-  SidebarStateProps & {
-    active?: boolean;
-  };
-
-function SidebarMenuItem({
-  active = false,
-  className,
-  collapsed,
-  state,
-  ...props
-}: SidebarMenuItemProps) {
-  const { state: contextState } = useSidebar();
-  const resolvedState = resolveSidebarState({ collapsed, state }, contextState);
+function SidebarMenuItem({ className, ...props }: ComponentProps<'li'>) {
   return (
     <li
       className={cn('m-0 p-0', className)}
-      data-active={active || undefined}
       data-slot="sidebar-menu-item"
-      data-state={resolvedState}
       {...props}
     />
   );
 }
 
 const sidebarMenuButtonVariants = cva(
-  'group/sidebar-menu-button inline-flex w-full items-center gap-2 rounded-lg px-2 text-left text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar data-[state=collapsed]:w-8 data-[state=collapsed]:justify-center data-[state=collapsed]:gap-0 data-[state=collapsed]:px-0 data-[state=collapsed]:[&_[data-slot=sidebar-menu-label]]:sr-only data-[state=collapsed]:[&_[data-slot=sidebar-menu-description]]:hidden data-[state=collapsed]:[&_[data-slot=sidebar-menu-trailing]]:hidden',
+  'inline-flex w-full items-center gap-2 rounded-lg px-2 text-left text-foreground outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar disabled:pointer-events-none disabled:text-muted-foreground motion-safe:transition-[color,background-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] group-data-[state=collapsed]/sidebar:w-8 group-data-[state=collapsed]/sidebar:justify-center group-data-[state=collapsed]/sidebar:gap-0 group-data-[state=collapsed]/sidebar:px-0 group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-menu-trailing]]:hidden',
   {
     variants: {
       variant: {
@@ -468,199 +258,98 @@ const sidebarMenuButtonVariants = cva(
   },
 );
 
-type SidebarMenuButtonProps = ComponentProps<'button'> &
-  VariantProps<typeof sidebarMenuButtonVariants> &
-  SidebarStateProps & {
+type SidebarMenuButtonProps = useRender.ComponentProps<'button'> &
+  VariantProps<typeof sidebarMenuButtonVariants> & {
     active?: boolean;
-    render?: RenderElement;
   };
 
 function SidebarMenuButton({
   active = false,
   className,
-  collapsed,
-  onClick,
-  onKeyDown,
-  render,
+  ref,
+  render = <button type="button" />,
   size,
-  state,
   variant,
   ...props
 }: SidebarMenuButtonProps) {
-  const { state: contextState } = useSidebar();
-  const resolvedState = resolveSidebarState({ collapsed, state }, contextState);
-
-  const buttonProps: ComponentProps<'button'> & DataAttributes = {
-    className: cn(sidebarMenuButtonVariants({ size, variant }), className),
-    'data-active': active || undefined,
-    'data-size': size ?? 'default',
-    'data-slot': 'sidebar-menu-button',
-    'data-state': resolvedState,
-    'data-variant': variant ?? 'default',
-    onClick,
-    onKeyDown: (event) => {
-      onKeyDown?.(event);
-      if (event.defaultPrevented) {
-        return;
-      }
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        event.currentTarget.click();
-      }
+  return useRender({
+    render,
+    ref,
+    props: {
+      className: cn(sidebarMenuButtonVariants({ size, variant }), className),
+      'data-active': active || undefined,
+      'data-size': size ?? 'default',
+      'data-slot': 'sidebar-menu-button',
+      'data-variant': variant ?? 'default',
+      ...props,
     },
-    type: 'button',
-    ...props,
-  };
-
-  if (render && isValidElement<Record<string, unknown>>(render)) {
-    const renderProps = render.props as {
-      className?: string;
-      onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-      onKeyDown?: (event: KeyboardEvent<HTMLButtonElement>) => void;
-    };
-
-    return cloneElement(render, {
-      ...buttonProps,
-      ...renderProps,
-      className: cn(buttonProps.className, renderProps.className),
-      onClick: (event: React.MouseEvent<HTMLButtonElement>) => {
-        renderProps.onClick?.(event);
-        onClick?.(event);
-      },
-      onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => {
-        renderProps.onKeyDown?.(event);
-        buttonProps.onKeyDown?.(event);
-      },
-    });
-  }
-
-  return <button {...buttonProps} />;
+  });
 }
 
-type SidebarMenuSubProps = ComponentProps<'ul'> & SidebarStateProps;
-
-function SidebarMenuSub({
-  className,
-  collapsed,
-  state,
-  ...props
-}: SidebarMenuSubProps) {
-  const { state: contextState } = useSidebar();
-  const resolvedState = resolveSidebarState({ collapsed, state }, contextState);
+function SidebarMenuLabel({ className, ...props }: ComponentProps<'span'>) {
   return (
-    <ul
+    <span
       className={cn(
-        'm-0 my-0.5 ml-4 flex list-none flex-col gap-0 border-l border-sidebar-border pl-4 data-[state=collapsed]:hidden',
+        'min-w-0 flex-1 truncate group-data-[state=collapsed]/sidebar:sr-only',
         className,
       )}
-      data-slot="sidebar-menu-sub"
-      data-state={resolvedState}
+      data-slot="sidebar-menu-label"
       {...props}
     />
   );
 }
 
-type SidebarMenuSubItemProps = ComponentProps<'li'> & SidebarStateProps;
-
-function SidebarMenuSubItem({
+function SidebarMenuDescription({
   className,
-  collapsed,
-  state,
   ...props
-}: SidebarMenuSubItemProps) {
-  const { state: contextState } = useSidebar();
-  const resolvedState = resolveSidebarState({ collapsed, state }, contextState);
+}: ComponentProps<'span'>) {
+  return (
+    <span
+      className={cn(
+        'block truncate text-xs leading-4 text-muted-foreground-strong group-data-[state=collapsed]/sidebar:hidden',
+        className,
+      )}
+      data-slot="sidebar-menu-description"
+      {...props}
+    />
+  );
+}
+
+function SidebarMenuSub({ className, ...props }: ComponentProps<'ul'>) {
+  return (
+    <ul
+      className={cn(
+        'm-0 my-0.5 ml-4 flex list-none flex-col gap-0 border-l border-sidebar-border pl-4 group-data-[state=collapsed]/sidebar:hidden',
+        className,
+      )}
+      data-slot="sidebar-menu-sub"
+      {...props}
+    />
+  );
+}
+
+function SidebarMenuSubItem({ className, ...props }: ComponentProps<'li'>) {
   return (
     <li
       className={cn('m-0 p-0', className)}
       data-slot="sidebar-menu-sub-item"
-      data-state={resolvedState}
       {...props}
     />
   );
 }
 
-type SidebarMenuSubButtonProps = ComponentProps<'button'> & SidebarStateProps;
-
-function SidebarMenuSubButton({
-  className,
-  collapsed,
-  state,
-  ...props
-}: SidebarMenuSubButtonProps) {
-  const { state: contextState } = useSidebar();
-  const resolvedState = resolveSidebarState({ collapsed, state }, contextState);
-  return (
-    <button
-      className={cn(
-        'flex h-7 w-full items-center rounded-lg px-2 text-left text-sm text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar',
-        className,
-      )}
-      data-slot="sidebar-menu-sub-button"
-      data-state={resolvedState}
-      type="button"
-      {...props}
-    />
-  );
-}
-
-type SidebarSeparatorProps = ComponentProps<'hr'> & SidebarStateProps;
-
-function SidebarSeparator({
-  className,
-  collapsed,
-  state,
-  ...props
-}: SidebarSeparatorProps) {
-  const { state: contextState } = useSidebar();
-  const resolvedState = resolveSidebarState({ collapsed, state }, contextState);
+function SidebarSeparator({ className, ...props }: ComponentProps<'hr'>) {
   return (
     <hr
       className={cn('my-2 border-t border-sidebar-border', className)}
       data-slot="sidebar-separator"
-      data-state={resolvedState}
       {...props}
     />
-  );
-}
-
-type SidebarCollapseIconProps = ComponentProps<'span'> & {
-  direction?: 'horizontal' | 'up-down';
-  expanded?: boolean;
-};
-
-function SidebarCollapseIcon({
-  className,
-  direction = 'horizontal',
-  expanded = false,
-  ...props
-}: SidebarCollapseIconProps) {
-  return (
-    <span
-      className={cn(
-        'inline-flex size-4 items-center justify-center text-muted-foreground',
-        className,
-      )}
-      data-slot="sidebar-collapse-icon"
-      data-direction={direction}
-      {...props}
-    >
-      {direction === 'horizontal' ? (
-        expanded ? (
-          <ChevronLeft className="size-4" />
-        ) : (
-          <ChevronRight className="size-4" />
-        )
-      ) : (
-        <ChevronsUpDown className="size-4" />
-      )}
-    </span>
   );
 }
 
 export type {
   SidebarMenuButtonProps,
-  SidebarMenuItemProps,
   SidebarProps,
   SidebarProviderProps,
   SidebarState,
@@ -668,18 +357,17 @@ export type {
 };
 export {
   Sidebar,
-  SidebarCollapseIcon,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarHeader,
-  SidebarHeaderBrand,
   SidebarMenu,
   SidebarMenuButton,
+  SidebarMenuDescription,
   SidebarMenuItem,
+  SidebarMenuLabel,
   SidebarMenuSub,
-  SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarProvider,
   SidebarSeparator,

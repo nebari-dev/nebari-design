@@ -1,241 +1,522 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import {
   Brain,
+  ChevronRight,
+  ChevronsUpDown,
   Coins,
+  LifeBuoy,
+  LogOut,
   Newspaper,
   PaintRoller,
+  Settings,
   Ship,
   Terminal,
   TrainFrontTunnel,
   UserRound,
 } from 'lucide-react';
+import type { ComponentProps, ReactNode } from 'react';
+import { expect, userEvent, within } from 'storybook/test';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/ui/dropdown-menu';
 import {
   Sidebar,
-  SidebarCollapseIcon,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarHeader,
-  SidebarHeaderBrand,
   SidebarMenu,
   SidebarMenuButton,
+  SidebarMenuDescription,
   SidebarMenuItem,
+  SidebarMenuLabel,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
   SidebarProvider,
+  SidebarSeparator,
+  SidebarTrigger,
 } from '@/ui/sidebar';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/ui/tooltip';
+
+type SidebarMenuButtonVariant = NonNullable<
+  ComponentProps<typeof SidebarMenuButton>['variant']
+>;
+type SidebarMenuButtonSize = NonNullable<
+  ComponentProps<typeof SidebarMenuButton>['size']
+>;
+
+type SidebarStoryArgs = Pick<
+  ComponentProps<typeof SidebarProvider>,
+  'collapsed' | 'defaultCollapsed' | 'onCollapsedChange'
+> &
+  Pick<ComponentProps<typeof SidebarMenuButton>, 'className' | 'render'> & {
+    active: boolean;
+    disabled: boolean;
+    size: SidebarMenuButtonSize;
+    variant: SidebarMenuButtonVariant;
+  };
 
 const meta = {
   title: 'Components/Sidebar',
-  component: Sidebar,
+  component: SidebarMenuButton,
   parameters: {
     layout: 'fullscreen',
     docs: {
       description: {
         component:
-          'Nebari app-shell sidebar composed from menu button, group label, submenu, and account-row patterns from the Figma Sidebar demo.',
+          "App-shell sidebar. The shell parts are plain layout; the composition point is `SidebarMenuButton`, which renders a `<button>` by default and accepts Base UI's `render` prop so the same row can become an anchor or the trigger of a dropdown menu, select, or tooltip.",
       },
     },
   },
-} satisfies Meta<typeof Sidebar>;
+  args: {
+    active: false,
+    defaultCollapsed: false,
+    disabled: false,
+    size: 'default',
+    variant: 'default',
+  },
+  argTypes: {
+    variant: {
+      description:
+        'Menu button emphasis. `default` uses the neutral muted surface for hover and active rows; `ghost` uses the sidebar accent tokens.',
+      control: 'select',
+      options: ['default', 'ghost'],
+      table: { defaultValue: { summary: 'default' } },
+    },
+    size: {
+      description:
+        'Menu button height. `account` is the two-line row used for the footer profile entry.',
+      control: 'select',
+      options: ['default', 'sm', 'lg', 'account'],
+      table: { defaultValue: { summary: 'default' } },
+    },
+    active: {
+      description:
+        'Marks a menu button as the current page or section, emitting `data-active="true"`.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    disabled: {
+      description:
+        'Disables the menu buttons. Applies to the default `<button>` element; an anchor-rendered row should use `aria-disabled` instead.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    defaultCollapsed: {
+      description:
+        'Initial collapsed state of `SidebarProvider` when uncontrolled. Collapsing narrows the rail to icons and hides labels, descriptions, group labels, and submenus.',
+      control: 'boolean',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    collapsed: {
+      description:
+        'Controlled collapsed state of `SidebarProvider`. Pair it with `onCollapsedChange`; left as a docs-only row here so the playground stays interactive.',
+      control: false,
+    },
+    render: {
+      description:
+        "Base UI render-prop composition on `SidebarMenuButton`. Swap the default button for an anchor or another component's trigger while keeping the sidebar styling and `data-slot` hooks.",
+      control: false,
+      table: { defaultValue: { summary: '<button type="button" />' } },
+    },
+    className: { table: { disable: true } },
+    onCollapsedChange: {
+      description: 'Called when the collapsed state changes.',
+      action: 'collapsed changed',
+      control: false,
+      table: { disable: true },
+    },
+  },
+  decorators: [
+    (Story, { args }) => <Story key={String(args.defaultCollapsed)} />,
+  ],
+} satisfies Meta<SidebarStoryArgs>;
 
 export default meta;
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<SidebarStoryArgs>;
 
-function SidebarExample({
+const NAV_ITEMS = [
+  { icon: Terminal, label: 'Playground' },
+  { icon: Brain, label: 'Models' },
+  { icon: Newspaper, label: 'Documentation' },
+  { icon: PaintRoller, label: 'Design' },
+] as const;
+
+const PROJECT_ITEMS = [
+  { icon: TrainFrontTunnel, label: 'Travel' },
+  { icon: Coins, label: 'Sales' },
+  { icon: UserRound, label: 'Engineering' },
+] as const;
+
+function SidebarFrame({
+  children,
   defaultCollapsed = false,
+  label = 'Sidebar',
 }: {
+  children: ReactNode;
   defaultCollapsed?: boolean;
+  label?: string;
 }) {
-  function SidebarLayout() {
-    return (
-      <Sidebar>
-        <SidebarHeader>
-          <SidebarHeaderBrand
-            description="Enterprise"
-            icon={<Ship className="size-4" />}
-            title="Menu Item"
-          />
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel>Group title</SidebarGroupLabel>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton active>
-                  <Terminal className="size-4 shrink-0" />
-                  <span
-                    className="min-w-0 flex-1"
-                    data-slot="sidebar-menu-label"
-                  >
-                    Playground
-                  </span>
-                  <SidebarCollapseIcon
-                    className="shrink-0"
-                    data-slot="sidebar-menu-trailing"
-                  />
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <Brain className="size-4 shrink-0" />
-                  <span
-                    className="min-w-0 flex-1"
-                    data-slot="sidebar-menu-label"
-                  >
-                    Models
-                  </span>
-                  <SidebarCollapseIcon
-                    className="shrink-0"
-                    data-slot="sidebar-menu-trailing"
-                  />
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <Newspaper className="size-4 shrink-0" />
-                  <span
-                    className="min-w-0 flex-1"
-                    data-slot="sidebar-menu-label"
-                  >
-                    Documentation
-                  </span>
-                  <SidebarCollapseIcon
-                    className="shrink-0"
-                    data-slot="sidebar-menu-trailing"
-                  />
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <PaintRoller className="size-4 shrink-0" />
-                  <span
-                    className="min-w-0 flex-1"
-                    data-slot="sidebar-menu-label"
-                  >
-                    Design
-                  </span>
-                  <SidebarCollapseIcon
-                    className="shrink-0"
-                    data-slot="sidebar-menu-trailing"
-                  />
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
-          <SidebarGroup>
-            <SidebarGroupLabel>Projects</SidebarGroupLabel>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <PaintRoller className="size-4 shrink-0" />
-                  <span
-                    className="min-w-0 flex-1"
-                    data-slot="sidebar-menu-label"
-                  >
-                    Design
-                  </span>
-                  <SidebarCollapseIcon
-                    className="shrink-0"
-                    data-slot="sidebar-menu-trailing"
-                  />
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <TrainFrontTunnel className="size-4 shrink-0" />
-                  <span
-                    className="min-w-0 flex-1"
-                    data-slot="sidebar-menu-label"
-                  >
-                    Travel
-                  </span>
-                  <SidebarCollapseIcon
-                    className="shrink-0"
-                    data-slot="sidebar-menu-trailing"
-                  />
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <Coins className="size-4 shrink-0" />
-                  <span
-                    className="min-w-0 flex-1"
-                    data-slot="sidebar-menu-label"
-                  >
-                    Sales
-                  </span>
-                  <SidebarCollapseIcon
-                    className="shrink-0"
-                    data-slot="sidebar-menu-trailing"
-                  />
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <UserRound className="size-4 shrink-0" />
-                  <span
-                    className="min-w-0 flex-1"
-                    data-slot="sidebar-menu-label"
-                  >
-                    Engineering
-                  </span>
-                  <SidebarCollapseIcon
-                    className="shrink-0"
-                    data-slot="sidebar-menu-trailing"
-                  />
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
-        </SidebarContent>
-        <SidebarFooter>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton size="account" variant="default">
-                <span className="inline-flex size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Ship className="size-4" />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span
-                    className="block truncate text-sm leading-5 font-medium"
-                    data-slot="sidebar-menu-label"
-                  >
-                    Username
-                  </span>
-                  <span
-                    className="block truncate text-xs leading-4 text-muted-foreground-strong"
-                    data-slot="sidebar-menu-description"
-                  >
-                    username@email.com
-                  </span>
-                </span>
-                <SidebarCollapseIcon data-slot="sidebar-menu-trailing" />
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarFooter>
-      </Sidebar>
-    );
-  }
-
   return (
-    <div className="h-[780px] w-full bg-background p-4">
+    <div className="h-[720px] w-full bg-card p-4">
       <SidebarProvider defaultCollapsed={defaultCollapsed}>
-        <SidebarLayout />
+        <div className="flex h-full gap-2">
+          <Sidebar aria-label={label}>{children}</Sidebar>
+          <SidebarTrigger className="mt-2 self-start" />
+        </div>
       </SidebarProvider>
     </div>
   );
 }
 
-export const Expanded: Story = {
-  render: () => <SidebarExample />,
+function BrandHeader({ subtitle = 'Enterprise' }: { subtitle?: string }) {
+  return (
+    <SidebarHeader>
+      <span className="inline-flex size-8 min-w-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+        <Ship className="size-4" />
+      </span>
+      <span className="min-w-0 flex-1 group-data-[state=collapsed]/sidebar:hidden">
+        <SidebarMenuLabel className="block text-sm leading-5 font-medium">
+          Nebari
+        </SidebarMenuLabel>
+        <SidebarMenuDescription>{subtitle}</SidebarMenuDescription>
+      </span>
+    </SidebarHeader>
+  );
+}
+
+export const Default: Story = {
+  render: ({ active, disabled, size, variant }) => (
+    <SidebarFrame label="Playground sidebar">
+      <BrandHeader />
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Platform</SidebarGroupLabel>
+          <SidebarMenu>
+            {NAV_ITEMS.map((item, index) => (
+              <SidebarMenuItem key={item.label}>
+                <SidebarMenuButton
+                  active={index === 0 ? active : false}
+                  disabled={disabled}
+                  size={size}
+                  variant={variant}
+                >
+                  <item.icon className="size-4 shrink-0" />
+                  <SidebarMenuLabel>{item.label}</SidebarMenuLabel>
+                  <ChevronRight
+                    className="size-4 shrink-0 text-muted-foreground"
+                    data-slot="sidebar-menu-trailing"
+                  />
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Projects</SidebarGroupLabel>
+          <SidebarMenu>
+            {PROJECT_ITEMS.map((item) => (
+              <SidebarMenuItem key={item.label}>
+                <SidebarMenuButton
+                  disabled={disabled}
+                  size={size}
+                  variant={variant}
+                >
+                  <item.icon className="size-4 shrink-0" />
+                  <SidebarMenuLabel>{item.label}</SidebarMenuLabel>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton disabled={disabled} size="account">
+              <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <UserRound className="size-4" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <SidebarMenuLabel className="block text-sm leading-5 font-medium">
+                  Ada Lovelace
+                </SidebarMenuLabel>
+                <SidebarMenuDescription>ada@example.com</SidebarMenuDescription>
+              </span>
+              <ChevronsUpDown
+                className="size-4 shrink-0 text-muted-foreground"
+                data-slot="sidebar-menu-trailing"
+              />
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </SidebarFrame>
+  ),
 };
 
-export const CollapsedIconOnly: Story = {
-  render: () => <SidebarExample defaultCollapsed />,
+export const AsLinks: Story = {
+  name: 'As links',
+  parameters: { controls: { include: [] } },
+  render: (_args) => (
+    <SidebarFrame label="Link sidebar">
+      <BrandHeader />
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Platform</SidebarGroupLabel>
+          <SidebarMenu>
+            {NAV_ITEMS.map((item, index) => (
+              <SidebarMenuItem key={item.label}>
+                <SidebarMenuButton
+                  active={index === 0}
+                  render={
+                    <a
+                      aria-current={index === 0 ? 'page' : undefined}
+                      href={`/${item.label.toLowerCase()}`}
+                    />
+                  }
+                >
+                  <item.icon className="size-4 shrink-0" />
+                  <SidebarMenuLabel>{item.label}</SidebarMenuLabel>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+    </SidebarFrame>
+  ),
+};
+
+export const WithDropdownMenu: Story = {
+  name: 'With dropdown menu',
+  parameters: { controls: { include: [] } },
+  render: (_args) => (
+    <SidebarFrame label="Workspace sidebar">
+      <SidebarHeader>
+        <SidebarMenu className="min-w-0 flex-1">
+          <DropdownMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                render={
+                  <DropdownMenuTrigger
+                    render={<button type="button" />}
+                    variant="ghost"
+                  />
+                }
+                size="account"
+              >
+                <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  <Ship className="size-4" />
+                </span>
+                <span className="min-w-0 flex-1 text-left">
+                  <SidebarMenuLabel className="block text-sm leading-5 font-medium">
+                    Nebari
+                  </SidebarMenuLabel>
+                  <SidebarMenuDescription>Enterprise</SidebarMenuDescription>
+                </span>
+                <ChevronsUpDown
+                  className="size-4 shrink-0 text-muted-foreground"
+                  data-slot="sidebar-menu-trailing"
+                />
+              </SidebarMenuButton>
+              <DropdownMenuPortal>
+                <DropdownMenuContent align="start" side="bottom">
+                  <DropdownMenuItem render={<a href="/workspaces/research" />}>
+                    <Brain className="size-4" />
+                    Research
+                  </DropdownMenuItem>
+                  <DropdownMenuItem render={<a href="/workspaces/platform" />}>
+                    <Terminal className="size-4" />
+                    Platform
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem render={<a href="/settings" />}>
+                    <Settings className="size-4" />
+                    Workspace settings
+                  </DropdownMenuItem>
+                  <DropdownMenuItem variant="destructive">
+                    <LogOut className="size-4" />
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenuPortal>
+            </SidebarMenuItem>
+          </DropdownMenu>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Platform</SidebarGroupLabel>
+          <SidebarMenu>
+            {NAV_ITEMS.map((item, index) => (
+              <SidebarMenuItem key={item.label}>
+                <SidebarMenuButton active={index === 0}>
+                  <item.icon className="size-4 shrink-0" />
+                  <SidebarMenuLabel>{item.label}</SidebarMenuLabel>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+    </SidebarFrame>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const page = within(canvasElement.ownerDocument.body);
+
+    const trigger = canvas.getByRole('button', { name: /Nebari/ });
+    await expect(trigger).toHaveAttribute('data-size', 'account');
+
+    await userEvent.click(trigger);
+    await userEvent.keyboard('{ArrowDown}');
+    await expect(
+      page.getByRole('menuitem', { name: /Research/ }),
+    ).toHaveAttribute('data-highlighted', '');
+  },
 };
 
 export const GroupedItems: Story = {
-  render: () => <SidebarExample />,
+  name: 'Grouped items',
+  parameters: { controls: { include: [] } },
+  render: (_args) => (
+    <SidebarFrame label="Grouped sidebar">
+      <BrandHeader />
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Platform</SidebarGroupLabel>
+          <SidebarMenu>
+            {NAV_ITEMS.map((item, index) => (
+              <SidebarMenuItem key={item.label}>
+                <SidebarMenuButton active={index === 0}>
+                  <item.icon className="size-4 shrink-0" />
+                  <SidebarMenuLabel>{item.label}</SidebarMenuLabel>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+        <SidebarSeparator />
+        <SidebarGroup>
+          <SidebarGroupLabel>Projects</SidebarGroupLabel>
+          <SidebarMenu>
+            {PROJECT_ITEMS.map((item) => (
+              <SidebarMenuItem key={item.label}>
+                <SidebarMenuButton>
+                  <item.icon className="size-4 shrink-0" />
+                  <SidebarMenuLabel>{item.label}</SidebarMenuLabel>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+        <SidebarSeparator />
+        <SidebarGroup>
+          <SidebarGroupLabel>Support</SidebarGroupLabel>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton>
+                <LifeBuoy className="size-4 shrink-0" />
+                <SidebarMenuLabel>Help center</SidebarMenuLabel>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton>
+                <Settings className="size-4 shrink-0" />
+                <SidebarMenuLabel>Settings</SidebarMenuLabel>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+    </SidebarFrame>
+  ),
+};
+
+export const CollapsedIconOnly: Story = {
+  name: 'Collapsed icon only',
+  parameters: { controls: { include: [] } },
+  render: (_args) => (
+    <TooltipProvider>
+      <SidebarFrame defaultCollapsed label="Collapsed sidebar">
+        <BrandHeader />
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Platform</SidebarGroupLabel>
+            <SidebarMenu>
+              {NAV_ITEMS.map((item, index) => (
+                <SidebarMenuItem key={item.label}>
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={<SidebarMenuButton active={index === 0} />}
+                    >
+                      <item.icon className="size-4 shrink-0" />
+                      <SidebarMenuLabel>{item.label}</SidebarMenuLabel>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">{item.label}</TooltipContent>
+                  </Tooltip>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroup>
+        </SidebarContent>
+      </SidebarFrame>
+    </TooltipProvider>
+  ),
+};
+
+export const NestedNavigation: Story = {
+  name: 'Nested navigation',
+  parameters: { controls: { include: [] } },
+  render: (_args) => (
+    <SidebarFrame label="Nested sidebar">
+      <BrandHeader />
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Projects</SidebarGroupLabel>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton active>
+                <PaintRoller className="size-4 shrink-0" />
+                <SidebarMenuLabel>Design</SidebarMenuLabel>
+              </SidebarMenuButton>
+              <SidebarMenuSub>
+                {['Tokens', 'Components', 'Icons'].map((label) => (
+                  <SidebarMenuSubItem key={label}>
+                    <SidebarMenuButton
+                      render={<a href={`/design/${label.toLowerCase()}`} />}
+                      size="sm"
+                    >
+                      <SidebarMenuLabel>{label}</SidebarMenuLabel>
+                    </SidebarMenuButton>
+                  </SidebarMenuSubItem>
+                ))}
+              </SidebarMenuSub>
+            </SidebarMenuItem>
+            {PROJECT_ITEMS.map((item) => (
+              <SidebarMenuItem key={item.label}>
+                <SidebarMenuButton>
+                  <item.icon className="size-4 shrink-0" />
+                  <SidebarMenuLabel>{item.label}</SidebarMenuLabel>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+    </SidebarFrame>
+  ),
 };
