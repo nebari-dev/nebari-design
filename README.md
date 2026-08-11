@@ -82,6 +82,7 @@ flow as the components themselves.
 | ----------------------------- | ------------------------------------------------------------------- |
 | `registry.json`               | Registry manifest — the source of truth for installable items.      |
 | `registry/nebari/ui/`         | UI components (`registry:ui`).                                       |
+| `registry/nebari/hooks/`      | Shared non-visual logic, e.g. theme state (`registry:hook`).         |
 | `registry/nebari/lib/`        | Shared library code, including the `cn()` helper (`registry:lib`).   |
 | `registry/nebari/globals.css` | Tailwind v4 `@theme` token mapping.                                  |
 | `registry/nebari/skills/`     | Consumer-facing Claude Code skills (`registry:file`).               |

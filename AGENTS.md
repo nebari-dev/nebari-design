@@ -54,6 +54,7 @@ Playwright/Chromium install for the Storybook browser tests.
 ```
 registry/nebari/
   ui/<name>.tsx        # components (kebab-case filenames)
+  hooks/<name>.ts      # shared non-visual logic (registry:hook)
   lib/utils.ts         # cn() helper
   globals.css          # theme: semantic CSS-variable tokens, light + .dark
   skills/nebari-ui/    # CONSUMER skill, shipped via the registry (claude-skill item)
@@ -123,7 +124,7 @@ rules that are easy to get wrong:
 - **Function components, named exports, no `forwardRef`.** React 19 passes `ref`
   as a normal prop and Base UI threads it through.
 - **Must be SSR-safe** — there's a dedicated SSR test project (Node, no DOM) that
-  renders every `registry:ui` item.
+  renders every `registry:ui` item and imports every `registry:hook` file.
 
 ### `registry.json` entry
 
@@ -202,7 +203,9 @@ Vitest runs three projects (`vitest.config.ts`):
 
 1. **unit** (jsdom) — `tests/**/*.test.tsx`, excluding the SSR test.
 2. **ssr** (Node, no jsdom) — renders every `registry:ui` component to catch
-   browser-only access at import/render time.
+   browser-only access at import/render time, and imports every `registry:hook`
+   file to catch it at module scope. Hooks also get a hand-written render probe
+   there; a new `registry:hook` item must add its own.
 3. **storybook** (real Chromium via Playwright) — runs every story with the a11y
    addon; **axe violations fail the run**.
 

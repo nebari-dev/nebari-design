@@ -192,6 +192,27 @@ describe('useThemePreference', () => {
     expect(result.current.isDarkMode).toBe(false);
   });
 
+  it('stays usable when the MediaQueryList has no change-listener API', () => {
+    // Safari < 14 exposes `matchMedia` but not `addEventListener` on the result.
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn(() => ({
+        matches: true,
+        media: '(prefers-color-scheme: dark)',
+        addEventListener: () => {
+          throw new TypeError('addEventListener is not a function');
+        },
+        removeEventListener: () => {},
+      })),
+    );
+
+    const { result, unmount } = renderHook(() => useThemePreference());
+
+    expect(result.current.isDarkMode).toBe(true);
+    expect(document.documentElement).toHaveClass('dark');
+    expect(() => unmount()).not.toThrow();
+  });
+
   it('removes the media query listener on unmount', () => {
     const media = installMatchMedia(false);
     const { unmount } = renderHook(() => useThemePreference());

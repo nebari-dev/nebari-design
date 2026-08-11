@@ -21,6 +21,9 @@ interface UseThemePreferenceOptions {
    * `localStorage` key the preference persists under. Keep an app's existing
    * key so users don't lose their saved preference.
    *
+   * Read once when the hook mounts — pass a constant. Changing it later
+   * redirects writes without re-reading the new key's stored value.
+   *
    * @default 'nebari:themeMode'
    */
   storageKey?: string;
@@ -94,19 +97,23 @@ function useThemePreference(
     [storageKey],
   );
 
-  // Keep `system` mode in sync with the OS preference as it changes.
+  // Keep `system` mode in sync with the OS preference as it changes. Both
+  // `matchMedia` and the `MediaQueryList` event API are guarded: an engine
+  // missing either (Safari < 14 has no `addEventListener` here) keeps the
+  // light default instead of throwing out of the effect.
   useEffect(() => {
     let mediaQuery: MediaQueryList;
+    let onChange: (event: MediaQueryListEvent) => void;
     try {
       mediaQuery = window.matchMedia(DARK_SCHEME_QUERY);
+      setSystemPrefersDark(mediaQuery.matches);
+      onChange = (event: MediaQueryListEvent) =>
+        setSystemPrefersDark(event.matches);
+      mediaQuery.addEventListener('change', onChange);
     } catch {
       return;
     }
 
-    setSystemPrefersDark(mediaQuery.matches);
-    const onChange = (event: MediaQueryListEvent) =>
-      setSystemPrefersDark(event.matches);
-    mediaQuery.addEventListener('change', onChange);
     return () => mediaQuery.removeEventListener('change', onChange);
   }, []);
 
