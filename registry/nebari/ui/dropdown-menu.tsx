@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { Button, type ButtonProps } from '@/ui/button';
 
 const dropdownMenuItemVariants = cva(
-  'relative flex w-full cursor-default items-center gap-2 rounded-md px-1.5 py-1 text-sm outline-hidden select-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring motion-safe:transition-[color,background-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]',
+  'relative flex w-full cursor-default items-center gap-2 rounded-[calc(var(--radius-md)-var(--spacing))] px-1.5 py-1 text-sm outline-hidden select-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring motion-safe:transition-[color,background-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]',
   {
     variants: {
       variant: {
