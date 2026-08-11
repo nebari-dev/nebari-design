@@ -13,6 +13,10 @@ const meta = {
       },
     },
   },
+  args: {
+    label: 'Loading',
+    size: 'default',
+  },
   argTypes: {
     size: {
       description:
@@ -35,7 +39,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  name: 'Default',
   parameters: {
     docs: {
       description: {
@@ -47,8 +50,8 @@ export const Default: Story = {
 };
 
 export const Sizes: Story = {
-  name: 'Sizes',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -56,20 +59,22 @@ export const Sizes: Story = {
       },
     },
   },
-  render: (args) => (
+  render: (_args) => (
     <div className="flex items-center gap-4">
-      <Spinner {...args} size="xs" />
-      <Spinner {...args} size="sm" />
-      <Spinner {...args} size="default" />
-      <Spinner {...args} size="lg" />
-      <Spinner {...args} size="xl" />
+      <Spinner size="xs" />
+      <Spinner size="sm" />
+      <Spinner size="default" />
+      <Spinner size="lg" />
+      <Spinner size="xl" />
     </div>
   ),
 };
 
 export const CustomColor: Story = {
   name: 'Custom color',
+  args: { size: 'lg' },
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -79,16 +84,18 @@ export const CustomColor: Story = {
   },
   render: (args) => (
     <div className="flex items-center gap-4">
-      <Spinner {...args} className="text-primary" size="lg" />
-      <Spinner {...args} className="text-destructive-foreground" size="lg" />
-      <Spinner {...args} className="text-muted-foreground" size="lg" />
+      <Spinner {...args} className="text-primary" />
+      <Spinner {...args} className="text-destructive-foreground" />
+      <Spinner {...args} className="text-muted-foreground" />
     </div>
   ),
 };
 
 export const WithText: Story = {
   name: 'With visible text',
+  args: { size: 'sm' },
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:
@@ -97,10 +104,8 @@ export const WithText: Story = {
     },
   },
   render: (args) => (
-    // The spinner is icon-only; pair it with text at the call site (this is how
-    // `Button` renders its `loadingText`).
     <span className="inline-flex items-center gap-2 text-muted-foreground text-sm">
-      <Spinner {...args} size="sm" />
+      <Spinner {...args} />
       Fetching data…
     </span>
   ),
@@ -109,6 +114,7 @@ export const WithText: Story = {
 export const CustomLabel: Story = {
   name: 'Custom accessible label',
   parameters: {
+    controls: { include: [] },
     docs: {
       description: {
         story:

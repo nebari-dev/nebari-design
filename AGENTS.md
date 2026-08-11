@@ -81,6 +81,31 @@ rules that are easy to get wrong:
 - **Location &amp; naming.** Component at `registry/nebari/ui/<name>.tsx`
   (kebab-case). Story at `stories/<name>.stories.tsx` (CSF3), test at
   `tests/<name>.test.tsx` — both top-level, never co-located.
+- **Storybook controls.** `Default` is the interactive playground: define the
+  documented prop surface in meta `argTypes`, keep its knobs live, and do not
+  narrow its controls. Seed every knob in meta `args` — boolean, number, and
+  object controls render a click-to-reveal "Set …" button while their arg is
+  `undefined`. Seed the component's own default unless that makes a dull
+  playground, in which case seed the better opening state and let
+  `table.defaultValue` carry the real one; where an unset prop is itself
+  meaningful, model it as an explicit `auto` option mapped back to `undefined`
+  (see drawer's `showSwipeHandle`).
+  Every other story sets `parameters.controls.include` to the props that apply to
+  it: express its subject through its own `args` rather than hardcoding it in the
+  render, add the knobs the render leaves live, and drop what it fixes per
+  instance or makes inert. `include: []` is for stories where nothing is
+  adjustable — those take no `args` in their render either. Document consumer
+  APIs that cannot be a knob — Base UI's `render`, `children` on a composed
+  component, controlled-state props — with `control: false` plus a description,
+  so they stay in the props table. Reserve `table: { disable: true }` for
+  implementation plumbing and callbacks (`className`, `style`, `id`,
+  `portalProps`, `onValueChange`, …). Composite stories use a local story-args
+  type for props and story-only toggles spanning multiple subcomponents. No knob
+  may be a no-op: args changes re-render without remounting, so key the story on
+  any mount-only prop (`defaultChecked`, `defaultValue`, `defaultOpen`) you
+  expose — via a meta decorator, not a `key` in every `render` — and leave its
+  controlled counterpart (`checked`, `value`, `open`) as a docs-only row with
+  `control: false`.
 - **Variants via `cva`.** Define `variants` + `defaultVariants` and export the
   `*Variants` function alongside the component. Type props with
   `VariantProps<typeof xVariants>`.
@@ -90,7 +115,7 @@ rules that are easy to get wrong:
 - **`cn()` merging.** Always `cn(xVariants({...}), className)` so a caller's
   `className` wins. Import `cn` from `@/lib/utils`.
 - **Composition uses Base UI's `render` prop**, via `useRender` from
-  `@base-ui-components/react/use-render` — this is the project's equivalent of
+  `@base-ui/react/use-render` — this is the project's equivalent of
   Radix `asChild`. Do **not** introduce Radix or an `asChild` API. Give `render`
   a sensible default element and type with `useRender.ComponentProps<'tag'>`.
   Plain styled wrappers with no element-swapping can skip `useRender` and use
@@ -103,7 +128,7 @@ rules that are easy to get wrong:
 ### `registry.json` entry
 
 - `dependencies` = npm packages the component imports (e.g.
-  `@base-ui-components/react`, `class-variance-authority`, `lucide-react`). Do
+  `@base-ui/react`, `class-variance-authority`, `lucide-react`). Do
   **not** list `react`/`react-dom`, `tailwindcss`, or `clsx`/`tailwind-merge`
   (those belong to the `utils` item).
 - `registryDependencies` = other registry items. Anything that calls `cn()` must
