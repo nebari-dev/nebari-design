@@ -175,7 +175,7 @@
       "title": "Calendar",
       "description": "Single-month calendar grid with reusable day cells, range states, keyboard navigation, and Nebari popover-surface styling.",
       "dependencies": [
-        "@base-ui-components/react",
+        "@base-ui/react",
         "class-variance-authority",
         "lucide-react"
       ],
@@ -198,7 +198,7 @@
       "title": "Date Picker",
       "description": "Date picker field for single dates, ranges, date and time selection, and segmented typed entry, backed by Base UI Popover.",
       "dependencies": [
-        "@base-ui-components/react",
+        "@base-ui/react",
         "class-variance-authority",
         "lucide-react"
       ],

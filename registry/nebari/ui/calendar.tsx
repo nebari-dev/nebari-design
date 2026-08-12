@@ -1,5 +1,5 @@
 // biome-ignore-all lint/a11y/noNoninteractiveElementToInteractiveRole: Calendar uses the WAI-ARIA date-picker grid pattern.
-import { useRender } from '@base-ui-components/react/use-render';
+import { useRender } from '@base-ui/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import {
