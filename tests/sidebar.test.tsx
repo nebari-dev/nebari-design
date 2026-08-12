@@ -52,7 +52,7 @@ function SidebarHarness({
             <SidebarGroupLabel>Projects</SidebarGroupLabel>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton active>
+                <SidebarMenuButton active tooltip="Design">
                   <SidebarMenuLabel>Design</SidebarMenuLabel>
                 </SidebarMenuButton>
                 <SidebarMenuSub>
@@ -128,6 +128,19 @@ describe('Sidebar', () => {
     expect(button).toHaveAttribute('data-variant', 'ghost');
     expect(button).toHaveAttribute('data-size', 'account');
     expect(button).toHaveAttribute('data-active', 'true');
+    expect(button).toHaveClass('data-[active=true]:font-semibold');
+  });
+
+  it('shows menu button tooltips only while collapsed', async () => {
+    const user = userEvent.setup();
+    render(<SidebarHarness defaultCollapsed />);
+
+    const button = screen.getByRole('button', { name: 'Design' });
+    expect(button).toHaveAttribute('data-slot', 'sidebar-menu-button');
+
+    await user.hover(button);
+
+    expect(await screen.findByRole('tooltip')).toHaveTextContent('Design');
   });
 
   it('falls back to the default variant and size', () => {

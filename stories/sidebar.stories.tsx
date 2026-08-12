@@ -42,12 +42,6 @@ import {
   SidebarSeparator,
   SidebarTrigger,
 } from '@/ui/sidebar';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/ui/tooltip';
 
 type SidebarMenuButtonVariant = NonNullable<
   ComponentProps<typeof SidebarMenuButton>['variant']
@@ -60,7 +54,10 @@ type SidebarStoryArgs = Pick<
   ComponentProps<typeof SidebarProvider>,
   'collapsed' | 'defaultCollapsed' | 'onCollapsedChange'
 > &
-  Pick<ComponentProps<typeof SidebarMenuButton>, 'className' | 'render'> & {
+  Pick<
+    ComponentProps<typeof SidebarMenuButton>,
+    'className' | 'render' | 'tooltip'
+  > & {
     active: boolean;
     disabled: boolean;
     size: SidebarMenuButtonSize;
@@ -130,6 +127,11 @@ const meta = {
       control: false,
       table: { defaultValue: { summary: '<button type="button" />' } },
     },
+    tooltip: {
+      description:
+        'Content shown beside the menu item on hover or keyboard focus while the sidebar is collapsed.',
+      control: false,
+    },
     className: { table: { disable: true } },
     onCollapsedChange: {
       description: 'Called when the collapsed state changes.',
@@ -184,15 +186,21 @@ function SidebarFrame({
 function BrandHeader({ subtitle = 'Enterprise' }: { subtitle?: string }) {
   return (
     <SidebarHeader>
-      <span className="inline-flex size-8 min-w-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-        <Ship className="size-4" />
-      </span>
-      <span className="min-w-0 flex-1 group-data-[state=collapsed]/sidebar:hidden">
-        <SidebarMenuLabel className="block text-sm leading-5 font-medium">
-          Nebari
-        </SidebarMenuLabel>
-        <SidebarMenuDescription>{subtitle}</SidebarMenuDescription>
-      </span>
+      <SidebarMenu className="w-full">
+        <SidebarMenuItem>
+          <SidebarMenuButton size="account" tooltip="Nebari">
+            <span className="inline-flex size-8 min-w-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              <Ship className="size-4" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <SidebarMenuLabel className="block text-sm leading-5 font-medium">
+                Nebari
+              </SidebarMenuLabel>
+              <SidebarMenuDescription>{subtitle}</SidebarMenuDescription>
+            </span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
     </SidebarHeader>
   );
 }
@@ -211,6 +219,7 @@ export const Default: Story = {
                   active={index === 0 ? active : false}
                   disabled={disabled}
                   size={size}
+                  tooltip={item.label}
                   variant={variant}
                 >
                   <item.icon className="size-4 shrink-0" />
@@ -232,6 +241,7 @@ export const Default: Story = {
                 <SidebarMenuButton
                   disabled={disabled}
                   size={size}
+                  tooltip={item.label}
                   variant={variant}
                 >
                   <item.icon className="size-4 shrink-0" />
@@ -245,7 +255,11 @@ export const Default: Story = {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton disabled={disabled} size="account">
+            <SidebarMenuButton
+              disabled={disabled}
+              size="account"
+              tooltip="Ada Lovelace"
+            >
               <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                 <UserRound className="size-4" />
               </span>
@@ -287,6 +301,7 @@ export const AsLinks: Story = {
                       href={`/${item.label.toLowerCase()}`}
                     />
                   }
+                  tooltip={item.label}
                 >
                   <item.icon className="size-4 shrink-0" />
                   <SidebarMenuLabel>{item.label}</SidebarMenuLabel>
@@ -317,6 +332,7 @@ export const WithDropdownMenu: Story = {
                   />
                 }
                 size="account"
+                tooltip="Nebari"
               >
                 <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <Ship className="size-4" />
@@ -363,7 +379,7 @@ export const WithDropdownMenu: Story = {
           <SidebarMenu>
             {NAV_ITEMS.map((item, index) => (
               <SidebarMenuItem key={item.label}>
-                <SidebarMenuButton active={index === 0}>
+                <SidebarMenuButton active={index === 0} tooltip={item.label}>
                   <item.icon className="size-4 shrink-0" />
                   <SidebarMenuLabel>{item.label}</SidebarMenuLabel>
                 </SidebarMenuButton>
@@ -401,7 +417,7 @@ export const GroupedItems: Story = {
           <SidebarMenu>
             {NAV_ITEMS.map((item, index) => (
               <SidebarMenuItem key={item.label}>
-                <SidebarMenuButton active={index === 0}>
+                <SidebarMenuButton active={index === 0} tooltip={item.label}>
                   <item.icon className="size-4 shrink-0" />
                   <SidebarMenuLabel>{item.label}</SidebarMenuLabel>
                 </SidebarMenuButton>
@@ -415,7 +431,7 @@ export const GroupedItems: Story = {
           <SidebarMenu>
             {PROJECT_ITEMS.map((item) => (
               <SidebarMenuItem key={item.label}>
-                <SidebarMenuButton>
+                <SidebarMenuButton tooltip={item.label}>
                   <item.icon className="size-4 shrink-0" />
                   <SidebarMenuLabel>{item.label}</SidebarMenuLabel>
                 </SidebarMenuButton>
@@ -428,13 +444,13 @@ export const GroupedItems: Story = {
           <SidebarGroupLabel>Support</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton>
+              <SidebarMenuButton tooltip="Help center">
                 <LifeBuoy className="size-4 shrink-0" />
                 <SidebarMenuLabel>Help center</SidebarMenuLabel>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton>
+              <SidebarMenuButton tooltip="Settings">
                 <Settings className="size-4 shrink-0" />
                 <SidebarMenuLabel>Settings</SidebarMenuLabel>
               </SidebarMenuButton>
@@ -450,32 +466,49 @@ export const CollapsedIconOnly: Story = {
   name: 'Collapsed icon only',
   parameters: { controls: { include: [] } },
   render: (_args) => (
-    <TooltipProvider>
-      <SidebarFrame defaultCollapsed label="Collapsed sidebar">
-        <BrandHeader />
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel>Platform</SidebarGroupLabel>
-            <SidebarMenu>
-              {NAV_ITEMS.map((item, index) => (
-                <SidebarMenuItem key={item.label}>
-                  <Tooltip>
-                    <TooltipTrigger
-                      render={<SidebarMenuButton active={index === 0} />}
-                    >
-                      <item.icon className="size-4 shrink-0" />
-                      <SidebarMenuLabel>{item.label}</SidebarMenuLabel>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">{item.label}</TooltipContent>
-                  </Tooltip>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroup>
-        </SidebarContent>
-      </SidebarFrame>
-    </TooltipProvider>
+    <SidebarFrame defaultCollapsed label="Collapsed sidebar">
+      <BrandHeader />
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Platform</SidebarGroupLabel>
+          <SidebarMenu>
+            {NAV_ITEMS.map((item, index) => (
+              <SidebarMenuItem key={item.label}>
+                <SidebarMenuButton active={index === 0} tooltip={item.label}>
+                  <item.icon className="size-4 shrink-0" />
+                  <SidebarMenuLabel>{item.label}</SidebarMenuLabel>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+    </SidebarFrame>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const page = within(canvasElement.ownerDocument.body);
+    const sidebar = canvas.getByRole('complementary', {
+      name: 'Collapsed sidebar',
+    });
+    const sidebarCenter = sidebar.getBoundingClientRect().x + 32;
+    const models = canvas.getByRole('button', { name: 'Models' });
+
+    await expect(getComputedStyle(sidebar).transitionDuration).toBe('0.35s');
+    await expect(models.getBoundingClientRect().width).toBe(32);
+    await expect(getComputedStyle(models).paddingInline).toBe('8px');
+    await expect(models).toHaveClass('hover:bg-muted');
+
+    for (const icon of sidebar.querySelectorAll(
+      '[data-slot="sidebar-menu-button"] > svg',
+    )) {
+      const bounds = icon.getBoundingClientRect();
+      await expect(bounds.x + bounds.width / 2).toBeCloseTo(sidebarCenter);
+    }
+
+    await userEvent.hover(models);
+    await expect(page.getByRole('tooltip')).toHaveTextContent('Models');
+  },
 };
 
 export const NestedNavigation: Story = {
@@ -489,7 +522,7 @@ export const NestedNavigation: Story = {
           <SidebarGroupLabel>Projects</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton active>
+              <SidebarMenuButton active tooltip="Design">
                 <PaintRoller className="size-4 shrink-0" />
                 <SidebarMenuLabel>Design</SidebarMenuLabel>
               </SidebarMenuButton>
@@ -499,6 +532,7 @@ export const NestedNavigation: Story = {
                     <SidebarMenuButton
                       render={<a href={`/design/${label.toLowerCase()}`} />}
                       size="sm"
+                      tooltip={label}
                     >
                       <SidebarMenuLabel>{label}</SidebarMenuLabel>
                     </SidebarMenuButton>
@@ -508,7 +542,7 @@ export const NestedNavigation: Story = {
             </SidebarMenuItem>
             {PROJECT_ITEMS.map((item) => (
               <SidebarMenuItem key={item.label}>
-                <SidebarMenuButton>
+                <SidebarMenuButton tooltip={item.label}>
                   <item.icon className="size-4 shrink-0" />
                   <SidebarMenuLabel>{item.label}</SidebarMenuLabel>
                 </SidebarMenuButton>

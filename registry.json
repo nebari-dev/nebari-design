@@ -203,7 +203,11 @@
         "class-variance-authority",
         "lucide-react"
       ],
-      "registryDependencies": ["@nebari/utils", "@nebari/theme"],
+      "registryDependencies": [
+        "@nebari/utils",
+        "@nebari/theme",
+        "@nebari/tooltip"
+      ],
       "files": [
         {
           "path": "registry/nebari/ui/sidebar.tsx",

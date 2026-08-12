@@ -12,6 +12,12 @@ import {
   useState,
 } from 'react';
 import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/ui/tooltip';
 
 type SidebarState = 'expanded' | 'collapsed';
 
@@ -75,7 +81,9 @@ function SidebarProvider({
   );
 
   return (
-    <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>
+    <SidebarContext.Provider value={value}>
+      <TooltipProvider>{children}</TooltipProvider>
+    </SidebarContext.Provider>
   );
 }
 
@@ -84,7 +92,7 @@ function useSidebar() {
 }
 
 const sidebarVariants = cva(
-  'group/sidebar flex h-full shrink-0 flex-col overflow-hidden rounded-lg bg-sidebar text-sidebar-foreground data-[state=collapsed]:w-16 data-[state=expanded]:w-64 motion-safe:transition-[width] motion-safe:duration-[--duration-base] motion-safe:ease-[--ease-standard]',
+  'group/sidebar flex h-full shrink-0 flex-col overflow-hidden rounded-lg bg-sidebar text-sidebar-foreground data-[state=collapsed]:w-16 data-[state=expanded]:w-64 motion-safe:transition-[width] motion-safe:duration-[var(--duration-slow)] motion-safe:ease-[var(--ease-emphasized)]',
   {
     variants: {
       variant: {
@@ -135,7 +143,7 @@ function SidebarTrigger({
         state === 'collapsed' ? 'Expand sidebar' : 'Collapse sidebar',
       children: <PanelLeft className="size-5" />,
       className: cn(
-        'inline-flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-sidebar hover:text-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-safe:transition-[color,background-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]',
+        'inline-flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-sidebar hover:text-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-safe:transition-[color,background-color] motion-safe:duration-[var(--duration-fast)] motion-safe:ease-[var(--ease-standard)]',
         className,
       ),
       'data-slot': 'sidebar-trigger',
@@ -155,10 +163,7 @@ function SidebarTrigger({
 function SidebarHeader({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
-      className={cn(
-        'flex w-full items-center gap-2 p-2 group-data-[state=collapsed]/sidebar:justify-center',
-        className,
-      )}
+      className={cn('flex w-full items-center gap-2 p-2', className)}
       data-slot="sidebar-header"
       {...props}
     />
@@ -169,7 +174,7 @@ function SidebarContent({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'flex min-h-0 flex-1 flex-col overflow-y-auto p-2',
+        'flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto p-2',
         className,
       )}
       data-slot="sidebar-content"
@@ -202,7 +207,7 @@ function SidebarGroupLabel({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'flex h-6 items-center rounded-sm px-2 py-1 text-[11px] font-medium tracking-[0.3px] text-muted-foreground-strong uppercase group-data-[state=collapsed]/sidebar:sr-only',
+        'flex h-6 items-center rounded-sm px-2 py-1 text-[11px] font-medium tracking-[0.3px] text-muted-foreground-strong uppercase group-data-[state=collapsed]/sidebar:opacity-0 motion-safe:transition-opacity motion-safe:duration-[var(--duration-fast)] motion-safe:ease-[var(--ease-standard)]',
         className,
       )}
       data-slot="sidebar-group-label"
@@ -214,10 +219,7 @@ function SidebarGroupLabel({ className, ...props }: ComponentProps<'div'>) {
 function SidebarMenu({ className, ...props }: ComponentProps<'ul'>) {
   return (
     <ul
-      className={cn(
-        'm-0 flex list-none flex-col gap-0.5 p-0 group-data-[state=collapsed]/sidebar:items-center',
-        className,
-      )}
+      className={cn('m-0 flex list-none flex-col gap-0.5 p-0', className)}
       data-slot="sidebar-menu"
       {...props}
     />
@@ -235,7 +237,7 @@ function SidebarMenuItem({ className, ...props }: ComponentProps<'li'>) {
 }
 
 const sidebarMenuButtonVariants = cva(
-  'inline-flex w-full items-center gap-2 rounded-lg px-2 text-left text-foreground outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar disabled:pointer-events-none disabled:text-muted-foreground motion-safe:transition-[color,background-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] group-data-[state=collapsed]/sidebar:w-8 group-data-[state=collapsed]/sidebar:justify-center group-data-[state=collapsed]/sidebar:gap-0 group-data-[state=collapsed]/sidebar:px-0 group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-menu-trailing]]:hidden',
+  'inline-flex w-full items-center gap-2 rounded-lg px-2 text-left text-foreground outline-none hover:[&_[data-slot=sidebar-menu-label]]:underline data-[active=true]:font-semibold focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar disabled:pointer-events-none disabled:text-muted-foreground motion-safe:transition-[color,background-color,translate] motion-safe:duration-[var(--duration-fast)] motion-safe:ease-[var(--ease-standard)] group-data-[state=collapsed]/sidebar:translate-x-2 group-data-[state=collapsed]/sidebar:justify-center group-data-[state=collapsed]/sidebar:gap-0 group-data-[state=collapsed]/sidebar:overflow-hidden group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-menu-trailing]]:hidden',
   {
     variants: {
       variant: {
@@ -245,10 +247,11 @@ const sidebarMenuButtonVariants = cva(
           'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground',
       },
       size: {
-        default: 'h-8 py-1',
-        sm: 'h-7 py-1 text-sm',
-        lg: 'h-9 py-1.5',
-        account: 'h-[53px] py-2',
+        default: 'h-8 py-1 group-data-[state=collapsed]/sidebar:size-8',
+        sm: 'h-7 py-1 text-sm group-data-[state=collapsed]/sidebar:size-8',
+        lg: 'h-9 py-1.5 group-data-[state=collapsed]/sidebar:size-8',
+        account:
+          'h-12 py-2 group-data-[state=collapsed]/sidebar:size-12 group-data-[state=collapsed]/sidebar:translate-x-0',
       },
     },
     defaultVariants: {
@@ -261,6 +264,7 @@ const sidebarMenuButtonVariants = cva(
 type SidebarMenuButtonProps = useRender.ComponentProps<'button'> &
   VariantProps<typeof sidebarMenuButtonVariants> & {
     active?: boolean;
+    tooltip?: ReactNode;
   };
 
 function SidebarMenuButton({
@@ -269,10 +273,12 @@ function SidebarMenuButton({
   ref,
   render = <button type="button" />,
   size,
+  tooltip,
   variant,
   ...props
 }: SidebarMenuButtonProps) {
-  return useRender({
+  const { state } = useSidebar();
+  const button = useRender({
     render,
     ref,
     props: {
@@ -284,13 +290,24 @@ function SidebarMenuButton({
       ...props,
     },
   });
+
+  if (tooltip === undefined) {
+    return button;
+  }
+
+  return (
+    <Tooltip disabled={state === 'expanded'}>
+      <TooltipTrigger data-slot="sidebar-menu-button" render={button} />
+      <TooltipContent side="right">{tooltip}</TooltipContent>
+    </Tooltip>
+  );
 }
 
 function SidebarMenuLabel({ className, ...props }: ComponentProps<'span'>) {
   return (
     <span
       className={cn(
-        'min-w-0 flex-1 truncate group-data-[state=collapsed]/sidebar:sr-only',
+        'min-w-0 flex-1 truncate group-data-[state=collapsed]/sidebar:opacity-0 motion-safe:transition-opacity motion-safe:duration-[var(--duration-fast)] motion-safe:ease-[var(--ease-standard)]',
         className,
       )}
       data-slot="sidebar-menu-label"
@@ -306,7 +323,7 @@ function SidebarMenuDescription({
   return (
     <span
       className={cn(
-        'block truncate text-xs leading-4 text-muted-foreground-strong group-data-[state=collapsed]/sidebar:hidden',
+        'block truncate text-xs leading-4 text-muted-foreground-strong group-data-[state=collapsed]/sidebar:opacity-0 motion-safe:transition-opacity motion-safe:duration-[var(--duration-fast)] motion-safe:ease-[var(--ease-standard)]',
         className,
       )}
       data-slot="sidebar-menu-description"
