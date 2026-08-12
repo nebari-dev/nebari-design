@@ -42,6 +42,15 @@ const exampleLabelClassName = 'font-medium text-foreground text-sm';
 export const Default: Story = {};
 
 export const Shapes: Story = {
+  parameters: {
+    controls: { include: [] },
+    docs: {
+      description: {
+        story:
+          'The three shape primitives. Use `className` to size each placeholder to the layout it represents.',
+      },
+    },
+  },
   render: () => (
     <div className={`${storyFrameClassName} grid gap-10 bg-card p-6`}>
       <h2 className="font-semibold text-2xl tracking-normal">Component</h2>
@@ -64,6 +73,15 @@ export const Shapes: Story = {
 };
 
 export const AnimationPrototype: Story = {
+  parameters: {
+    controls: { include: [] },
+    docs: {
+      description: {
+        story:
+          'A motion-focused prototype showing repeated placeholders in each shape.',
+      },
+    },
+  },
   render: () => (
     <div className={`${storyFrameClassName} grid gap-8 bg-card p-6`}>
       <h2 className="font-semibold text-2xl tracking-normal">
@@ -88,6 +106,15 @@ export const AnimationPrototype: Story = {
 };
 
 export const Examples: Story = {
+  parameters: {
+    controls: { include: [] },
+    docs: {
+      description: {
+        story:
+          'Common loading compositions for cards, list rows, and text blocks.',
+      },
+    },
+  },
   render: () => (
     <div className={`${storyFrameClassName} grid gap-6 bg-card p-6`}>
       <div className="grid gap-5">
