@@ -51,7 +51,7 @@ export const Shapes: Story = {
       },
     },
   },
-  render: () => (
+  render: (_args) => (
     <div className={`${storyFrameClassName} grid gap-10 bg-card p-6`}>
       <h2 className="font-semibold text-2xl tracking-normal">Component</h2>
       <div className="grid gap-8 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-end sm:gap-14">
@@ -82,7 +82,7 @@ export const AnimationPrototype: Story = {
       },
     },
   },
-  render: () => (
+  render: (_args) => (
     <div className={`${storyFrameClassName} grid gap-8 bg-card p-6`}>
       <h2 className="font-semibold text-2xl tracking-normal">
         Animation Prototype
@@ -115,7 +115,7 @@ export const Examples: Story = {
       },
     },
   },
-  render: () => (
+  render: (_args) => (
     <div className={`${storyFrameClassName} grid gap-6 bg-card p-6`}>
       <div className="grid gap-5">
         <h2 className="font-semibold text-2xl tracking-normal">Examples</h2>
