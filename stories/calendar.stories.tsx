@@ -19,6 +19,78 @@ const meta = {
       },
     },
   },
+  args: {
+    autoFocusDay: false,
+    defaultMonth: july2026,
+    defaultSelected: july10,
+    mode: 'single',
+    today: july6,
+  },
+  argTypes: {
+    mode: {
+      control: 'select',
+      description: 'Selection behavior for the calendar grid.',
+      options: ['single', 'range'],
+      table: { defaultValue: { summary: 'single' } },
+    },
+    autoFocusDay: {
+      control: 'boolean',
+      description:
+        'Moves focus to the active day after mount or month navigation.',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    defaultMonth: {
+      control: false,
+      description:
+        'Initial visible month when the calendar manages its own month state.',
+    },
+    month: {
+      control: false,
+      description: 'Controlled visible month. Pair it with `onMonthChange`.',
+    },
+    defaultSelected: {
+      control: false,
+      description:
+        'Initial selected date when the calendar manages its own single-date state.',
+    },
+    selected: {
+      control: false,
+      description: 'Controlled selected date. Pair it with `onSelect`.',
+    },
+    defaultRange: {
+      control: false,
+      description:
+        'Initial selected date range when the calendar manages its own range state.',
+    },
+    range: {
+      control: false,
+      description: 'Controlled selected range. Pair it with `onRangeSelect`.',
+    },
+    today: {
+      control: false,
+      description:
+        'Date highlighted as today. Seeded in stories so examples stay deterministic.',
+    },
+    disabledDate: {
+      control: false,
+      description:
+        'Predicate that disables matching days and blocks selection.',
+    },
+    children: {
+      control: false,
+      description: 'Optional content rendered below the calendar grid.',
+    },
+    render: {
+      control: false,
+      description:
+        'Base UI render-prop composition. Swap the default `<div>` while preserving the calendar styling and slot attributes.',
+      table: { defaultValue: { summary: '<div />' } },
+    },
+    className: { table: { disable: true } },
+    onMonthChange: { table: { disable: true } },
+    onRangeSelect: { table: { disable: true } },
+    onSelect: { table: { disable: true } },
+  },
 } satisfies Meta<typeof Calendar>;
 
 export default meta;
@@ -26,11 +98,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {
-    defaultMonth: july2026,
-    selected: july10,
-    today: july6,
-  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const grid = canvas.getByRole('grid', { name: 'July 2026' });
@@ -47,19 +114,33 @@ export const Default: Story = {
 };
 
 export const Range: Story = {
+  parameters: {
+    controls: { include: [] },
+    docs: {
+      description: {
+        story:
+          'Range mode highlights the selected start, middle, and end days.',
+      },
+    },
+  },
   args: {
-    defaultMonth: july2026,
     defaultRange: { from: july6, to: july15 },
+    defaultSelected: undefined,
     mode: 'range',
-    today: july6,
   },
 };
 
 export const DisabledDays: Story = {
+  parameters: {
+    controls: { include: [] },
+    docs: {
+      description: {
+        story: 'Disabled days keep their grid position but cannot be selected.',
+      },
+    },
+  },
   args: {
-    defaultMonth: july2026,
     disabledDate: (date) => date.getDay() === 0 || date.getDay() === 6,
-    today: july6,
   },
 };
 
@@ -76,7 +157,15 @@ const dayStates = [
 ] as const;
 
 export const DayStates: Story = {
-  render: () => (
+  parameters: {
+    controls: { include: [] },
+    docs: {
+      description: {
+        story: 'The reusable `Day` primitive shown across each visual state.',
+      },
+    },
+  },
+  render: (_args) => (
     <div className="grid grid-cols-5 gap-3">
       {dayStates.map((state) => (
         <div className="flex flex-col items-center gap-1" key={state}>

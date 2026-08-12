@@ -24,16 +24,105 @@ const meta = {
   },
   args: {
     defaultMonth: july2026,
+    defaultTime: '2:30 PM',
+    disabled: false,
     label: 'Date',
     today: july6,
+    type: 'single',
   },
   argTypes: {
     type: {
       control: 'select',
+      description:
+        'Picker mode. `single`, `range`, and `date-time` open a calendar popover; `segmented` supports typed entry directly in the field.',
       options: ['single', 'range', 'date-time', 'segmented'],
+      table: { defaultValue: { summary: 'single' } },
     },
-    disabled: { control: 'boolean' },
+    label: {
+      control: 'text',
+      description:
+        'Accessible field label shown above the trigger and included in the trigger name.',
+      table: { defaultValue: { summary: 'Date' } },
+    },
+    disabled: {
+      control: 'boolean',
+      description:
+        'Disables the field trigger, muted visual state, and calendar interaction.',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    defaultTime: {
+      control: 'text',
+      description:
+        'Initial selected time for the `date-time` mode when the picker manages its own time state.',
+      table: { defaultValue: { summary: '2:30 PM' } },
+    },
+    time: {
+      control: false,
+      description: 'Controlled selected time. Pair it with `onTimeChange`.',
+    },
+    defaultMonth: {
+      control: false,
+      description:
+        'Initial visible calendar month when the picker manages its own month state.',
+    },
+    month: {
+      control: false,
+      description:
+        'Controlled visible calendar month. Pair it with `onMonthChange`.',
+    },
+    defaultValue: {
+      control: false,
+      description:
+        'Initial selected date when the picker manages its own date state.',
+    },
+    value: {
+      control: false,
+      description: 'Controlled selected date. Pair it with `onValueChange`.',
+    },
+    defaultRange: {
+      control: false,
+      description:
+        'Initial selected date range when the picker manages its own range state.',
+    },
+    range: {
+      control: false,
+      description: 'Controlled selected range. Pair it with `onRangeChange`.',
+    },
+    today: {
+      control: false,
+      description:
+        'Date highlighted as today. Seeded in stories so examples stay deterministic.',
+    },
+    description: {
+      control: false,
+      description: 'Optional helper text rendered below the field.',
+    },
+    placeholder: {
+      control: false,
+      description:
+        'Placeholder text. Leave unset to use the mode-specific placeholder.',
+    },
+    timeSlots: {
+      control: false,
+      description:
+        'Time options shown next to the calendar in `date-time` mode.',
+    },
+    disabledDate: {
+      control: false,
+      description:
+        'Predicate passed to the calendar to disable matching dates.',
+    },
+    className: { table: { disable: true } },
+    onMonthChange: { table: { disable: true } },
+    onOpenChange: { table: { disable: true } },
+    onRangeChange: { table: { disable: true } },
+    onTimeChange: { table: { disable: true } },
+    onValueChange: { table: { disable: true } },
   },
+  decorators: [
+    // `defaultTime` is mount-only, so the key forces a remount when it changes.
+    (Story, { args }) => <Story key={String(args.defaultTime)} />,
+  ],
 } satisfies Meta<typeof DatePicker>;
 
 export default meta;
@@ -65,7 +154,16 @@ export const Default: Story = {
 };
 
 export const TypeStateMatrix: Story = {
-  render: () => {
+  parameters: {
+    controls: { include: [] },
+    docs: {
+      description: {
+        story:
+          'Each picker mode shown across empty, focused, filled, and disabled states.',
+      },
+    },
+  },
+  render: (_args) => {
     const rows = [
       {
         label: 'Single',
@@ -142,7 +240,16 @@ export const TypeStateMatrix: Story = {
 };
 
 export const Examples: Story = {
-  render: () => (
+  parameters: {
+    controls: { include: [] },
+    docs: {
+      description: {
+        story:
+          'Open single-date, range, and date-time examples with their popovers visible.',
+      },
+    },
+  },
+  render: (_args) => (
     <div className="grid grid-cols-3 items-start gap-12">
       <DatePicker
         defaultMonth={july2026}
@@ -173,14 +280,20 @@ export const Examples: Story = {
 };
 
 export const SegmentedTyping: Story = {
-  render: () => (
-    <DatePicker
-      defaultMonth={july2026}
-      label="Segmented date"
-      today={july6}
-      type="segmented"
-    />
-  ),
+  args: {
+    label: 'Segmented date',
+    type: 'segmented',
+  },
+  parameters: {
+    controls: { include: [] },
+    docs: {
+      description: {
+        story:
+          'Segmented mode accepts numeric keyboard entry without opening a popover.',
+      },
+    },
+  },
+  render: (args) => <DatePicker {...args} />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const trigger = canvas.getByRole('button', {
