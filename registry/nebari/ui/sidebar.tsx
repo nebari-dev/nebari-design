@@ -237,7 +237,7 @@ function SidebarMenuItem({ className, ...props }: ComponentProps<'li'>) {
 }
 
 const sidebarMenuButtonVariants = cva(
-  'inline-flex w-full items-center gap-2 rounded-lg px-2 text-left text-foreground outline-none hover:[&_[data-slot=sidebar-menu-label]]:underline data-[active=true]:font-semibold focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar disabled:pointer-events-none disabled:text-muted-foreground motion-safe:transition-[color,background-color,translate] motion-safe:duration-[var(--duration-fast)] motion-safe:ease-[var(--ease-standard)] group-data-[state=collapsed]/sidebar:translate-x-2 group-data-[state=collapsed]/sidebar:justify-center group-data-[state=collapsed]/sidebar:gap-0 group-data-[state=collapsed]/sidebar:overflow-hidden group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-menu-trailing]]:hidden',
+  'inline-flex w-full items-center gap-2 rounded-lg px-4 text-left text-foreground outline-none hover:[&_[data-slot=sidebar-menu-label]]:underline data-[active=true]:font-semibold focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar disabled:pointer-events-none disabled:text-muted-foreground motion-safe:transition-[color,background-color] motion-safe:duration-[var(--duration-fast)] motion-safe:ease-[var(--ease-standard)] group-data-[state=collapsed]/sidebar:gap-0 group-data-[state=collapsed]/sidebar:overflow-hidden group-data-[state=collapsed]/sidebar:[&_[data-slot=sidebar-menu-trailing]]:hidden',
   {
     variants: {
       variant: {
@@ -247,11 +247,10 @@ const sidebarMenuButtonVariants = cva(
           'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground',
       },
       size: {
-        default: 'h-8 py-1 group-data-[state=collapsed]/sidebar:size-8',
-        sm: 'h-7 py-1 text-sm group-data-[state=collapsed]/sidebar:size-8',
-        lg: 'h-9 py-1.5 group-data-[state=collapsed]/sidebar:size-8',
-        account:
-          'h-12 py-2 group-data-[state=collapsed]/sidebar:size-12 group-data-[state=collapsed]/sidebar:translate-x-0',
+        default: 'h-8 py-1',
+        sm: 'h-7 py-1 text-sm',
+        lg: 'h-9 py-1.5',
+        account: 'h-12 px-2 py-2',
       },
     },
     defaultVariants: {

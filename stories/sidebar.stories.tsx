@@ -156,6 +156,8 @@ const NAV_ITEMS = [
   { icon: PaintRoller, label: 'Design' },
 ] as const;
 
+const SIDEBAR_ICON_INSET = 24;
+
 const PROJECT_ITEMS = [
   { icon: TrainFrontTunnel, label: 'Travel' },
   { icon: Coins, label: 'Sales' },
@@ -279,6 +281,21 @@ export const Default: Story = {
       </SidebarFooter>
     </SidebarFrame>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const sidebar = canvas.getByRole('complementary', {
+      name: 'Playground sidebar',
+    });
+    const sidebarLeft = sidebar.getBoundingClientRect().x;
+
+    for (const icon of sidebar.querySelectorAll(
+      '[data-slot="sidebar-content"] [data-slot="sidebar-menu-button"] > svg:first-child',
+    )) {
+      await expect(icon.getBoundingClientRect().x - sidebarLeft).toBeCloseTo(
+        SIDEBAR_ICON_INSET,
+      );
+    }
+  },
 };
 
 export const AsLinks: Story = {
@@ -491,19 +508,27 @@ export const CollapsedIconOnly: Story = {
     const sidebar = canvas.getByRole('complementary', {
       name: 'Collapsed sidebar',
     });
-    const sidebarCenter = sidebar.getBoundingClientRect().x + 32;
+    const sidebarLeft = sidebar.getBoundingClientRect().x;
     const models = canvas.getByRole('button', { name: 'Models' });
 
+    const sidebarWidth = sidebar.getBoundingClientRect().width;
+
     await expect(getComputedStyle(sidebar).transitionDuration).toBe('0.35s');
-    await expect(models.getBoundingClientRect().width).toBe(32);
-    await expect(getComputedStyle(models).paddingInline).toBe('8px');
+    await expect(models.getBoundingClientRect().width).toBe(48);
+    await expect(getComputedStyle(models).paddingInline).toBe('16px');
     await expect(models).toHaveClass('hover:bg-muted');
+    await expect(models).not.toHaveClass(
+      'group-data-[state=collapsed]/sidebar:translate-x-2',
+    );
 
     for (const icon of sidebar.querySelectorAll(
-      '[data-slot="sidebar-menu-button"] > svg',
+      '[data-slot="sidebar-content"] [data-slot="sidebar-menu-button"] > svg:first-child',
     )) {
       const bounds = icon.getBoundingClientRect();
-      await expect(bounds.x + bounds.width / 2).toBeCloseTo(sidebarCenter);
+      await expect(bounds.x - sidebarLeft).toBeCloseTo(SIDEBAR_ICON_INSET);
+      await expect(bounds.x + bounds.width / 2 - sidebarLeft).toBeCloseTo(
+        sidebarWidth / 2,
+      );
     }
 
     await userEvent.hover(models);
