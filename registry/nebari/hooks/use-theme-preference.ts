@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useSyncExternalStore } from 'react';
 
 const THEME_MODES = ['light', 'dark', 'system'] as const;
 
@@ -21,8 +21,8 @@ interface UseThemePreferenceOptions {
    * `localStorage` key the preference persists under. Keep an app's existing
    * key so users don't lose their saved preference.
    *
-   * Read once when the hook mounts — pass a constant. Changing it later
-   * redirects writes without re-reading the new key's stored value.
+   * Pass a stable value — changing it mid-session re-reads the preference
+   * from (and redirects writes to) the new key.
    *
    * @default 'nebari:themeMode'
    */
@@ -38,26 +38,64 @@ interface UseThemePreferenceResult {
   setThemeMode: (mode: ThemeMode) => void;
 }
 
+// The preference lives outside React (localStorage plus the listener set
+// below) and is read through `useSyncExternalStore`, so the server render and
+// the hydration render both see the same defaults (`'system'`, light) while
+// client renders see the real stored/OS values — no hydration mismatch.
+const themeModeListeners = new Set<() => void>();
+
+// Session fallback for when `localStorage` throws (private browsing, disabled
+// cookies): the preference still updates in memory.
+const inMemoryThemeModes = new Map<string, ThemeMode>();
+
+function subscribeToThemeMode(onStoreChange: () => void): () => void {
+  themeModeListeners.add(onStoreChange);
+  return () => {
+    themeModeListeners.delete(onStoreChange);
+  };
+}
+
 function readStoredMode(storageKey: string): ThemeMode {
-  if (typeof window === 'undefined') {
-    return 'system';
-  }
   try {
     const stored = window.localStorage.getItem(storageKey);
-    if (isThemeMode(stored)) {
-      return stored;
-    }
+    return isThemeMode(stored) ? stored : 'system';
   } catch {
-    // Storage unavailable (private browsing, disabled cookies) — the
-    // preference lives in memory for this session.
+    return inMemoryThemeModes.get(storageKey) ?? 'system';
   }
+}
+
+function writeStoredMode(storageKey: string, mode: ThemeMode): void {
+  try {
+    window.localStorage.setItem(storageKey, mode);
+    // Storage is the source of truth again — drop any stale fallback.
+    inMemoryThemeModes.delete(storageKey);
+  } catch {
+    // Storage unavailable — the in-memory copy carries the session.
+    inMemoryThemeModes.set(storageKey, mode);
+  }
+  for (const listener of themeModeListeners) {
+    listener();
+  }
+}
+
+function serverThemeMode(): ThemeMode {
   return 'system';
 }
 
-function prefersDark(): boolean {
-  if (typeof window === 'undefined') {
-    return false;
+// Both `matchMedia` and the `MediaQueryList` event API are guarded: an engine
+// missing either (Safari < 14 has no `addEventListener` here) keeps the light
+// default instead of throwing.
+function subscribeToSystemScheme(onStoreChange: () => void): () => void {
+  try {
+    const mediaQuery = window.matchMedia(DARK_SCHEME_QUERY);
+    mediaQuery.addEventListener('change', onStoreChange);
+    return () => mediaQuery.removeEventListener('change', onStoreChange);
+  } catch {
+    return () => {};
   }
+}
+
+function prefersDark(): boolean {
   try {
     return window.matchMedia(DARK_SCHEME_QUERY).matches;
   } catch {
@@ -65,11 +103,20 @@ function prefersDark(): boolean {
   }
 }
 
+function serverPrefersDark(): boolean {
+  return false;
+}
+
 /**
  * Theme/dark-mode state for apps built on the Nebari theme tokens. Persists a
  * `light` / `dark` / `system` preference, follows the OS while in `system`
  * mode, and toggles the `.dark` class on `<html>` so every token-styled
  * component re-themes automatically.
+ *
+ * SSR-safe: the server render and the hydration render both resolve to
+ * `'system'` / light, then the real stored/OS values apply immediately after
+ * hydration — pair with `themeBootstrapScript` so the pre-paint class already
+ * matches and there is no flash.
  *
  * Mount it exactly once (directly or via `ThemeProvider`) — multiple instances
  * would compete over the `<html>` class.
@@ -79,43 +126,27 @@ function useThemePreference(
 ): UseThemePreferenceResult {
   const { storageKey = DEFAULT_THEME_STORAGE_KEY } = options;
 
-  const [themeMode, setThemeModeState] = useState<ThemeMode>(() =>
-    readStoredMode(storageKey),
+  const readThemeMode = useCallback(
+    () => readStoredMode(storageKey),
+    [storageKey],
   );
-  const [systemPrefersDark, setSystemPrefersDark] =
-    useState<boolean>(prefersDark);
+  const themeMode = useSyncExternalStore(
+    subscribeToThemeMode,
+    readThemeMode,
+    serverThemeMode,
+  );
+  const systemPrefersDark = useSyncExternalStore(
+    subscribeToSystemScheme,
+    prefersDark,
+    serverPrefersDark,
+  );
 
   const setThemeMode = useCallback(
     (mode: ThemeMode) => {
-      setThemeModeState(mode);
-      try {
-        window.localStorage.setItem(storageKey, mode);
-      } catch {
-        // Storage unavailable — keep the in-memory preference.
-      }
+      writeStoredMode(storageKey, mode);
     },
     [storageKey],
   );
-
-  // Keep `system` mode in sync with the OS preference as it changes. Both
-  // `matchMedia` and the `MediaQueryList` event API are guarded: an engine
-  // missing either (Safari < 14 has no `addEventListener` here) keeps the
-  // light default instead of throwing out of the effect.
-  useEffect(() => {
-    let mediaQuery: MediaQueryList;
-    let onChange: (event: MediaQueryListEvent) => void;
-    try {
-      mediaQuery = window.matchMedia(DARK_SCHEME_QUERY);
-      setSystemPrefersDark(mediaQuery.matches);
-      onChange = (event: MediaQueryListEvent) =>
-        setSystemPrefersDark(event.matches);
-      mediaQuery.addEventListener('change', onChange);
-    } catch {
-      return;
-    }
-
-    return () => mediaQuery.removeEventListener('change', onChange);
-  }, []);
 
   const isDarkMode =
     themeMode === 'system' ? systemPrefersDark : themeMode === 'dark';

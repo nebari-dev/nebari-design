@@ -1,4 +1,6 @@
 import { act, render, renderHook, screen } from '@testing-library/react';
+import { hydrateRoot } from 'react-dom/client';
+import { renderToString } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ThemeProvider, useTheme } from '@/hooks/theme-provider';
 import {
@@ -221,6 +223,40 @@ describe('useThemePreference', () => {
     unmount();
     expect(media.mediaQueryList.removeEventListener).toHaveBeenCalled();
     expect(media.listeners.size).toBe(0);
+  });
+
+  it('hydrates server HTML without a mismatch when a preference is stored', async () => {
+    installMatchMedia(true);
+    window.localStorage.setItem(DEFAULT_THEME_STORAGE_KEY, 'dark');
+
+    function Probe() {
+      const { themeMode, isDarkMode } = useThemePreference();
+      return <div>{`${themeMode}:${isDarkMode}`}</div>;
+    }
+
+    // `renderToString` uses the server snapshots even under jsdom, so this is
+    // the HTML a real SSR pass would send: no stored preference, no OS signal.
+    const serverHtml = renderToString(<Probe />);
+    expect(serverHtml).toContain('system:false');
+
+    const container = document.createElement('div');
+    container.innerHTML = serverHtml;
+    document.body.appendChild(container);
+
+    // React reports hydration mismatches through console.error.
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    let root: ReturnType<typeof hydrateRoot> | undefined;
+    await act(async () => {
+      root = hydrateRoot(container, <Probe />);
+    });
+
+    expect(errorSpy).not.toHaveBeenCalled();
+    // After hydrating against the server HTML, the stored preference applies.
+    expect(container.textContent).toBe('dark:true');
+    expect(document.documentElement).toHaveClass('dark');
+
+    await act(async () => root?.unmount());
+    container.remove();
   });
 });
 
