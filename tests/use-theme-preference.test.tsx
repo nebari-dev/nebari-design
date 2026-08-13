@@ -352,4 +352,27 @@ describe('themeBootstrapScript', () => {
       new Function(themeBootstrapScript())();
     }).not.toThrow();
   });
+
+  it('still applies the OS preference when storage is unavailable', () => {
+    installMatchMedia(true);
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('storage disabled');
+    });
+
+    new Function(themeBootstrapScript())();
+    expect(document.documentElement).toHaveClass('dark');
+  });
+
+  it('still reads the stored preference when matchMedia is unavailable', () => {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn(() => {
+        throw new Error('not implemented');
+      }),
+    );
+    window.localStorage.setItem(DEFAULT_THEME_STORAGE_KEY, 'dark');
+
+    new Function(themeBootstrapScript())();
+    expect(document.documentElement).toHaveClass('dark');
+  });
 });

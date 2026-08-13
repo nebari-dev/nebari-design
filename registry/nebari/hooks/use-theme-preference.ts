@@ -169,12 +169,21 @@ function useThemePreference(
 function themeBootstrapScript(
   storageKey: string = DEFAULT_THEME_STORAGE_KEY,
 ): string {
+  // Each browser API gets its own try so one failing (storage disabled,
+  // matchMedia missing) doesn't stop the others — mirroring how the hook
+  // guards them independently.
   return [
     '(function () {',
+    '  var mode = null;',
+    '  var prefersDark = false;',
     '  try {',
-    `    var mode = localStorage.getItem(${JSON.stringify(storageKey)});`,
-    `    var prefersDark = window.matchMedia('${DARK_SCHEME_QUERY}').matches;`,
-    "    var isDark = mode === 'dark' || (mode !== 'light' && prefersDark);",
+    `    mode = localStorage.getItem(${JSON.stringify(storageKey)});`,
+    '  } catch (e) {}',
+    '  try {',
+    `    prefersDark = window.matchMedia('${DARK_SCHEME_QUERY}').matches;`,
+    '  } catch (e) {}',
+    "  var isDark = mode === 'dark' || (mode !== 'light' && prefersDark);",
+    '  try {',
     "    document.documentElement.classList.toggle('dark', isDark);",
     '  } catch (e) {}',
     '})();',
