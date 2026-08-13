@@ -5,12 +5,15 @@ description: >-
   registry) in this app. Use when asked to "add a nebari component", "use the
   nebari button/badge/alert/spinner", "install the nebari theme", "animate,
   add a transition, make it feel polished, or add an entrance animation with
-  nebari", or "build <something> with nebari components". Covers registry setup
-  (the @nebari namespace in components.json + the shadcn add command), the
-  component catalog (variants, sizes, props), the Base UI render-prop
-  composition convention, theming (the @nebari/theme tokens, CSS variables, and
-  light/dark), and motion (duration/easing tokens, entrance animations, overlay
-  transitions, accessibility guardrails).
+  nebari", "build <something> with nebari components", or "build/update the app
+  header (top bar, navigation bar, profile menu, notifications menu, theme
+  picker) to match nebari". Covers registry setup (the @nebari namespace in
+  components.json + the shadcn add command), the component catalog (variants,
+  sizes, props), the Base UI render-prop composition convention, theming (the
+  @nebari/theme tokens, CSS variables, and light/dark), the canonical app
+  header recipe (MenuBar composition, header tokens, notifications and profile
+  menus, the menuitemradio theme picker), and motion (duration/easing tokens,
+  entrance animations, overlay transitions, accessibility guardrails).
 ---
 
 # Using the Nebari design system
@@ -21,7 +24,8 @@ Nebari brand. You install its components into this app with the `shadcn` CLI —
 they're copied into your codebase, but Nebari treats them as **upstream-managed
 source**: you extend them at the call site rather than editing the installed
 files (see [Treat installed components as managed](#treat-installed-components-as-managed)).
-This skill covers setup, the catalog, the composition convention, and theming.
+This skill covers setup, the catalog, the composition convention, theming, and
+the canonical app-header recipe.
 
 ## Step 1 — register the `@nebari` namespace (once)
 
@@ -262,6 +266,226 @@ function ThemeToggle() {
 
   If you use a non-default storage key, regenerate the snippet with
   `themeBootstrapScript('your:key')` instead of editing it by hand.
+
+## App header
+
+Nebari apps in one deployment share a single header, so users read them as one
+product. Don't re-derive the layout from another app's source — this section is
+the canonical recipe. The reference implementation is
+[nebari-landing's `Header.tsx`](https://github.com/nebari-dev/nebari-landing/blob/main/frontend/src/components/Header.tsx).
+
+### Composition and sizing
+
+The header is built from `@nebari/navigation-menu` (its menus also need
+`@nebari/dropdown-menu`, `@nebari/avatar`, and `@nebari/button`):
+
+```sh
+npx shadcn add @nebari/navigation-menu @nebari/dropdown-menu @nebari/avatar @nebari/button
+```
+
+- **`NavigationMenu`** (alias of `MenuBar`, a semantic `<header>`) is the bar.
+  Its default is `h-12 px-3`; the canonical app header overrides to **`h-14`**
+  with **`pl-4`** (keeping the default `pr-3`) and the header tokens:
+
+  ```tsx
+  <NavigationMenu className="h-14 justify-between border-header-border bg-header-background pl-4 text-header-foreground">
+  ```
+
+- **`MenuBarBrand`** holds the logo, left-aligned, linking home:
+
+  ```tsx
+  <MenuBarBrand href="/" aria-label="Go to homepage">
+    <img src={logoSrc} alt="Nebari" className="h-8 w-auto" />
+  </MenuBarBrand>
+  ```
+
+  The logo is **`h-8 w-auto`**. Apps with light/dark logo variants pick by
+  `isDarkMode` from [`useTheme`](#dark-mode-state-usethemepreference).
+- **`MenuBarNav`** (optional) holds center `NavLink` / `NavDropdownMenu` items.
+- **`MenuBarActions`** is the right-side slot (use `className="gap-2"`) holding,
+  in order: the notifications menu (if the app has notifications) and the
+  profile/account menu.
+
+### Header token contract
+
+The header is styled **only** with semantic tokens — no hardcoded colors.
+`@nebari/theme` does **not** ship these; **the consuming app must define them**
+in its theme CSS, in both light and dark, plus the Tailwind `@theme` mappings
+that make `bg-header-background` etc. resolve:
+
+```css
+:root {
+  --header-background: #f8f8f8;
+  --header-border: #b7b7bb;
+  --header-foreground: #262628;
+  --header-action-hover: #d9d9dc;
+  --notification-badge: #d00000;
+  --sign-out-foreground: #d2161c;
+}
+
+.dark {
+  --header-background: var(--card);
+  --header-border: #5a5a61;
+  --header-foreground: #f8f8f8;
+  --header-action-hover: #4a4a50;
+  --notification-badge: #e00000;
+  --sign-out-foreground: #ff6b6b;
+}
+
+@theme inline {
+  --color-header-background: var(--header-background);
+  --color-header-border: var(--header-border);
+  --color-header-foreground: var(--header-foreground);
+  --color-header-action-hover: var(--header-action-hover);
+  --color-notification-badge: var(--notification-badge);
+  --color-sign-out-foreground: var(--sign-out-foreground);
+}
+```
+
+Registry-provided vs. app-defined:
+
+| Token | Source |
+|---|---|
+| `--primary`, `--muted`, `--card`, `--border`, … | `@nebari/theme` (registry) |
+| `--header-background`, `--header-border`, `--header-foreground` | **app-defined** (values above) |
+| `--header-action-hover`, `--notification-badge`, `--sign-out-foreground` | **app-defined** (values above) |
+
+### Notifications menu
+
+A ghost icon `DropdownMenuTrigger` with a `Bell`, an unread-count badge on
+`bg-notification-badge`, and a **552px** menu. `modal={false}` keeps the page
+scrollable while the menu is open — don't omit it:
+
+```tsx
+<DropdownMenu modal={false} onOpenChange={(open) => open && markViewed()}>
+  <DropdownMenuTrigger
+    variant="ghost"
+    aria-label="Notifications"
+    className="relative w-8 px-0 hover:bg-header-action-hover hover:no-underline focus-visible:ring-offset-0 active:bg-header-action-hover"
+  >
+    <Bell />
+    {unreadCount > 0 && (
+      <span className="absolute -right-0.5 -top-0.5 z-10 flex h-4 min-w-4 items-center justify-center rounded-full bg-notification-badge px-1 pt-px text-[9px] font-semibold leading-none text-white tabular-nums">
+        {unreadCount}
+      </span>
+    )}
+  </DropdownMenuTrigger>
+  <DropdownMenuPortal>
+    <DropdownMenuContent align="end" className="max-h-(--available-height) w-[552px] overflow-y-auto p-0">
+      {/* one DropdownMenuItem per notification; unread items get a
+          h-2 w-2 rounded-full bg-primary dot */}
+    </DropdownMenuContent>
+  </DropdownMenuPortal>
+</DropdownMenu>
+```
+
+Only render the bell if the app actually has notifications — don't ship an
+empty menu.
+
+### Profile / account menu
+
+Avatar + user name + `ChevronDown` as the trigger; a **248px** menu
+(`w-[248px] p-2`) with a name/email section, the theme picker, then a red
+sign-out item:
+
+```tsx
+<DropdownMenu modal={false}>
+  <DropdownMenuTrigger
+    variant="ghost"
+    aria-label="Account menu"
+    className="h-auto px-2.5 py-1 hover:bg-header-action-hover hover:no-underline focus-visible:ring-offset-0 active:bg-header-action-hover data-[popup-open]:bg-header-action-hover data-[popup-open]:no-underline"
+  >
+    <Avatar>
+      {user.image && <AvatarImage src={user.image} alt={user.name} />}
+      <AvatarFallback className="bg-primary font-semibold text-primary-foreground">
+        {initials}
+      </AvatarFallback>
+    </Avatar>
+    <span>{user.name}</span>
+    <ChevronDown />
+  </DropdownMenuTrigger>
+  <DropdownMenuPortal>
+    <DropdownMenuContent align="end" className="w-[248px] p-2">
+      <div className="border-b px-1.5 pb-2">
+        <p className="text-sm font-medium text-foreground">{user.name}</p>
+        <p className="text-xs text-muted-foreground">{user.email}</p>
+      </div>
+
+      {/* Theme picker — see below */}
+
+      <DropdownMenuSeparator />
+
+      <DropdownMenuItem
+        className="leading-5 text-sign-out-foreground data-[highlighted]:text-sign-out-foreground"
+        onClick={signOut}
+      >
+        <LogOut className="size-4 shrink-0" aria-hidden="true" />
+        Sign out
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenuPortal>
+</DropdownMenu>
+```
+
+When no user is signed in, render a plain `<Button>` sign-in trigger in
+`MenuBarActions` instead of the menu.
+
+### Theme picker — a menu radio group, not tabs
+
+The Light/Dark/System control lives **inside the profile menu** (not as a
+standalone header button) and is a **menu radio group**: Base UI's
+`Menu.RadioGroup` / `Menu.RadioItem`, which render `role="menuitemradio"` with
+`aria-checked`. It only *looks* like a segmented control.
+
+Tabs are the wrong semantics here: `role="tab"` promises that selecting one
+reveals an associated `tabpanel`, which doesn't exist — a screen reader would
+announce a relationship that isn't there, and tab keyboard conventions fight
+the menu's own arrow-key navigation. "Pick exactly one of three values from a
+menu" is precisely what `menuitemradio` means.
+
+Wire it to the registry hook's state
+([`useTheme`](#dark-mode-state-usethemepreference) from
+`@nebari/use-theme-preference`) — never a bespoke theme store:
+
+```tsx
+import { Menu as MenuPrimitive } from '@base-ui/react/menu';
+import { isThemeMode } from '@/hooks/use-theme-preference';
+import { useTheme } from '@/hooks/theme-provider';
+
+const { themeMode, setThemeMode } = useTheme();
+
+<div className="py-2">
+  <MenuPrimitive.RadioGroup
+    aria-label="Theme"
+    value={themeMode}
+    onValueChange={(value) => {
+      if (isThemeMode(value)) setThemeMode(value);
+    }}
+    className="flex h-[34px] items-center gap-1 rounded-md bg-muted p-1"
+  >
+    {/* one per mode: light / dark / system */}
+    <MenuPrimitive.RadioItem
+      value="light"
+      aria-label="Light mode"
+      title="Light mode"
+      closeOnClick={false}
+      className={cn(
+        'flex h-auto flex-1 cursor-pointer items-center justify-center gap-1 rounded-sm border border-transparent px-1.5 py-0.5 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring',
+        'text-muted-foreground-strong hover:text-foreground',
+        'data-checked:border-border-strong data-checked:bg-card data-checked:text-foreground data-checked:shadow-[0_1px_3px_0_rgba(0,0,0,0.10)]',
+      )}
+    >
+      <Sun className="h-4 w-4" />
+      <span>Light</span>
+    </MenuPrimitive.RadioItem>
+    {/* Dark → <Moon />, System → <Monitor />, same classes */}
+  </MenuPrimitive.RadioGroup>
+</div>
+```
+
+`closeOnClick={false}` lets the user try modes without the menu snapping shut.
+In tests, assert the picker exposes three `menuitemradio` items and that the
+active mode has `aria-checked="true"`.
 
 ## Motion
 
