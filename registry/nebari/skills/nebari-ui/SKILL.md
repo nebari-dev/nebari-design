@@ -59,7 +59,8 @@ npx shadcn add @nebari/theme
 npx shadcn add @nebari/button
 ```
 
-Installed files land under the app's configured aliases (`@/ui`, `@/lib`), so
+Installed files land under the app's configured aliases (`@/ui`, `@/hooks`,
+`@/lib`), so
 imports look like `import { Button } from '@/components/ui/button'` — match the
 host app's existing alias resolution.
 
@@ -194,6 +195,73 @@ npx shadcn add @nebari/theme
   import '@fontsource/ibm-plex-mono/400.css';
   import '@fontsource/ibm-plex-mono/500.css';
   ```
+
+### Dark mode state (`useThemePreference`)
+
+Don't hand-roll the `.dark`-class toggling — install the shared hook:
+
+```sh
+npx shadcn add @nebari/use-theme-preference
+```
+
+It installs two files under your hooks alias:
+
+- `use-theme-preference` — `useThemePreference()` persists a
+  `'light' | 'dark' | 'system'` preference in `localStorage`, follows the OS
+  (`prefers-color-scheme`) while in `system` mode, and toggles the `.dark`
+  class on `<html>`. Returns `{ themeMode, isDarkMode, setThemeMode }`. Also
+  exports `THEME_MODES`, `ThemeMode`, `isThemeMode`, and
+  `themeBootstrapScript`. SSR-safe, and storage failures (private browsing)
+  fall back to in-memory state.
+- `theme-provider` — `ThemeProvider` / `useTheme` for sharing **one** hook
+  instance app-wide. Mount the hook exactly once; multiple instances would
+  compete over the `<html>` class.
+
+```tsx
+// App root — mount once
+import { ThemeProvider } from '@/hooks/theme-provider';
+
+<ThemeProvider>
+  <App />
+</ThemeProvider>
+
+// Anywhere below it
+import { useTheme } from '@/hooks/theme-provider';
+
+function ThemeToggle() {
+  const { themeMode, isDarkMode, setThemeMode } = useTheme();
+  return <Button onClick={() => setThemeMode(isDarkMode ? 'light' : 'dark')}>…</Button>;
+}
+```
+
+- **Storage key:** defaults to `nebari:themeMode`. An app that already
+  persists a preference must pass its existing key so users keep it:
+  `<ThemeProvider storageKey="nebari-chat:themeMode">` (or
+  `useThemePreference({ storageKey: '…' })`).
+
+- **Flash prevention:** the saved theme is applied from a React effect, so a
+  dark-preference user sees a light flash while the bundle loads — unless the
+  class is set pre-paint. `themeBootstrapScript(storageKey?)` is the single
+  source of truth for that snippet: it resolves `dark` exactly like the hook,
+  from the same storage key and default. Paste its output into a `<script>`
+  at the top of `<head>` in `index.html` (or inject it from your HTML
+  template/SSR layer). For the default key it emits:
+
+  ```html
+  <script>
+    (function () {
+      try {
+        var mode = localStorage.getItem("nebari:themeMode");
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var isDark = mode === 'dark' || (mode !== 'light' && prefersDark);
+        document.documentElement.classList.toggle('dark', isDark);
+      } catch (e) {}
+    })();
+  </script>
+  ```
+
+  If you use a non-default storage key, regenerate the snippet with
+  `themeBootstrapScript('your:key')` instead of editing it by hand.
 
 ## Motion
 
