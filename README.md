@@ -1,11 +1,15 @@
-<!-- <img alt="Nebari horizontal logo mark - black text" src="./logo-mark/horizontal/Nebari-Logo-Horizontal-Lockup.svg#gh-light-mode-only" height="150" />
-
-<img alt="Nebari horizontal logo mark - white text" src="./logo-mark/horizontal/Nebari-Logo-Horizontal-Lockup-White-text.svg#gh-dark-mode-only" height="150" /> -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./logo-mark/horizontal/Nebari-Logo-Horizontal-Lockup-White-text.svg">
+  <img alt="Nebari horizontal logo mark" src="./logo-mark/horizontal/Nebari-Logo-Horizontal-Lockup.svg" height="150">
+</picture>
 
 # Nebari design
 
 🎨 This repository is a [shadcn](https://ui.shadcn.com/) component registry styled
 with the Nebari brand, and the home of the Nebari project's design assets.
+
+Browse every component, with docs and live examples, in the deployed Storybook:
+<https://nebari-dev.github.io/nebari-design/>.
 
 ## Component registry
 
@@ -37,6 +41,28 @@ For example, to install the shared `cn()` utility and the Nebari theme tokens:
 npx shadcn add @nebari/utils
 npx shadcn add @nebari/theme
 ```
+
+Installing a component automatically pulls in its registry dependencies — adding
+`@nebari/button` also installs `@nebari/utils`, `@nebari/spinner`, and
+`@nebari/theme` if they aren't present yet.
+
+### What's in the registry
+
+The manifest in [`registry.json`](./registry.json) is the source of truth for
+installable items; each one is documented in
+[Storybook](https://nebari-dev.github.io/nebari-design/). The catalog currently
+covers:
+
+- **Foundations** — `utils` (the `cn()` helper), `theme` (brand color tokens and
+  radius for light and dark modes), and `claude-skill` (see below).
+- **Hooks** — `use-theme-preference` (a hook + `ThemeProvider` that persists a
+  light/dark/system preference and follows the OS).
+- **Forms & inputs** — `button`, `button-group`, `input`, `textarea`, `label`,
+  `field`, `checkbox`, `radio-group`, `switch`, `slider`, `select`.
+- **Overlays & menus** — `dialog`, `drawer`, `dropdown-menu`, `tooltip`.
+- **Navigation** — `navigation-menu`, `breadcrumb`, `tabs`.
+- **Feedback & display** — `alert`, `badge`, `card`, `table`, `code-block`,
+  `spinner`.
 
 ### Fonts
 
@@ -78,24 +104,34 @@ flow as the components themselves.
 
 ### Registry layout
 
-| Path                          | Purpose                                                              |
-| ----------------------------- | ------------------------------------------------------------------- |
-| `registry.json`               | Registry manifest — the source of truth for installable items.      |
-| `registry/nebari/ui/`         | UI components (`registry:ui`).                                       |
-| `registry/nebari/lib/`        | Shared library code, including the `cn()` helper (`registry:lib`).   |
-| `registry/nebari/globals.css` | Tailwind v4 `@theme` token mapping.                                  |
-| `registry/nebari/skills/`     | Consumer-facing Claude Code skills (`registry:file`).               |
-| `public/r/`                   | Built, installable JSON artifacts produced by `build:registry`.     |
+| Path                          | Purpose                                                            |
+| ----------------------------- | ------------------------------------------------------------------ |
+| `registry.json`               | Registry manifest — the source of truth for installable items.     |
+| `registry/nebari/ui/`         | UI components (`registry:ui`).                                     |
+| `registry/nebari/hooks/`      | Shared non-visual logic, e.g. theme state (`registry:hook`).       |
+| `registry/nebari/lib/`        | Shared library code, including the `cn()` helper (`registry:lib`). |
+| `registry/nebari/globals.css` | Tailwind v4 `@theme` token mapping.                                |
+| `registry/nebari/skills/`     | Consumer-facing Claude Code skills (`registry:file`).              |
+| `public/r/`                   | Built, installable JSON artifacts produced by `build:registry`.    |
 
-### Authoring components
+### Contributing a component
 
 This repo ships a [Claude Code skill](https://docs.claude.com/en/docs/claude-code/skills)
 at `.claude/skills/nebari-component/` that encodes the house recipe for adding a
 component to the registry — the component file pattern (`cva` variants,
 `data-slot` attributes, `cn()` merging, Base UI `render`-prop composition), the
-`registry.json` entry shape, story and test templates, and the verification gate.
-Any contributor using Claude Code gets it automatically; invoke it with
+`registry.json` entry shape, story and test templates, and the verification
+gate. Any contributor using Claude Code gets it automatically; invoke it with
 `/nebari-component` or just ask to "add a `<X>` component to the registry".
+
+Every component change must pass the verification gate before it's done:
+
+```sh
+bun run build:registry   # registry.json is valid and the item builds into public/r
+bun run check            # biome lint + format (use check:fix to auto-fix)
+bunx tsc --noEmit        # types pass
+bun run test             # unit tests pass
+```
 
 ### Design-to-code with Figma
 
@@ -115,8 +151,9 @@ and [Tailwind CSS v4](https://tailwindcss.com/). The `@/*` path alias resolves t
 `registry/nebari`.
 
 ```sh
-bun install          # install dependencies
+bun install              # install dependencies
 bun run build:registry   # build the registry into public/r
+bun run check            # biome lint + format checks (check:fix to auto-fix)
 ```
 
 ### Storybook
@@ -199,20 +236,6 @@ You can find the assets in the following locations:
 - [Nebari horizontal logo mark](./logo-mark/horizontal/)
 - [Nebari stacked logo mark](./logo-mark/stacked/)
 - [Nebari logo mark with colored backgrounds](./logo-mark/colored-background/)
-
-## Nebari brand
-
-The Nebari brand uses the following primary colors:
-
-- Yellow: #EAB54E
-- Green: #20AAA1
-- Purple: #BA18DA
-- Black: #0F1015
-
-And, the following fonts:
-
-- [Atkinson Hyperlegible](https://fonts.google.com/specimen/Atkinson+Hyperlegible)
-- [Poppins](https://fonts.google.com/specimen/Poppins)
 
 ## Software used
 
