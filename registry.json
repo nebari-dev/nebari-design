@@ -198,6 +198,29 @@
       ]
     },
     {
+      "name": "data-table",
+      "type": "registry:ui",
+      "title": "Data Table",
+      "description": "Reusable TanStack Table with sorting, filtering, row selection, column visibility, pagination, and complete empty, loading, and error states.",
+      "dependencies": ["@tanstack/react-table", "lucide-react"],
+      "registryDependencies": [
+        "@nebari/button",
+        "@nebari/checkbox",
+        "@nebari/dropdown-menu",
+        "@nebari/input",
+        "@nebari/select",
+        "@nebari/table",
+        "@nebari/theme",
+        "@nebari/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/nebari/ui/data-table.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "alert",
       "type": "registry:ui",
       "title": "Alert",
