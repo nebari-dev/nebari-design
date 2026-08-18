@@ -188,21 +188,17 @@ function SidebarFrame({
 function BrandHeader({ subtitle = 'Enterprise' }: { subtitle?: string }) {
   return (
     <SidebarHeader>
-      <SidebarMenu className="w-full">
-        <SidebarMenuItem>
-          <SidebarMenuButton size="account" tooltip="Nebari">
-            <span className="inline-flex size-8 min-w-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-              <Ship className="size-4" />
-            </span>
-            <span className="min-w-0 flex-1">
-              <SidebarMenuLabel className="block text-sm leading-5 font-medium">
-                Nebari
-              </SidebarMenuLabel>
-              <SidebarMenuDescription>{subtitle}</SidebarMenuDescription>
-            </span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
+      <div className="flex h-12 w-full items-center gap-2 px-2 py-2">
+        <span className="inline-flex size-8 min-w-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+          <Ship className="size-4" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <SidebarMenuLabel className="block text-sm leading-5 font-medium">
+            Nebari
+          </SidebarMenuLabel>
+          <SidebarMenuDescription>{subtitle}</SidebarMenuDescription>
+        </span>
+      </div>
     </SidebarHeader>
   );
 }
@@ -283,7 +279,7 @@ export const Default: Story = {
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const sidebar = canvas.getByRole('complementary', {
+    const sidebar = canvas.getByRole('navigation', {
       name: 'Playground sidebar',
     });
     const sidebarLeft = sidebar.getBoundingClientRect().x;
@@ -312,12 +308,7 @@ export const AsLinks: Story = {
               <SidebarMenuItem key={item.label}>
                 <SidebarMenuButton
                   active={index === 0}
-                  render={
-                    <a
-                      aria-current={index === 0 ? 'page' : undefined}
-                      href={`/${item.label.toLowerCase()}`}
-                    />
-                  }
+                  render={<a href={`/${item.label.toLowerCase()}`} />}
                   tooltip={item.label}
                 >
                   <item.icon className="size-4 shrink-0" />
@@ -505,7 +496,7 @@ export const CollapsedIconOnly: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const page = within(canvasElement.ownerDocument.body);
-    const sidebar = canvas.getByRole('complementary', {
+    const sidebar = canvas.getByRole('navigation', {
       name: 'Collapsed sidebar',
     });
     const sidebarLeft = sidebar.getBoundingClientRect().x;

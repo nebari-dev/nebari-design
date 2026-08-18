@@ -106,14 +106,14 @@ const sidebarVariants = cva(
   },
 );
 
-type SidebarProps = ComponentProps<'aside'> &
+type SidebarProps = ComponentProps<'nav'> &
   VariantProps<typeof sidebarVariants>;
 
 function Sidebar({ className, variant, ...props }: SidebarProps) {
   const { state } = useSidebar();
 
   return (
-    <aside
+    <nav
       className={cn(sidebarVariants({ variant }), className)}
       data-slot="sidebar"
       data-state={state}
@@ -281,6 +281,7 @@ function SidebarMenuButton({
     render,
     ref,
     props: {
+      'aria-current': active ? 'page' : undefined,
       className: cn(sidebarMenuButtonVariants({ size, variant }), className),
       'data-active': active || undefined,
       'data-size': size ?? 'default',

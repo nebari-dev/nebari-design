@@ -43,7 +43,7 @@ function SidebarHarness({
       defaultCollapsed={defaultCollapsed}
       onCollapsedChange={onCollapsedChange}
     >
-      <Sidebar data-testid="sidebar-root" variant="inset">
+      <Sidebar aria-label="Main" data-testid="sidebar-root" variant="inset">
         <SidebarHeader>
           <SidebarTrigger />
         </SidebarHeader>
@@ -128,7 +128,17 @@ describe('Sidebar', () => {
     expect(button).toHaveAttribute('data-variant', 'ghost');
     expect(button).toHaveAttribute('data-size', 'account');
     expect(button).toHaveAttribute('data-active', 'true');
+    expect(button).toHaveAttribute('aria-current', 'page');
     expect(button).toHaveClass('data-[active=true]:font-semibold');
+  });
+
+  it('renders the rail as a navigation landmark', () => {
+    render(<SidebarHarness />);
+
+    expect(screen.getByRole('navigation', { name: 'Main' })).toHaveAttribute(
+      'data-slot',
+      'sidebar',
+    );
   });
 
   it('shows menu button tooltips only while collapsed', async () => {
@@ -151,6 +161,7 @@ describe('Sidebar', () => {
     expect(button).toHaveAttribute('data-variant', 'default');
     expect(button).toHaveAttribute('data-size', 'default');
     expect(button).not.toHaveAttribute('data-active');
+    expect(button).not.toHaveAttribute('aria-current');
   });
 
   it('composes the menu button with the render prop', () => {
