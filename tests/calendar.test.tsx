@@ -21,6 +21,10 @@ describe('Calendar', () => {
       'data-slot',
       'calendar-grid',
     );
+    expect(screen.getByText('July 2026')).toHaveAttribute(
+      'aria-live',
+      'polite',
+    );
     expect(screen.getAllByRole('columnheader')).toHaveLength(7);
     expect(screen.getAllByRole('gridcell')).toHaveLength(42);
 
@@ -129,7 +133,33 @@ describe('Calendar', () => {
     ).toHaveFocus();
 
     await user.keyboard('{PageDown}');
-    expect(screen.getByText('August 2026')).toBeInTheDocument();
+    expect(screen.getByText('August 2026')).toHaveAttribute(
+      'aria-live',
+      'polite',
+    );
+  });
+
+  it('skips disabled days when moving focus with arrow keys', async () => {
+    const user = userEvent.setup();
+    render(
+      <Calendar
+        defaultMonth={july2026}
+        disabledDate={(date) => date.getDate() === 11}
+        selected={july10}
+        today={july6}
+      />,
+    );
+
+    screen.getByRole('button', { name: 'Friday, July 10, 2026' }).focus();
+
+    await user.keyboard('{ArrowRight}');
+
+    expect(
+      screen.getByRole('button', { name: 'Saturday, July 11, 2026' }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole('button', { name: 'Sunday, July 12, 2026' }),
+    ).toHaveFocus();
   });
 
   it('extends ranges with Shift and arrow keys', async () => {
@@ -275,5 +305,6 @@ describe('Calendar', () => {
       'range-end',
     );
     expect(dayVariants({ state: 'today' })).toContain('border-primary');
+    expect(dayVariants({ state: 'disabled' })).not.toContain('opacity-50');
   });
 });

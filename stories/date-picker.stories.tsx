@@ -1,14 +1,21 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
+import {
+  addDays,
+  formatDate,
+  formatSegmentDate,
+  startOfMonth,
+} from '@/lib/date';
 import { DatePicker } from '@/ui/date-picker';
 
-const july2026 = new Date(2026, 6, 1);
-const july6 = new Date(2026, 6, 6);
-const july10 = new Date(2026, 6, 10);
-const july15 = new Date(2026, 6, 15);
+const storyToday = new Date();
+const storyMonth = startOfMonth(storyToday);
+const storyRangeEnd = addDays(storyToday, 9);
+const storySegmentDigits = formatSegmentDate(storyToday);
 
-const focusClassName =
-  '[&_[data-slot=date-picker-trigger]]:border-ring [&_[data-slot=date-picker-trigger]]:ring-2 [&_[data-slot=date-picker-trigger]]:ring-ring';
+function getSegmentInputValue(digits: string) {
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+}
 
 const meta = {
   title: 'Components/Date Picker',
@@ -23,11 +30,11 @@ const meta = {
     },
   },
   args: {
-    defaultMonth: july2026,
+    defaultMonth: storyMonth,
     defaultTime: '2:30 PM',
     disabled: false,
     label: 'Date',
-    today: july6,
+    today: storyToday,
     type: 'single',
   },
   argTypes: {
@@ -90,8 +97,7 @@ const meta = {
     },
     today: {
       control: false,
-      description:
-        'Date highlighted as today. Seeded in stories so examples stay deterministic.',
+      description: 'Date highlighted as today.',
     },
     description: {
       control: false,
@@ -144,98 +150,12 @@ export const Default: Story = {
     await expect(dialog).toBeVisible();
 
     await userEvent.click(
-      page.getByRole('button', { name: 'Friday, July 10, 2026' }),
+      page.getByRole('button', { name: formatDate(storyToday, 'dayLabel') }),
     );
 
     await waitFor(() => {
-      expect(trigger).toHaveTextContent('July 10, 2026');
+      expect(trigger).toHaveTextContent(formatDate(storyToday, 'long'));
     });
-  },
-};
-
-export const TypeStateMatrix: Story = {
-  parameters: {
-    controls: { include: [] },
-    docs: {
-      description: {
-        story:
-          'Each picker mode shown across empty, focused, filled, and disabled states.',
-      },
-    },
-  },
-  render: (_args) => {
-    const rows = [
-      {
-        label: 'Single',
-        type: 'single',
-        filled: { defaultValue: july10 },
-      },
-      {
-        label: 'Range',
-        type: 'range',
-        filled: { defaultRange: { from: july6, to: july15 } },
-      },
-      {
-        label: 'Date and time',
-        type: 'date-time',
-        filled: { defaultTime: '2:30 PM', defaultValue: july10 },
-      },
-      {
-        label: 'Segmented',
-        type: 'segmented',
-        filled: { defaultValue: july10 },
-      },
-    ] as const;
-
-    return (
-      <div className="grid gap-6">
-        <div className="grid grid-cols-[7rem_repeat(4,18rem)] gap-4 text-muted-foreground text-sm">
-          <span />
-          <span>Default</span>
-          <span>Focus</span>
-          <span>Filled</span>
-          <span>Disabled</span>
-        </div>
-        {rows.map((row) => (
-          <div
-            className="grid grid-cols-[7rem_repeat(4,18rem)] items-start gap-4"
-            key={row.type}
-          >
-            <span className="pt-7 font-medium text-muted-foreground text-sm">
-              {row.label}
-            </span>
-            <DatePicker
-              defaultMonth={july2026}
-              label="Label"
-              today={july6}
-              type={row.type}
-            />
-            <DatePicker
-              className={focusClassName}
-              defaultMonth={july2026}
-              label="Label"
-              today={july6}
-              type={row.type}
-              {...row.filled}
-            />
-            <DatePicker
-              defaultMonth={july2026}
-              label="Label"
-              today={july6}
-              type={row.type}
-              {...row.filled}
-            />
-            <DatePicker
-              defaultMonth={july2026}
-              disabled
-              label="Label"
-              today={july6}
-              type={row.type}
-            />
-          </div>
-        ))}
-      </div>
-    );
   },
 };
 
@@ -252,27 +172,27 @@ export const Examples: Story = {
   render: (_args) => (
     <div className="grid grid-cols-3 items-start gap-12">
       <DatePicker
-        defaultMonth={july2026}
+        defaultMonth={storyMonth}
         defaultOpen
-        defaultValue={july10}
+        defaultValue={storyToday}
         label="Single date"
-        today={july6}
+        today={storyToday}
       />
       <DatePicker
-        defaultMonth={july2026}
+        defaultMonth={storyMonth}
         defaultOpen
-        defaultRange={{ from: july6, to: july15 }}
+        defaultRange={{ from: storyToday, to: storyRangeEnd }}
         label="Date range"
-        today={july6}
+        today={storyToday}
         type="range"
       />
       <DatePicker
-        defaultMonth={july2026}
+        defaultMonth={storyMonth}
         defaultOpen
         defaultTime="2:30 PM"
-        defaultValue={july10}
+        defaultValue={storyToday}
         label="Date and time"
-        today={july6}
+        today={storyToday}
         type="date-time"
       />
     </div>
@@ -296,16 +216,47 @@ export const SegmentedTyping: Story = {
   render: (args) => <DatePicker {...args} />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const trigger = canvas.getByRole('button', {
-      name: /Segmented date.*Month MM active.*Day DD.*Year YYYY/,
+    const input = canvas.getByRole('textbox', {
+      name: 'Segmented date',
     });
 
-    trigger.focus();
-    await userEvent.keyboard('07102026');
+    input.focus();
+    await userEvent.keyboard(storySegmentDigits);
 
-    await expect(trigger).toHaveTextContent('07/10/2026');
-    await expect(trigger).toHaveAccessibleName(
-      /Segmented date.*Month 07.*Day 10.*Year 2026 active/,
+    await expect(input).toHaveValue(getSegmentInputValue(storySegmentDigits));
+    await expect(input).toHaveAccessibleDescription('Editing year segment.');
+  },
+};
+
+export const SegmentedInvalid: Story = {
+  args: {
+    label: 'Segmented date',
+    type: 'segmented',
+  },
+  parameters: {
+    controls: { include: [] },
+    docs: {
+      description: {
+        story:
+          'Invalid segmented entry keeps the typed value visible and marks the field invalid.',
+      },
+    },
+  },
+  render: (args) => <DatePicker {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole('textbox', {
+      name: 'Segmented date',
+    });
+
+    input.focus();
+    await userEvent.keyboard('99992026');
+
+    await expect(input).toHaveValue('99/99/2026');
+    await expect(input).toHaveAttribute('aria-invalid', 'true');
+    await expect(canvas.getByText('Enter a valid date.')).toBeInTheDocument();
+    await expect(input).toHaveAccessibleDescription(
+      'Editing year segment. Enter a valid date.',
     );
   },
 };

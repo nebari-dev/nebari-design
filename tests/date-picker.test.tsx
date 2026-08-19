@@ -223,22 +223,59 @@ describe('DatePicker', () => {
       />,
     );
 
-    const trigger = screen.getByRole('button', {
-      name: /Segmented.*Month MM active.*Day DD.*Year YYYY/,
+    const input = screen.getByRole('textbox', {
+      name: 'Segmented',
     });
-    await user.click(trigger);
+    const trigger = document.querySelector('[data-slot="date-picker-trigger"]');
+
+    expect(input).toHaveAttribute('inputmode', 'numeric');
+    expect(input).toHaveAccessibleDescription('Editing month segment.');
+    expect(trigger?.querySelector('svg')).toBeNull();
+
+    await user.click(input);
     await user.keyboard('07102026');
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    expect(trigger).toHaveTextContent('07/10/2026');
-    expect(trigger).toHaveAccessibleName(
-      /Segmented.*Month 07.*Day 10.*Year 2026 active/,
-    );
+    expect(input).toHaveValue('07/10/2026');
+    expect(input).toHaveAccessibleName('Segmented');
+    expect(input).toHaveAccessibleDescription('Editing year segment.');
     expect(onValueChange).toHaveBeenLastCalledWith(july10);
     expect(document.querySelector('[data-segment="year"]')).toHaveAttribute(
       'data-active',
       'true',
     );
+  });
+
+  it('marks invalid segmented date entry without changing the date', async () => {
+    const onValueChange = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <DatePicker
+        defaultMonth={july2026}
+        defaultValue={july10}
+        label="Segmented"
+        onValueChange={onValueChange}
+        today={july6}
+        type="segmented"
+      />,
+    );
+
+    const input = screen.getByRole('textbox', {
+      name: 'Segmented',
+    });
+    await user.click(input);
+    await user.keyboard('99992026');
+
+    expect(input).toHaveValue('99/99/2026');
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    expect(input).toHaveAccessibleDescription(
+      'Editing year segment. Enter a valid date.',
+    );
+    expect(screen.getByText('Enter a valid date.')).toBeInTheDocument();
+    expect(
+      document.querySelector('[data-slot="date-picker-trigger"]'),
+    ).toHaveAttribute('data-invalid', 'true');
+    expect(onValueChange).not.toHaveBeenCalled();
   });
 
   it('clamps segmented month and year adjustments to valid dates', async () => {
@@ -255,13 +292,13 @@ describe('DatePicker', () => {
       />,
     );
 
-    let trigger = screen.getByRole('button', {
-      name: /Segmented.*Month 01 active.*Day 31.*Year 2026/,
+    let input = screen.getByRole('textbox', {
+      name: 'Segmented',
     });
-    await user.click(trigger);
+    await user.click(input);
     await user.keyboard('{ArrowUp}');
 
-    expect(trigger).toHaveTextContent('02/28/2026');
+    expect(input).toHaveValue('02/28/2026');
     expect(onValueChange).toHaveBeenLastCalledWith(february28);
 
     view.unmount();
@@ -278,13 +315,13 @@ describe('DatePicker', () => {
       />,
     );
 
-    trigger = screen.getByRole('button', {
-      name: /Segmented.*Month 02 active.*Day 29.*Year 2024/,
+    input = screen.getByRole('textbox', {
+      name: 'Segmented',
     });
-    await user.click(trigger);
+    await user.click(input);
     await user.keyboard('{ArrowRight}{ArrowRight}{ArrowUp}');
 
-    expect(trigger).toHaveTextContent('02/28/2025');
+    expect(input).toHaveValue('02/28/2025');
     expect(onValueChange).toHaveBeenLastCalledWith(february28NextYear);
   });
 

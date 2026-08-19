@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, within } from 'storybook/test';
+import { addDays, formatDate, startOfMonth } from '@/lib/date';
 import { Calendar, Day } from '@/ui/calendar';
 
-const july2026 = new Date(2026, 6, 1);
-const july6 = new Date(2026, 6, 6);
-const july10 = new Date(2026, 6, 10);
-const july15 = new Date(2026, 6, 15);
+const storyToday = new Date();
+const storyMonth = startOfMonth(storyToday);
+const storyRangeEnd = addDays(storyToday, 9);
 
 const meta = {
   title: 'Components/Calendar',
@@ -21,10 +21,10 @@ const meta = {
   },
   args: {
     autoFocusDay: false,
-    defaultMonth: july2026,
-    defaultSelected: july10,
+    defaultMonth: storyMonth,
+    defaultSelected: storyToday,
     mode: 'single',
-    today: july6,
+    today: storyToday,
   },
   argTypes: {
     mode: {
@@ -68,8 +68,7 @@ const meta = {
     },
     today: {
       control: false,
-      description:
-        'Date highlighted as today. Seeded in stories so examples stay deterministic.',
+      description: 'Date highlighted as today.',
     },
     disabledDate: {
       control: false,
@@ -100,16 +99,19 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const grid = canvas.getByRole('grid', { name: 'July 2026' });
+    const grid = canvas.getByRole('grid', {
+      name: formatDate(storyMonth, 'monthLabel'),
+    });
+    const selectedDay = canvas.getByRole('button', {
+      name: formatDate(storyToday, 'dayLabel'),
+    });
+    const selectedCell = selectedDay.closest('[role="gridcell"]');
 
     await expect(grid).toBeVisible();
     await expect(canvas.getAllByRole('gridcell')).toHaveLength(42);
-    await expect(canvas.getByRole('gridcell', { name: '10' })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
+    await expect(selectedCell).toHaveAttribute('aria-selected', 'true');
 
-    await userEvent.keyboard('{ArrowRight}');
+    await expect(selectedDay).toBeVisible();
   },
 };
 
@@ -124,7 +126,7 @@ export const Range: Story = {
     },
   },
   args: {
-    defaultRange: { from: july6, to: july15 },
+    defaultRange: { from: storyToday, to: storyRangeEnd },
     defaultSelected: undefined,
     mode: 'range',
   },

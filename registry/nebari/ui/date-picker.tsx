@@ -4,8 +4,10 @@ import {
   CalendarClock,
   Calendar as CalendarIcon,
   CalendarRange,
+  TriangleAlert,
 } from 'lucide-react';
 import {
+  type ChangeEvent,
   type ComponentProps,
   type KeyboardEvent,
   type ReactNode,
@@ -27,7 +29,7 @@ import {
   type CalendarDateRange,
   type CalendarRangeSelectDetails,
 } from '@/ui/calendar';
-import { Field, FieldDescription, FieldLabel } from '@/ui/field';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/ui/field';
 
 const datePickerVariants = cva('flex w-72 flex-col gap-1.5', {
   variants: {
@@ -48,7 +50,7 @@ const datePickerVariants = cva('flex w-72 flex-col gap-1.5', {
 });
 
 const datePickerTriggerVariants = cva(
-  "flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-md border border-input bg-background py-2 pr-2 pl-3 text-left text-foreground text-sm shadow-xs outline-none motion-safe:transition-[color,background-color,border-color,box-shadow] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] hover:border-border-strong focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring data-[popup-open]:border-ring data-[popup-open]:ring-2 data-[popup-open]:ring-ring disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-md border border-input bg-background py-2 pr-2 pl-3 text-left text-foreground text-sm shadow-xs outline-none motion-safe:transition-[color,background-color,border-color,box-shadow] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] hover:border-border-strong focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring has-[:focus-visible]:border-ring has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring data-[invalid]:border-destructive-foreground data-[invalid]:pr-9 data-[invalid]:ring-2 data-[invalid]:ring-destructive-foreground data-[invalid]:hover:border-destructive-foreground data-[popup-open]:border-ring data-[popup-open]:ring-2 data-[popup-open]:ring-ring data-[disabled]:cursor-not-allowed data-[disabled]:bg-muted data-[disabled]:text-muted-foreground data-[disabled]:opacity-50 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       type: {
@@ -177,6 +179,26 @@ function getSegmentValue(value: string, placeholder: string) {
   return `${value}${placeholder.slice(value.length)}`;
 }
 
+function getSegmentInputValue(digits: string) {
+  if (digits.length <= 2) {
+    return digits;
+  }
+
+  if (digits.length <= 4) {
+    return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  }
+
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+}
+
+function getSegmentDigits(value: string) {
+  return value.replace(/\D/g, '').slice(0, 8);
+}
+
+function isInvalidSegmentDate(digits: string) {
+  return digits.length === 8 && !parseSegmentDate(digits);
+}
+
 function getDisplayValue({
   placeholder,
   range,
@@ -205,81 +227,50 @@ function getDisplayValue({
   return formatDate(selectedDate, 'long');
 }
 
-function getSegmentLabel({
-  activeSegment,
-  day,
-  month,
-  year,
-}: {
-  activeSegment: DateSegment;
-  day: string;
-  month: string;
-  year: string;
-}) {
-  return [
-    `${segmentLabels.month} ${getSegmentValue(month, 'MM')}${
-      activeSegment === 'month' ? ' active' : ''
-    }`,
-    `${segmentLabels.day} ${getSegmentValue(day, 'DD')}${
-      activeSegment === 'day' ? ' active' : ''
-    }`,
-    `${segmentLabels.year} ${getSegmentValue(year, 'YYYY')}${
-      activeSegment === 'year' ? ' active' : ''
-    }`,
-  ].join(' ');
-}
-
 function SegmentedDateValue({
   activeSegment,
   digits,
-  id,
 }: {
   activeSegment: DateSegment;
   digits: string;
-  id: string;
 }) {
   const month = digits.slice(0, 2);
   const day = digits.slice(2, 4);
   const year = digits.slice(4, 8);
 
   return (
-    <>
-      <span className="sr-only" id={id}>
-        {getSegmentLabel({ activeSegment, day, month, year })}
-      </span>
+    <span
+      aria-hidden="true"
+      className="flex min-w-0 items-center gap-1"
+      data-slot="date-picker-segments"
+    >
       <span
-        aria-hidden="true"
-        className="flex min-w-0 items-center gap-1"
-        data-slot="date-picker-segments"
+        className="rounded-sm px-1 data-[active]:bg-muted data-[active]:text-foreground"
+        data-active={activeSegment === 'month' || undefined}
+        data-placeholder={month.length < 2 || undefined}
+        data-segment="month"
       >
-        <span
-          className="rounded-sm px-1 data-[active]:bg-muted data-[active]:text-foreground"
-          data-active={activeSegment === 'month' || undefined}
-          data-placeholder={month.length < 2 || undefined}
-          data-segment="month"
-        >
-          {getSegmentValue(month, 'MM')}
-        </span>
-        <span className="text-muted-foreground">/</span>
-        <span
-          className="rounded-sm px-1 data-[active]:bg-muted data-[active]:text-foreground"
-          data-active={activeSegment === 'day' || undefined}
-          data-placeholder={day.length < 2 || undefined}
-          data-segment="day"
-        >
-          {getSegmentValue(day, 'DD')}
-        </span>
-        <span className="text-muted-foreground">/</span>
-        <span
-          className="rounded-sm px-1 data-[active]:bg-muted data-[active]:text-foreground"
-          data-active={activeSegment === 'year' || undefined}
-          data-placeholder={year.length < 4 || undefined}
-          data-segment="year"
-        >
-          {getSegmentValue(year, 'YYYY')}
-        </span>
+        {getSegmentValue(month, 'MM')}
       </span>
-    </>
+      <span className="text-muted-foreground">/</span>
+      <span
+        className="rounded-sm px-1 data-[active]:bg-muted data-[active]:text-foreground"
+        data-active={activeSegment === 'day' || undefined}
+        data-placeholder={day.length < 2 || undefined}
+        data-segment="day"
+      >
+        {getSegmentValue(day, 'DD')}
+      </span>
+      <span className="text-muted-foreground">/</span>
+      <span
+        className="rounded-sm px-1 data-[active]:bg-muted data-[active]:text-foreground"
+        data-active={activeSegment === 'year' || undefined}
+        data-placeholder={year.length < 4 || undefined}
+        data-segment="year"
+      >
+        {getSegmentValue(year, 'YYYY')}
+      </span>
+    </span>
   );
 }
 
@@ -328,7 +319,9 @@ function DatePicker({
   const [activeSegment, setActiveSegment] = useState<DateSegment>('month');
   const labelId = useId();
   const triggerValueId = useId();
+  const descriptionId = useId();
   const segmentDescriptionId = useId();
+  const segmentErrorId = useId();
   const PickerIcon =
     pickerType === 'date-time'
       ? CalendarClock
@@ -352,6 +345,16 @@ function DatePicker({
   const stringTriggerLabel =
     typeof label === 'string' ? `${label}: ${displayValue}` : undefined;
   const triggerLabelledBy = `${labelId} ${triggerValueId}`;
+  const segmentInputValue = getSegmentInputValue(segmentDigits);
+  const segmentInvalid =
+    pickerType === 'segmented' && isInvalidSegmentDate(segmentDigits);
+  const segmentDescribedBy = [
+    segmentDescriptionId,
+    description ? descriptionId : undefined,
+    segmentInvalid ? segmentErrorId : undefined,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   useEffect(() => {
     setSegmentDigits(formatSegmentDate(selectedDate));
@@ -419,11 +422,13 @@ function DatePicker({
   }
 
   function updateSegmentDigits(nextDigits: string) {
-    setSegmentDigits(nextDigits);
-    setActiveSegment(segmentFromLength(nextDigits.length));
+    const digits = nextDigits.slice(0, 8);
 
-    const parsedDate = parseSegmentDate(nextDigits);
-    if (parsedDate || nextDigits.length === 0) {
+    setSegmentDigits(digits);
+    setActiveSegment(segmentFromLength(digits.length));
+
+    const parsedDate = parseSegmentDate(digits);
+    if (parsedDate || digits.length === 0) {
       updateDate(parsedDate);
     }
   }
@@ -443,7 +448,11 @@ function DatePicker({
     updateDate(startOfDay(nextDate));
   }
 
-  function handleSegmentKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
+  function handleSegmentInputChange(event: ChangeEvent<HTMLInputElement>) {
+    updateSegmentDigits(getSegmentDigits(event.currentTarget.value));
+  }
+
+  function handleSegmentKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (pickerType !== 'segmented') {
       return;
     }
@@ -491,40 +500,62 @@ function DatePicker({
       data-slot="date-picker"
       data-variant={pickerType}
       disabled={disabled}
+      invalid={segmentInvalid}
       {...props}
     >
       <FieldLabel
         className={disabled ? 'data-[disabled]:opacity-100' : undefined}
+        htmlFor={pickerType === 'segmented' ? triggerValueId : undefined}
         id={labelId}
       >
         {label}
       </FieldLabel>
       {pickerType === 'segmented' ? (
         <>
-          <button
-            aria-describedby={segmentDescriptionId}
-            aria-labelledby={triggerLabelledBy}
+          <div
             className={cn(
               datePickerTriggerVariants({ type: pickerType, size }),
+              'relative cursor-text',
               !hasValue && 'text-muted-foreground',
             )}
+            data-disabled={disabled || undefined}
             data-filled={hasValue || undefined}
+            data-invalid={segmentInvalid || undefined}
             data-size={size ?? 'default'}
             data-slot="date-picker-trigger"
             data-variant={pickerType}
-            disabled={disabled}
-            onKeyDown={handleSegmentKeyDown}
-            type="button"
           >
             <SegmentedDateValue
               activeSegment={activeSegment}
               digits={segmentDigits}
-              id={triggerValueId}
             />
-            <PickerIcon aria-hidden="true" className="text-muted-foreground" />
-          </button>
+            <input
+              aria-describedby={segmentDescribedBy}
+              aria-invalid={segmentInvalid || undefined}
+              aria-labelledby={labelId}
+              autoComplete="off"
+              className="absolute inset-0 z-10 h-full w-full cursor-text bg-transparent px-3 py-2 text-transparent caret-transparent outline-none placeholder:text-transparent disabled:cursor-not-allowed"
+              data-invalid={segmentInvalid || undefined}
+              data-slot="date-picker-segment-input"
+              disabled={disabled}
+              id={triggerValueId}
+              inputMode="numeric"
+              onChange={handleSegmentInputChange}
+              onKeyDown={handleSegmentKeyDown}
+              pattern="[0-9]*"
+              placeholder={resolvedPlaceholder}
+              type="text"
+              value={segmentInputValue}
+            />
+            {segmentInvalid && (
+              <TriangleAlert
+                aria-hidden
+                className="pointer-events-none absolute top-1/2 right-3 size-[18px] -translate-y-1/2 text-destructive-foreground"
+              />
+            )}
+          </div>
           <span className="sr-only" id={segmentDescriptionId}>
-            {segmentLabels[activeSegment]} segment active.
+            Editing {segmentLabels[activeSegment].toLowerCase()} segment.
           </span>
         </>
       ) : (
@@ -624,7 +655,14 @@ function DatePicker({
           </PopoverPrimitive.Portal>
         </PopoverPrimitive.Root>
       )}
-      {description && <FieldDescription>{description}</FieldDescription>}
+      {description && (
+        <FieldDescription id={descriptionId}>{description}</FieldDescription>
+      )}
+      {pickerType === 'segmented' && (
+        <FieldError id={segmentErrorId} match={segmentInvalid}>
+          Enter a valid date.
+        </FieldError>
+      )}
     </Field>
   );
 }

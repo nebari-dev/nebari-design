@@ -46,7 +46,7 @@ const calendarVariants = cva(
 );
 
 const dayVariants = cva(
-  'inline-flex size-9 items-center justify-center rounded-md border border-transparent text-sm outline-none motion-safe:transition-[color,background-color,border-color,box-shadow] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50',
+  'inline-flex size-9 items-center justify-center rounded-md border border-transparent text-sm outline-none motion-safe:transition-[color,background-color,border-color,box-shadow] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed',
   {
     variants: {
       state: {
@@ -302,11 +302,12 @@ function Calendar({
   const keyboardRangeRef = useRef<CalendarDateRange | undefined>(undefined);
   const rangeAnchorRef = useRef<Date | undefined>(selectedRange.from);
   const shouldFocusDayRef = useRef(autoFocusDay);
+  const initialFocusedDate =
+    selectedDate ??
+    selectedRange.from ??
+    (isSameMonth(todayDate, visibleMonth) ? todayDate : visibleMonth);
   const [focusedDate, setFocusedDate] = useState(
-    () =>
-      selectedDate ??
-      selectedRange.from ??
-      (isSameMonth(todayDate, visibleMonth) ? todayDate : visibleMonth),
+    () => findFocusableDate(initialFocusedDate, 1) ?? initialFocusedDate,
   );
   const cells = useMemo(() => getCalendarCells(visibleMonth), [visibleMonth]);
   const weeks = useMemo(
@@ -372,8 +373,34 @@ function Calendar({
     onSelect?.(day);
   }
 
-  function moveFocus(nextDate: Date) {
-    const day = startOfDay(nextDate);
+  function isDayDisabled(date: Date) {
+    return disabledDate?.(startOfDay(date)) ?? false;
+  }
+
+  function findFocusableDate(date: Date, step: number) {
+    const day = startOfDay(date);
+
+    if (!isDayDisabled(day)) {
+      return day;
+    }
+
+    for (let index = 1; index <= 370; index += 1) {
+      const nextDay = addDays(day, step * index);
+
+      if (!isDayDisabled(nextDay)) {
+        return nextDay;
+      }
+    }
+
+    return undefined;
+  }
+
+  function moveFocus(nextDate: Date, step = 1) {
+    const day = findFocusableDate(nextDate, step);
+
+    if (!day) {
+      return;
+    }
 
     shouldFocusDayRef.current = true;
     setFocusedDate(day);
@@ -383,15 +410,16 @@ function Calendar({
     }
   }
 
-  function extendRange(nextDate: Date, anchorDate: Date) {
-    const day = startOfDay(nextDate);
-    const anchor = startOfDay(anchorDate);
+  function extendRange(nextDate: Date, anchorDate: Date, step: number) {
+    const day = findFocusableDate(nextDate, step);
 
-    moveFocus(day);
-
-    if (disabledDate?.(day)) {
+    if (!day) {
       return;
     }
+
+    const anchor = startOfDay(anchorDate);
+
+    moveFocus(day, step);
 
     const nextRange = sortRange({ from: anchor, to: day });
     keyboardRangeRef.current = nextRange;
@@ -421,17 +449,23 @@ function Calendar({
     return true;
   }
 
-  function moveOrExtendRange(nextDate: Date, date: Date, extend: boolean) {
+  function moveOrExtendRange(
+    nextDate: Date,
+    date: Date,
+    extend: boolean,
+    step: number,
+  ) {
     if (extend && calendarMode === 'range') {
       extendRange(
         nextDate,
         rangeAnchorRef.current ?? selectedRange.from ?? date,
+        step,
       );
       return;
     }
 
     keyboardRangeRef.current = undefined;
-    moveFocus(nextDate);
+    moveFocus(nextDate, step);
   }
 
   function handleDayKeyDown(
@@ -441,35 +475,35 @@ function Calendar({
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
-        moveOrExtendRange(addDays(date, 7), date, event.shiftKey);
+        moveOrExtendRange(addDays(date, 7), date, event.shiftKey, 7);
         break;
       case 'ArrowLeft':
         event.preventDefault();
-        moveOrExtendRange(addDays(date, -1), date, event.shiftKey);
+        moveOrExtendRange(addDays(date, -1), date, event.shiftKey, -1);
         break;
       case 'ArrowRight':
         event.preventDefault();
-        moveOrExtendRange(addDays(date, 1), date, event.shiftKey);
+        moveOrExtendRange(addDays(date, 1), date, event.shiftKey, 1);
         break;
       case 'ArrowUp':
         event.preventDefault();
-        moveOrExtendRange(addDays(date, -7), date, event.shiftKey);
+        moveOrExtendRange(addDays(date, -7), date, event.shiftKey, -7);
         break;
       case 'End':
         event.preventDefault();
-        moveFocus(addDays(date, 6 - date.getDay()));
+        moveFocus(addDays(date, 6 - date.getDay()), -1);
         break;
       case 'Home':
         event.preventDefault();
-        moveFocus(addDays(date, -date.getDay()));
+        moveFocus(addDays(date, -date.getDay()), 1);
         break;
       case 'PageDown':
         event.preventDefault();
-        moveFocus(addMonths(date, 1));
+        moveFocus(addMonths(date, 1), 1);
         break;
       case 'PageUp':
         event.preventDefault();
-        moveFocus(addMonths(date, -1));
+        moveFocus(addMonths(date, -1), -1);
         break;
       case ' ':
       case 'Enter':
@@ -512,6 +546,8 @@ function Calendar({
               <ChevronLeft aria-hidden="true" />
             </Button>
             <div
+              aria-atomic="true"
+              aria-live="polite"
               className="flex-1 text-center font-medium text-foreground text-xs"
               data-slot="calendar-caption"
               id={labelId}
