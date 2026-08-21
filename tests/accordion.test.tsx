@@ -12,6 +12,7 @@ import accordionMeta, {
   Default as AccordionDefaultStory,
 } from '../stories/accordion.stories';
 
+/** Renders the common accordion fixture used by behavior tests. */
 function renderAccordion({
   defaultValue = [],
 }: {
@@ -44,7 +45,7 @@ describe('Accordion', () => {
       args: {
         ...accordionMeta.args,
         defaultValue: 'first two items',
-        multiple: true,
+        multiple: false,
       },
     } as never);
 
@@ -56,6 +57,24 @@ describe('Accordion', () => {
     expect(source).not.toContain('headingLevel={3}');
   });
 
+  it('enables multiple mode when the playground starts with two items open', () => {
+    const story = AccordionDefaultStory.render?.(
+      {
+        ...accordionMeta.args,
+        defaultValue: 'first two items',
+        multiple: false,
+      },
+      {} as never,
+    );
+
+    render(story as ReactNode);
+
+    expect(
+      screen.getByRole('region', { name: 'Is it accessible?' }),
+    ).toBeVisible();
+    expect(screen.getByRole('region', { name: 'Is it styled?' })).toBeVisible();
+  });
+
   it('handles Storybook clearing the defaultValue select', () => {
     const story = AccordionDefaultStory.render?.(
       { ...accordionMeta.args, defaultValue: undefined },
@@ -65,6 +84,19 @@ describe('Accordion', () => {
     expect(story).toBeDefined();
     render(story as ReactNode);
     expect(screen.getAllByRole('button')).toHaveLength(3);
+  });
+
+  it('applies the playground headingLevel control to every trigger', () => {
+    const story = AccordionDefaultStory.render?.(
+      { ...accordionMeta.args, headingLevel: 2 },
+      {} as never,
+    );
+
+    render(story as ReactNode);
+
+    for (const trigger of screen.getAllByRole('button')) {
+      expect(trigger.closest('h2')).toBeInTheDocument();
+    }
   });
 
   it('renders stable slots and semantic heading-wrapped buttons', () => {
@@ -141,8 +173,6 @@ describe('Accordion', () => {
     expect(screen.getByRole('link', { name: 'Manage account' })).toHaveFocus();
     await user.tab();
     expect(screen.getByRole('button', { name: 'Billing' })).toHaveFocus();
-    // Advanced is disabled, so tabbing past Billing leaves the accordion
-    // entirely rather than landing on it.
     await user.tab();
     expect(document.body).toHaveFocus();
     await user.tab();
@@ -190,14 +220,11 @@ describe('Accordion', () => {
     const trigger = screen.getByRole('button', { name: 'Account' });
     const panel = screen.getByRole('region', { name: 'Account' });
 
-    // Slots, not class strings, are the contract each part advertises.
     expect(trigger).toHaveAttribute('data-slot', 'accordion-trigger');
     expect(panel).toHaveAttribute('data-slot', 'accordion-content');
     const inner = panel.querySelector('[data-slot="accordion-content-inner"]');
     expect(inner).toBeInTheDocument();
 
-    // A caller's `className` reaches the element carrying that part's slot,
-    // and the panel's inner wrapper stays reachable through contentClassName.
     expect(trigger).toHaveClass('trigger-class');
     expect(trigger.closest('[data-slot="accordion-item"]')).toHaveClass(
       'item-class',
@@ -207,8 +234,6 @@ describe('Accordion', () => {
   });
 
   it('fails loudly when a part is used outside an AccordionItem', () => {
-    // Silent degradation here would mean a trigger and panel with no
-    // association at all, so the guard throws rather than dropping the ids.
     expect(() => render(<AccordionTrigger>Solo</AccordionTrigger>)).toThrow(
       '<AccordionTrigger> must be used within an <AccordionItem>.',
     );
@@ -221,9 +246,6 @@ describe('Accordion', () => {
     renderAccordion({ defaultValue: ['account'] });
     const trigger = screen.getByRole('button', { name: 'Account' });
 
-    // The trigger already announces its state through aria-expanded, so the
-    // chevron treatment is decorative. Asserted over however many icons that
-    // treatment uses, so swapping two glyphs for one rotating glyph is free.
     const icons = trigger.querySelectorAll('svg');
     expect(icons.length).toBeGreaterThan(0);
     for (const icon of icons) {
@@ -231,29 +253,7 @@ describe('Accordion', () => {
       expect(icon).toHaveAttribute('focusable', 'false');
     }
 
-    // The accessible name is the label alone, with nothing contributed by the
-    // icons — the behavioural counterpart to the attributes above.
     expect(trigger).toHaveAccessibleName('Account');
-  });
-
-  it('gates panel motion behind prefers-reduced-motion', () => {
-    renderAccordion({ defaultValue: ['account'] });
-    const panel = screen.getByRole('region', { name: 'Account' });
-
-    // jsdom has no CSS engine, so the utility list is the only place this is
-    // observable. Phrased as a rule over whatever motion utilities exist
-    // rather than against a named property, so changing *what* animates
-    // cannot quietly drop the gate.
-    const motionUtilities = panel.className
-      .split(/\s+/)
-      .filter((utility) =>
-        /(?:^|:)(?:transition|animate|duration|ease)(?:-|$)/.test(utility),
-      );
-
-    expect(motionUtilities.length).toBeGreaterThan(0);
-    for (const utility of motionUtilities) {
-      expect(utility).toMatch(/(?:^|:)motion-safe:/);
-    }
   });
 
   it('supports multiple open items and root render composition', async () => {

@@ -1,5 +1,7 @@
 import type { Meta, StoryContext, StoryObj } from '@storybook/react-vite';
 import type { ComponentProps } from 'react';
+import { useArgs, useEffect } from 'storybook/preview-api';
+import { expect, within } from 'storybook/test';
 import {
   Accordion,
   AccordionContent,
@@ -8,9 +10,7 @@ import {
   AccordionTrigger,
 } from '@/ui/accordion';
 
-// `defaultValue` is an array of item values, which as a knob would mean editing
-// raw JSON. These labels map onto the real arrays instead, following the same
-// lookup pattern as `showSwipeHandle` in the drawer stories.
+/** Maps readable control labels to the item values expanded on first render. */
 const OPEN_ITEMS_BY_KEY = {
   none: [],
   'first item': ['item-1'],
@@ -20,21 +20,21 @@ const OPEN_ITEMS_BY_KEY = {
 
 type AccordionStoryArgs = Pick<
   ComponentProps<typeof Accordion>,
-  | 'children'
-  | 'className'
-  | 'disabled'
-  | 'hiddenUntilFound'
-  | 'keepMounted'
-  | 'multiple'
-  | 'onValueChange'
-  | 'render'
-  | 'value'
+  'className' | 'disabled' | 'multiple' | 'onValueChange' | 'value'
 > & {
   defaultValue?: keyof typeof OPEN_ITEMS_BY_KEY;
   headingLevel: AccordionHeadingLevel;
 };
 
 const STORY_WIDTH = 'w-[min(460px,calc(100vw-2rem))]';
+
+/** Returns whether the story should allow multiple open items. */
+function resolvesMultiple(
+  defaultValue: AccordionStoryArgs['defaultValue'],
+  multiple: AccordionStoryArgs['multiple'],
+) {
+  return multiple || defaultValue === 'first two items';
+}
 
 const items = [
   {
@@ -58,6 +58,7 @@ const items = [
   },
 ];
 
+/** Builds the consumer-facing source shown for the current playground state. */
 function getAccordionSource({
   defaultValue,
   disabled,
@@ -65,12 +66,13 @@ function getAccordionSource({
   multiple,
 }: AccordionStoryArgs) {
   const openItems = OPEN_ITEMS_BY_KEY[defaultValue ?? 'none'];
+  const resolvedMultiple = resolvesMultiple(defaultValue, multiple);
   const rootProps = [
     openItems.length > 0
       ? `defaultValue={[${openItems.map((value) => `'${value}'`).join(', ')}]}`
       : undefined,
     disabled ? 'disabled' : undefined,
-    multiple ? 'multiple' : undefined,
+    resolvedMultiple ? 'multiple' : undefined,
   ].filter((prop): prop is string => prop !== undefined);
   const rootOpening =
     rootProps.length > 0
@@ -103,17 +105,18 @@ function getAccordionSource({
 </Accordion>`;
 }
 
+/**
+ * Defines custom story args because the readable `defaultValue` options map to
+ * the string arrays accepted by Accordion.
+ */
 const meta = {
-  // No `component`: the `defaultValue` knob is remapped to friendly labels, so
-  // the args type intentionally diverges from Accordion's real props. The
-  // argTypes below are the props table, as in the drawer stories.
   title: 'Components/Accordion',
   parameters: {
     layout: 'centered',
     docs: {
       description: {
         component:
-          'Accordion reveals related sections of content. Base UI supplies the button, the heading, the panel region, the keyboard behavior, and the hidden-panel lifecycle; Nebari supplies the Figma-aligned presentation, the semantic heading level, the trigger/panel id association, and native `disabled` triggers that Tab skips.',
+          'Accordion organizes related content into sections that users can expand and collapse. Each trigger is a button within a configurable semantic heading and is programmatically associated with its panel. Disabled triggers are skipped during keyboard navigation.',
       },
     },
   },
@@ -126,7 +129,7 @@ const meta = {
   argTypes: {
     defaultValue: {
       description:
-        'Which items start expanded, then the accordion owns the state. Story-only shorthand: each label maps to the real `defaultValue` array of item values; clearing “Choose Option” maps back to the empty default.',
+        'Sets which items are expanded when the accordion first renders.',
       control: 'select',
       options: Object.keys(OPEN_ITEMS_BY_KEY),
       table: {
@@ -135,7 +138,8 @@ const meta = {
       },
     },
     multiple: {
-      description: 'Allows more than one item to remain expanded.',
+      description:
+        'Allows more than one item to remain expanded at the same time.',
       control: 'boolean',
       table: { defaultValue: { summary: 'false' } },
     },
@@ -147,45 +151,34 @@ const meta = {
     },
     headingLevel: {
       description:
-        'Heading level wrapping each trigger, passed through to `AccordionTrigger`. Match it to the surrounding page hierarchy so screen-reader users can skim the set.',
+        'Semantic heading level wrapping each trigger. Match it to the surrounding page hierarchy so screen-reader users can skim the set; it intentionally does not change the visual styling.',
       control: 'select',
       options: [2, 3, 4, 5, 6],
       table: { defaultValue: { summary: '3' } },
     },
-    value: {
-      description:
-        'Controlled expanded item values. Pair with `onValueChange`. Left as a docs-only row here so the playground stays interactive.',
-      control: false,
-    },
-    keepMounted: {
-      description:
-        'Keeps collapsed panels in the DOM with the native `hidden` attribute, so they are genuinely hidden (`display: none`) and out of the tab order rather than clipped to zero height. Nebari defaults this to `true` so `aria-controls` always points to a panel that exists. Pass `hiddenUntilFound` instead to use `hidden="until-found"`, letting browser page search reveal a collapsed panel.',
-      control: false,
-      table: { defaultValue: { summary: 'true' } },
-    },
-    hiddenUntilFound: {
-      description:
-        'Keeps collapsed panels searchable with `hidden="until-found"`, allowing browser page search to reveal matching content.',
-      control: false,
-      table: { defaultValue: { summary: 'false' } },
-    },
-    render: {
-      description:
-        'Base UI render-prop composition for replacing the root `<div>` while retaining accordion behavior and data attributes.',
-      control: false,
-      table: { defaultValue: { summary: '<div />' } },
-    },
-    children: {
-      description:
-        'Composed `AccordionItem` children. Documented here rather than exposed as a meaningless JSX control.',
-      control: false,
-    },
+    value: { table: { disable: true } },
     onValueChange: { table: { disable: true } },
     className: { table: { disable: true } },
   },
   decorators: [
-    // `defaultValue` is mount-only, so changing it remounts the playground.
-    (Story, { args }) => <Story key={String(args.defaultValue)} />,
+    /**
+     * Enables `multiple` when the selected default contains two items. The key
+     * remounts the story after either arg changes so the mount-only
+     * `defaultValue` is applied under the matching selection mode.
+     */
+    (Story, { args }) => {
+      const [, updateArgs] = useArgs<AccordionStoryArgs>();
+
+      useEffect(() => {
+        if (args.defaultValue === 'first two items' && !args.multiple) {
+          updateArgs({ multiple: true });
+        }
+      }, [args.defaultValue, args.multiple, updateArgs]);
+
+      return (
+        <Story key={`${String(args.defaultValue)}:${String(args.multiple)}`} />
+      );
+    },
   ],
 } satisfies Meta<AccordionStoryArgs>;
 
@@ -193,6 +186,7 @@ export default meta;
 
 type Story = StoryObj<AccordionStoryArgs>;
 
+/** Renders the shared interactive accordion used by the default story. */
 function ExampleAccordion({
   defaultValue,
   disabled,
@@ -200,17 +194,15 @@ function ExampleAccordion({
   multiple,
   onValueChange,
 }: AccordionStoryArgs) {
-  // Storybook's select reset is displayed as "Choose Option" and supplies
-  // `undefined`. Treat it like the component's real empty default instead of
-  // indexing the lookup with a missing key.
   const openItems = OPEN_ITEMS_BY_KEY[defaultValue ?? 'none'];
+  const resolvedMultiple = resolvesMultiple(defaultValue, multiple);
 
   return (
     <Accordion
       className={STORY_WIDTH}
       defaultValue={[...openItems]}
       disabled={disabled}
-      multiple={multiple}
+      multiple={resolvedMultiple}
       onValueChange={onValueChange}
     >
       {items.map((item) => (
@@ -229,8 +221,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          'The default single-open accordion. Use the controls to choose which items start open, allow multiple to stay open, disable the set, or change the heading level.',
+        story: 'An accordion with one section expanded on first render.',
       },
       source: {
         language: 'tsx',
@@ -242,6 +233,13 @@ export const Default: Story = {
     },
   },
   render: (args) => <ExampleAccordion {...args} />,
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Is it accessible?',
+    });
+
+    await expect(getComputedStyle(trigger).cursor).toBe('pointer');
+  },
 };
 
 export const Disabled: Story = {
@@ -268,6 +266,14 @@ export const Disabled: Story = {
       ))}
     </Accordion>
   ),
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Is it styled?',
+    });
+
+    await expect(trigger).toBeDisabled();
+    await expect(getComputedStyle(trigger).cursor).toBe('not-allowed');
+  },
 };
 
 export const Card: Story = {
@@ -275,8 +281,7 @@ export const Card: Story = {
     controls: { include: [] },
     docs: {
       description: {
-        story:
-          'Accordion items composed inside a bordered card surface, following the card example from the shadcn documentation and the Nebari design.',
+        story: 'Accordion items presented within a bordered card surface.',
       },
     },
   },

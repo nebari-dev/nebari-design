@@ -4,9 +4,8 @@ import { createContext, createElement, useContext, useId } from 'react';
 import { cn } from '@/lib/utils';
 
 /**
- * Root props. `orientation` is omitted: the design is a vertical stack and the
- * root hard-codes `flex-col`, so accepting `orientation="horizontal"` would
- * switch Base UI's arrow-key handling without switching the layout to match.
+ * Root props. `orientation` is omitted because the component is designed as a
+ * vertical stack; horizontal keyboard behavior would not match that layout.
  */
 type AccordionProps = Omit<AccordionPrimitive.Root.Props, 'orientation'>;
 type AccordionItemProps = AccordionPrimitive.Item.Props;
@@ -49,9 +48,8 @@ type AccordionItemContextValue = {
 
 /**
  * Reads the ids and resolved disabled state minted by {@link AccordionItem}.
- * Throws instead of degrading to `undefined` ids: a missing provider would
- * otherwise silently drop `aria-controls` and `aria-labelledby`, leaving the
- * trigger and its panel unassociated with nothing to show it.
+ * Throws when no item context exists so a trigger and panel cannot render
+ * without their required accessible association.
  */
 function useAccordionItemContext(component: string): AccordionItemContextValue {
   const context = useContext(AccordionItemContext);
@@ -101,12 +99,9 @@ function Accordion({
 /**
  * Groups one heading and its associated panel.
  *
- * Base UI generates its own trigger and panel ids, but drops `aria-controls`
- * from the trigger whenever the panel is closed. The design calls for that
- * reference at all times, so this item mints both ids and shares them with
- * {@link AccordionTrigger} and {@link AccordionContent}, which apply them to
- * both sides of the relationship. Keep the two in step: overriding only one
- * side would silently desync the association from Base UI's own ids.
+ * Generates stable ids shared by {@link AccordionTrigger} and
+ * {@link AccordionContent}, preserving their accessible association whether
+ * the panel is expanded or collapsed.
  */
 function AccordionItem({
   className,
@@ -141,9 +136,8 @@ function AccordionItem({
  * Button that toggles its panel. The button is wrapped in an `h3` by default;
  * set `headingLevel` to preserve the surrounding page's heading hierarchy.
  *
- * Base UI soft-disables its trigger with `aria-disabled`, leaving it focusable.
- * The design asks for focus to skip disabled items instead, so the trigger is
- * rendered with the native `disabled` attribute.
+ * Uses the native `disabled` attribute so disabled triggers are removed from
+ * the keyboard tab order.
  */
 function AccordionTrigger({
   children,
@@ -152,8 +146,6 @@ function AccordionTrigger({
   headingLevel = 3,
   ...props
 }: AccordionTriggerProps) {
-  // The item's disabled state already folds in the root's, so there is no need
-  // to read the root context a second time here.
   const {
     disabled: itemDisabled,
     panelId,
@@ -170,7 +162,7 @@ function AccordionTrigger({
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          'group/accordion-trigger relative flex w-full flex-1 items-start justify-between gap-2 overflow-hidden rounded-sm px-2 py-4 text-left font-medium text-sm leading-5 text-foreground outline-none underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring disabled:cursor-not-allowed disabled:no-underline',
+          'group/accordion-trigger relative flex w-full flex-1 cursor-pointer items-start justify-between gap-2 overflow-hidden rounded-sm px-2 py-4 text-left font-medium text-sm leading-5 text-foreground outline-none underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring disabled:cursor-not-allowed disabled:no-underline',
           className,
         )}
         aria-controls={panelId}
@@ -181,8 +173,6 @@ function AccordionTrigger({
         )}
         {...props}
       >
-        {/* `break-words` so a long unbroken title wraps instead of being
-            clipped by the trigger's `overflow-hidden`. */}
         <span className="min-w-0 flex-1 break-words">{children}</span>
         <ChevronDownIcon
           aria-hidden="true"
