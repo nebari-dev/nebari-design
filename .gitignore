@@ -3,6 +3,7 @@ dist/
 coverage/
 *.tsbuildinfo
 .DS_Store
+.cursor/
 
 # This is a Bun project — bun.lock is the only lockfile. Never commit an npm lockfile.
 package-lock.json

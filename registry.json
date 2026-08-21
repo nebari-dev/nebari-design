@@ -212,6 +212,28 @@
       ]
     },
     {
+      "name": "sidebar",
+      "type": "registry:ui",
+      "title": "Sidebar",
+      "description": "Collapsible app-shell sidebar whose menu button composes via Base UI's render prop into links, dropdown, select, and tooltip triggers.",
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "@nebari/utils",
+        "@nebari/theme",
+        "@nebari/tooltip"
+      ],
+      "files": [
+        {
+          "path": "registry/nebari/ui/sidebar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "badge",
       "type": "registry:ui",
       "title": "Badge",
