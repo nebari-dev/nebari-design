@@ -210,6 +210,7 @@ function WorkspaceDataTable({
             : undefined
         }
         filterColumnId="name"
+        filterLabel="Filter workspaces"
         filterPlaceholder="Filter workspaces…"
         getRowId={(workspace) => workspace.id}
         getRowLabel={(workspace) => workspace.name}

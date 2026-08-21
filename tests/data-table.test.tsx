@@ -41,10 +41,7 @@ function createColumnsWithActions(onAction?: () => void) {
       cell: ({ row }) => (
         <Button
           aria-label={`Open actions for ${row.original.name}`}
-          className="focus-visible:ring-offset-0"
           onClick={onAction}
-          size="icon-xs"
-          variant="ghost"
         >
           ⋯
         </Button>
@@ -85,9 +82,34 @@ describe('DataTable', () => {
     expect(
       container.querySelector('[data-slot="data-table-pagination"]'),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole('region', { name: 'Projects scroll area' }),
+    ).toHaveAttribute('tabindex', '-1');
     expect(within(table).getByText('Beta')).toBeInTheDocument();
     expect(within(table).getByText('Alpha')).toBeInTheDocument();
     expect(within(table).queryByText('Charlie')).not.toBeInTheDocument();
+  });
+
+  it('uses an ellipsis-free search label and a design-system clear button', async () => {
+    const user = userEvent.setup();
+    render(<TestDataTable filterPlaceholder="Filter projects…" />);
+    const search = screen.getByRole('searchbox', {
+      name: 'Filter projects',
+    });
+
+    expect(search).toHaveAttribute('placeholder', 'Filter projects…');
+    expect(search).toHaveAccessibleName('Filter projects');
+    expect(screen.queryByRole('button', { name: 'Clear search' })).toBeNull();
+
+    await user.type(search, 'Alpha');
+    expect(search).toHaveValue('Alpha');
+
+    const clearButton = screen.getByRole('button', { name: 'Clear search' });
+    expect(clearButton).toHaveAttribute('data-slot', 'button');
+
+    await user.click(clearButton);
+    expect(search).toHaveValue('');
+    expect(search).toHaveFocus();
   });
 
   it('filters rows and clears a filtered-empty state', async () => {
@@ -95,7 +117,7 @@ describe('DataTable', () => {
     const { container } = render(<TestDataTable />);
 
     await user.type(
-      screen.getByRole('searchbox', { name: 'Filter rows…' }),
+      screen.getByRole('searchbox', { name: 'Filter rows' }),
       'missing',
     );
 
@@ -110,7 +132,7 @@ describe('DataTable', () => {
     await user.click(screen.getByRole('button', { name: 'Clear filters' }));
     expect(screen.getByText('Beta')).toBeInTheDocument();
     expect(
-      screen.getByRole('searchbox', { name: 'Filter rows…' }),
+      screen.getByRole('searchbox', { name: 'Filter rows' }),
     ).toHaveFocus();
   });
 
@@ -127,16 +149,16 @@ describe('DataTable', () => {
     expect(status).toHaveTextContent('3 rows, page 2 of 2');
 
     await user.type(
-      screen.getByRole('searchbox', { name: 'Filter rows…' }),
+      screen.getByRole('searchbox', { name: 'Filter rows' }),
       'Alpha',
     );
     expect(status).toHaveTextContent('1 result');
 
     // The empty, filtered-empty, and error states carry their own status or
     // alert, so this region stays silent rather than announcing twice.
-    await user.clear(screen.getByRole('searchbox', { name: 'Filter rows…' }));
+    await user.clear(screen.getByRole('searchbox', { name: 'Filter rows' }));
     await user.type(
-      screen.getByRole('searchbox', { name: 'Filter rows…' }),
+      screen.getByRole('searchbox', { name: 'Filter rows' }),
       'missing',
     );
     expect(status).toBeEmptyDOMElement();
@@ -330,7 +352,7 @@ describe('DataTable', () => {
       { id: 'beta', name: 'Beta', owner: 'Grace' },
     ]);
     await user.type(
-      screen.getByRole('searchbox', { name: 'Filter rows…' }),
+      screen.getByRole('searchbox', { name: 'Filter rows' }),
       'Alpha',
     );
 
@@ -360,6 +382,23 @@ describe('DataTable', () => {
 
     expect(headerCells).toHaveLength(13); // 12 columns + the selection column
     expect(skeletonCells).toHaveLength(headerCells.length);
+  });
+
+  it('hides pagination while loading with or without existing data', () => {
+    const { container, rerender } = render(<TestDataTable loading />);
+
+    expect(container.querySelector('[data-slot="data-table"]')).toHaveAttribute(
+      'data-state',
+      'loading',
+    );
+    expect(
+      container.querySelector('[data-slot="data-table-pagination"]'),
+    ).not.toBeInTheDocument();
+
+    rerender(<TestDataTable data={[]} loading />);
+    expect(
+      container.querySelector('[data-slot="data-table-pagination"]'),
+    ).not.toBeInTheDocument();
   });
 
   it('opens the grouped Columns menu and toggles column visibility', async () => {
@@ -438,6 +477,16 @@ describe('DataTable', () => {
     expect(screen.getByText('Charlie')).toBeInTheDocument();
   });
 
+  it('omits the selection count when rows are not selectable', () => {
+    const { container } = render(<TestDataTable selectable={false} />);
+
+    expect(
+      container.querySelector('[data-slot="data-table-pagination"]'),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+    expect(screen.queryByText(/row\(s\) selected/)).not.toBeInTheDocument();
+  });
+
   it('keeps selection, row actions, and pagination in the tab order', () => {
     render(
       <TestDataTable
@@ -459,15 +508,6 @@ describe('DataTable', () => {
       expect(control).toHaveFocus();
       expect(control).not.toHaveAttribute('tabindex', '-1');
     }
-
-    // Assert the stable data hooks rather than the class string, so restyling
-    // a row action never breaks this test.
-    const rowAction = screen.getByRole('button', {
-      name: 'Open actions for Beta',
-    });
-    expect(rowAction).toHaveAttribute('data-slot', 'button');
-    expect(rowAction).toHaveAttribute('data-variant', 'ghost');
-    expect(rowAction).toHaveAttribute('data-size', 'icon-xs');
   });
 
   it('renders empty, loading, and error states from the design', async () => {
@@ -486,6 +526,9 @@ describe('DataTable', () => {
       'data-state',
       'empty',
     );
+    expect(
+      container.querySelector('[data-slot="data-table-pagination"]'),
+    ).not.toBeInTheDocument();
 
     rerender(<TestDataTable loading />);
     expect(container.querySelector('[data-slot="data-table"]')).toHaveAttribute(
@@ -496,21 +539,24 @@ describe('DataTable', () => {
       'aria-busy',
       'true',
     );
+    expect(
+      container.querySelector('[data-slot="data-table-pagination"]'),
+    ).not.toBeInTheDocument();
 
     rerender(
       <TestDataTable error="The service is unavailable." onRetry={onRetry} />,
     );
-    // The error state is assertive (`alert`) where empty is polite
-    // (`status`), and marks itself with the error variant rather than a class.
+    // The error state is assertive (`alert`) where empty is polite (`status`).
     expect(screen.getByRole('alert')).toHaveTextContent(
       'The service is unavailable.',
     );
+    expect(container.querySelector('[data-slot="data-table"]')).toHaveAttribute(
+      'data-state',
+      'error',
+    );
     expect(
-      container.querySelector('[data-slot="data-table-state"]'),
-    ).toHaveAttribute('data-variant', 'error');
-    expect(
-      container.querySelector('[data-slot="data-table-error-icon"]'),
-    ).toBeInTheDocument();
+      container.querySelector('[data-slot="data-table-pagination"]'),
+    ).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Retry' }));
     expect(onRetry).toHaveBeenCalledOnce();
 

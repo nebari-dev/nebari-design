@@ -30,6 +30,7 @@ import {
   RefreshCwIcon,
   SearchIcon,
   SearchXIcon,
+  XIcon,
 } from 'lucide-react';
 import { type ReactNode, useEffect, useMemo, useRef } from 'react';
 import { cn } from '@/lib/utils';
@@ -119,9 +120,11 @@ type DataTableProps<TData extends Record<string, unknown>> = {
   /** Column id the toolbar search filters. Omit to hide the search input. */
   filterColumnId?: string;
   /**
-   * Placeholder for the toolbar search input, which doubles as its accessible
-   * name because the input has no visible label.
+   * Accessible name for the toolbar search input. When omitted, it is derived
+   * from `filterPlaceholder` without a trailing ellipsis.
    */
+  filterLabel?: string;
+  /** Visible placeholder for the toolbar search input. */
   filterPlaceholder?: string;
   /** Search value the table starts with; it owns the value from then on. */
   initialFilterValue?: string;
@@ -154,7 +157,8 @@ type DataTableProps<TData extends Record<string, unknown>> = {
   selectionActions?: (selectedRows: TData[]) => ReactNode;
   /**
    * Replaces the rows with skeleton placeholders, marks the table `aria-busy`,
-   * and disables the search, selection, and pagination controls.
+   * disables the search and selection controls, and hides the pagination
+   * footer until loading finishes.
    */
   loading?: boolean;
   /**
@@ -283,6 +287,7 @@ function DataTable<TData extends Record<string, unknown>>({
   filteredEmptyDescription = 'Try a different search or clear your filters.',
   filteredEmptyTitle = 'No results found',
   filterColumnId,
+  filterLabel,
   filterPlaceholder = 'Filter rows…',
   getRowId,
   getRowLabel,
@@ -330,6 +335,10 @@ function DataTable<TData extends Record<string, unknown>>({
   });
   const filterColumn =
     filterColumnId === undefined ? undefined : table.getColumn(filterColumnId);
+  const filterValue =
+    (filterColumn?.getFilterValue() as string | undefined) ?? '';
+  const resolvedFilterLabel =
+    filterLabel ?? filterPlaceholder.replace(/(?:…|\.{3})\s*$/, '');
   const rows = table.getRowModel().rows;
   // Selection is read from the filtered model so bulk actions never receive a
   // row the active filter has hidden from the user.
@@ -436,8 +445,8 @@ function DataTable<TData extends Record<string, unknown>>({
               className="pointer-events-none absolute top-1/2 left-3 z-10 size-[18px] -translate-y-1/2 text-muted-foreground"
             />
             <Input
-              aria-label={filterPlaceholder}
-              className="h-8 pl-9"
+              aria-label={resolvedFilterLabel}
+              className="h-8 pr-9 pl-9 [&::-webkit-search-cancel-button]:hidden"
               disabled={loading}
               onChange={(event) =>
                 filterColumn.setFilterValue(event.target.value)
@@ -445,10 +454,23 @@ function DataTable<TData extends Record<string, unknown>>({
               placeholder={filterPlaceholder}
               ref={searchRef}
               type="search"
-              value={
-                (filterColumn.getFilterValue() as string | undefined) ?? ''
-              }
+              value={filterValue}
             />
+            {filterValue === '' ? null : (
+              <Button
+                aria-label="Clear search"
+                className="absolute top-1/2 right-1 z-10 -translate-y-1/2 focus-visible:ring-offset-0"
+                disabled={loading}
+                onClick={() => {
+                  filterColumn.setFilterValue('');
+                  searchRef.current?.focus();
+                }}
+                size="icon-xs"
+                variant="ghost"
+              >
+                <XIcon />
+              </Button>
+            )}
           </div>
         )}
 
@@ -511,7 +533,11 @@ function DataTable<TData extends Record<string, unknown>>({
         )}
       </div>
 
-      <Table aria-busy={loading || undefined} aria-label={ariaLabel}>
+      <Table
+        aria-busy={loading || undefined}
+        aria-label={ariaLabel}
+        scrollContainerProps={{ tabIndex: -1 }}
+      >
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow className="hover:bg-transparent" key={headerGroup.id}>
@@ -689,15 +715,17 @@ function DataTable<TData extends Record<string, unknown>>({
         </TableBody>
       </Table>
 
-      {showPagination && !error && (loading || filteredRowCount > 0) ? (
+      {showPagination && !loading && !error && pageCount > 0 ? (
         <div
           className="flex flex-wrap items-center justify-between gap-3"
           data-slot="data-table-pagination"
         >
-          <p className="flex-1 text-muted-foreground text-sm">
-            {selectedCount} of {filteredRowCount} row(s) selected.
-          </p>
-          <div className="flex flex-wrap items-center gap-6">
+          {selectable ? (
+            <p className="flex-1 text-muted-foreground text-sm">
+              {selectedCount} of {filteredRowCount} row(s) selected.
+            </p>
+          ) : null}
+          <div className="ml-auto flex flex-wrap items-center gap-6">
             <div className="flex items-center gap-2">
               <span className="font-medium text-[11px] text-muted-foreground">
                 Rows per page
