@@ -248,3 +248,7 @@ The original designs were created by the very talented [Irina Fumarel](https://i
 ## License
 
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons Licence" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/StillImage" property="dct:title" rel="dct:type">All Nebari design assets </span> by the <a xmlns:cc="http://creativecommons.org/ns#" href="https://nebari.dev" property="cc:attributionName" rel="cc:attributionURL">Nebari dev team</a> are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.<br /> Based on a work at <a xmlns:dct="http://purl.org/dc/terms/" href="https://github.com/nebari-dev/nebari-design" rel="dct:source">https://github.com/nebari-dev/nebari-design</a>.
+
+
+## Developer Reference #141
+Resolves issue #141: Fix color token drift from Figma.
