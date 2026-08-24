@@ -1,13 +1,17 @@
 // biome-ignore-all lint/a11y/noNoninteractiveTabindex: table scroll containers need keyboard access when content overflows.
 import type * as React from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 type TableProps = React.ComponentProps<'table'> & {
-  /** Accessible name for the keyboard-focusable horizontal scroll container. */
+  /** Accessible name for the horizontal scroll container. */
   scrollContainerLabel?: string;
   /** Additional classes for the horizontal scroll container. */
   scrollContainerClassName?: string;
-  /** Props forwarded to the horizontal scroll container. */
+  /**
+   * Props forwarded to the horizontal scroll container. Its `tabIndex`
+   * overrides the automatic focusability applied when the table overflows.
+   */
   scrollContainerProps?: Omit<React.ComponentProps<'section'>, 'children'>;
 };
 
@@ -34,15 +38,65 @@ function Table({
     className: scrollContainerPropsClassName,
     'aria-label': scrollContainerAriaLabel,
     'aria-labelledby': scrollContainerAriaLabelledBy,
+    ref: scrollContainerRef,
     tabIndex: scrollContainerTabIndex,
     ...resolvedScrollContainerProps
   } = scrollContainerProps ?? {};
+  const internalScrollContainerRef = useRef<HTMLElement>(null);
+  const [isHorizontallyScrollable, setIsHorizontallyScrollable] =
+    useState(false);
+  const setScrollContainerRef = useCallback(
+    (element: HTMLElement | null) => {
+      internalScrollContainerRef.current = element;
+
+      if (typeof scrollContainerRef === 'function') {
+        return scrollContainerRef(element);
+      }
+
+      if (scrollContainerRef) {
+        scrollContainerRef.current = element;
+      }
+    },
+    [scrollContainerRef],
+  );
   const resolvedScrollContainerLabel =
     scrollContainerAriaLabel ??
     scrollContainerLabel ??
     (ariaLabel === undefined
       ? 'Table scroll area'
       : `${ariaLabel} scroll area`);
+
+  useEffect(() => {
+    const scrollContainer = internalScrollContainerRef.current;
+    if (!scrollContainer) {
+      return;
+    }
+
+    const updateScrollability = () => {
+      setIsHorizontallyScrollable(
+        scrollContainer.scrollWidth > scrollContainer.clientWidth,
+      );
+    };
+
+    updateScrollability();
+    window.addEventListener('resize', updateScrollability);
+
+    const resizeObserver =
+      typeof ResizeObserver === 'undefined'
+        ? undefined
+        : new ResizeObserver(updateScrollability);
+    resizeObserver?.observe(scrollContainer);
+
+    const table = scrollContainer.querySelector('table');
+    if (table) {
+      resizeObserver?.observe(table);
+    }
+
+    return () => {
+      window.removeEventListener('resize', updateScrollability);
+      resizeObserver?.disconnect();
+    };
+  }, []);
 
   return (
     <section
@@ -54,7 +108,10 @@ function Table({
       }
       aria-labelledby={scrollContainerAriaLabelledBy}
       data-slot="table-container"
-      tabIndex={scrollContainerTabIndex ?? 0}
+      ref={setScrollContainerRef}
+      tabIndex={
+        scrollContainerTabIndex ?? (isHorizontallyScrollable ? 0 : undefined)
+      }
       className={cn(
         'relative w-full overflow-x-auto rounded-md border border-border bg-card outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         scrollContainerClassName,

@@ -84,7 +84,7 @@ describe('DataTable', () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole('region', { name: 'Projects scroll area' }),
-    ).toHaveAttribute('tabindex', '-1');
+    ).not.toHaveAttribute('tabindex');
     expect(within(table).getByText('Beta')).toBeInTheDocument();
     expect(within(table).getByText('Alpha')).toBeInTheDocument();
     expect(within(table).queryByText('Charlie')).not.toBeInTheDocument();

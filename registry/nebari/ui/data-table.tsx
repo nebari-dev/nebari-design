@@ -533,11 +533,7 @@ function DataTable<TData extends Record<string, unknown>>({
         )}
       </div>
 
-      <Table
-        aria-busy={loading || undefined}
-        aria-label={ariaLabel}
-        scrollContainerProps={{ tabIndex: -1 }}
-      >
+      <Table aria-busy={loading || undefined} aria-label={ariaLabel}>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow className="hover:bg-transparent" key={headerGroup.id}>

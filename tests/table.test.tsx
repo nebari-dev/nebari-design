@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -88,7 +88,7 @@ describe('Table', () => {
     expect(table).toHaveAttribute('data-slot', 'table');
     expect(table).toHaveClass('bg-card');
     expect(scrollContainer).toHaveAttribute('data-slot', 'table-container');
-    expect(scrollContainer).toHaveAttribute('tabindex', '0');
+    expect(scrollContainer).not.toHaveAttribute('tabindex');
     expect(scrollContainer).toHaveClass(
       'bg-card',
       'overflow-x-auto',
@@ -108,6 +108,39 @@ describe('Table', () => {
       'data-slot',
       'table-caption',
     );
+  });
+
+  it('enters the tab order only while its content overflows', () => {
+    render(<TestTable />);
+    const scrollContainer = screen.getByRole('region', {
+      name: 'Environments scroll area',
+    });
+
+    Object.defineProperties(scrollContainer, {
+      clientWidth: { configurable: true, value: 320 },
+      scrollWidth: { configurable: true, value: 640 },
+    });
+    fireEvent.resize(window);
+
+    expect(scrollContainer).toHaveAttribute('tabindex', '0');
+
+    Object.defineProperty(scrollContainer, 'scrollWidth', {
+      configurable: true,
+      value: 320,
+    });
+    fireEvent.resize(window);
+
+    expect(scrollContainer).not.toHaveAttribute('tabindex');
+  });
+
+  it('honors an explicit scroll-container tab index', () => {
+    render(
+      <Table scrollContainerProps={{ tabIndex: -1 }}>
+        <TableBody />
+      </Table>,
+    );
+
+    expect(screen.getByRole('region')).toHaveAttribute('tabindex', '-1');
   });
 
   it('renders headers and cells with the Nebari typography', () => {
