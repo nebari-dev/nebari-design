@@ -226,6 +226,28 @@
       ]
     },
     {
+      "name": "sidebar",
+      "type": "registry:ui",
+      "title": "Sidebar",
+      "description": "Collapsible app-shell sidebar whose menu button composes via Base UI's render prop into links, dropdown, select, and tooltip triggers.",
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "@nebari/utils",
+        "@nebari/theme",
+        "@nebari/tooltip"
+      ],
+      "files": [
+        {
+          "path": "registry/nebari/ui/sidebar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "badge",
       "type": "registry:ui",
       "title": "Badge",
@@ -392,6 +414,23 @@
         {
           "path": "registry/nebari/ui/code-block.tsx",
           "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "use-theme-preference",
+      "type": "registry:hook",
+      "title": "useThemePreference",
+      "description": "Theme/dark-mode state: persists a light/dark/system preference, follows the OS in system mode, and toggles the .dark class on <html>. Ships a ThemeProvider/useTheme context wrapper and a pre-paint bootstrap script builder that eliminates the theme flash.",
+      "registryDependencies": ["@nebari/theme"],
+      "files": [
+        {
+          "path": "registry/nebari/hooks/use-theme-preference.ts",
+          "type": "registry:hook"
+        },
+        {
+          "path": "registry/nebari/hooks/theme-provider.tsx",
+          "type": "registry:hook"
         }
       ]
     },
