@@ -182,6 +182,15 @@ npx shadcn add @nebari/theme
   tokens, …) and consumed in components via Tailwind utilities like
   `bg-primary` / `text-muted-foreground`. **Never** hard-code brand hex values or
   add `dark:` variants — the tokens flip automatically.
+- **Surface stack.** Four distinct background layers, in stacking order:
+  `--canvas` (the page — nothing sits below it) → `--header` (app chrome: top
+  bar, sidebar, toolbars, table headers; `--sidebar` is the same layer) →
+  `--card` / `--popover` (raised surfaces; popovers share the card fill and are
+  differentiated by elevation) → `--muted` (recessed — only *inside* a card or
+  chrome: input fills, zebra rows, slider/progress tracks, disabled states).
+  Muted text sitting on `--muted` must use `text-muted-foreground-strong`, not
+  `text-muted-foreground`. `--background` is the legacy page token, kept for
+  backwards compatibility — prefer `bg-canvas` for new page shells.
 - **Light/dark:** the theme defines a `light` set on `:root` and a `dark` set;
   toggle by adding/removing the `.dark` class on an ancestor (typically `<html>`).
   Every Nebari component re-themes from the active token set with no per-component
@@ -288,7 +297,7 @@ npx shadcn add @nebari/navigation-menu @nebari/dropdown-menu @nebari/avatar @neb
   with **`pl-4`** (keeping the default `pr-3`) and the header tokens:
 
   ```tsx
-  <NavigationMenu className="h-14 justify-between border-header-border bg-header-background pl-4 text-header-foreground">
+  <NavigationMenu className="h-14 justify-between border-border bg-header pl-4 text-header-foreground">
   ```
 
 - **`MenuBarBrand`** holds the logo, left-aligned, linking home:
@@ -309,33 +318,28 @@ npx shadcn add @nebari/navigation-menu @nebari/dropdown-menu @nebari/avatar @neb
 ### Header token contract
 
 The header is styled **only** with semantic tokens — no hardcoded colors.
-`@nebari/theme` does **not** ship these; **the consuming app must define them**
-in its theme CSS, in both light and dark, plus the Tailwind `@theme` mappings
-that make `bg-header-background` etc. resolve:
+The chrome surface itself ships with `@nebari/theme`: **`--header`** /
+**`--header-foreground`** are the app-chrome layer of the surface stack
+(`--canvas` → `--header` → `--card`/`--popover` → `--muted`), so use
+`bg-header text-header-foreground` with the plain `border-border`. Only the
+interaction and status colors below are **app-defined** — declare them in your
+theme CSS in both light and dark, plus the Tailwind `@theme` mappings that make
+`bg-header-action-hover` etc. resolve:
 
 ```css
 :root {
-  --header-background: #f8f8f8;
-  --header-border: #b7b7bb;
-  --header-foreground: #262628;
   --header-action-hover: #d9d9dc;
   --notification-badge: #d00000;
   --sign-out-foreground: #d2161c;
 }
 
 .dark {
-  --header-background: var(--card);
-  --header-border: #5a5a61;
-  --header-foreground: #f8f8f8;
   --header-action-hover: #4a4a50;
   --notification-badge: #e00000;
   --sign-out-foreground: #ff6b6b;
 }
 
 @theme inline {
-  --color-header-background: var(--header-background);
-  --color-header-border: var(--header-border);
-  --color-header-foreground: var(--header-foreground);
   --color-header-action-hover: var(--header-action-hover);
   --color-notification-badge: var(--notification-badge);
   --color-sign-out-foreground: var(--sign-out-foreground);
@@ -347,7 +351,7 @@ Registry-provided vs. app-defined:
 | Token | Source |
 |---|---|
 | `--primary`, `--muted`, `--card`, `--border`, … | `@nebari/theme` (registry) |
-| `--header-background`, `--header-border`, `--header-foreground` | **app-defined** (values above) |
+| `--canvas`, `--header`, `--header-foreground` | `@nebari/theme` (registry) |
 | `--header-action-hover`, `--notification-badge`, `--sign-out-foreground` | **app-defined** (values above) |
 
 ### Notifications menu

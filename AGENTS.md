@@ -145,6 +145,16 @@ rules that are easy to get wrong:
 - **Semantic tokens only.** Style with theme tokens via Tailwind utilities
   (`bg-primary`, `text-muted-foreground`, `border-input`, `ring-ring`, plus
   `info` / `success` / `warning` / `destructive`, chart, and sidebar tokens).
+- **Surface stack.** Four distinct background layers, in stacking order:
+  `--canvas` (page) → `--header` (app chrome — top bar, sidebar, toolbars, table
+  headers; `--sidebar` is the same layer) → `--card` / `--popover` (raised;
+  popovers share the card fill and read as raised via elevation) → `--muted`
+  (recessed — only *inside* a card or chrome: input fills, zebra rows,
+  slider/progress tracks, disabled states). Keep adjacent layers distinct — a
+  fill that matches the surface under it is invisible. Muted text on `--muted`
+  must use `text-muted-foreground-strong`, not `text-muted-foreground`.
+  `--background` mirrors Figma's deprecated `background/default` and is kept for
+  backwards compatibility; prefer `bg-canvas` for new page shells.
 - **Never hard-code brand hex values, and never add `dark:` variants.** Tokens
   are defined for `:root` and `.dark` in `registry/nebari/globals.css`; toggling
   the `.dark` class on an ancestor re-themes every component automatically.

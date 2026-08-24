@@ -99,6 +99,10 @@ const SEMANTIC_GROUPS: { title: string; tokens: [string, string][] }[] = [
   {
     title: 'Surfaces',
     tokens: [
+      ['--canvas', 'Canvas'],
+      ['--canvas-foreground', 'Canvas foreground'],
+      ['--header', 'Header'],
+      ['--header-foreground', 'Header foreground'],
       ['--background', 'Background'],
       ['--foreground', 'Foreground'],
       ['--card', 'Card'],
@@ -236,6 +240,7 @@ const PRIMITIVE_RAMPS: {
       ['800', '#47474b'],
       ['900', '#353538'],
       ['950', '#262628'],
+      ['975', '#1a1a1c'],
     ],
   },
   {
