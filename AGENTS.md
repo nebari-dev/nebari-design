@@ -182,6 +182,13 @@ Once you've decided a component should move, follow these rules:
 - **Use tokens, never hardcode durations or easing.** Reference
   `var(--duration-fast/base/slow)` and `var(--ease-standard/emphasized)` in
   custom CSS. Use the pre-built Tailwind `animate-*` utilities where possible.
+- **Reference motion tokens with Tailwind v4 paren syntax.** In class names it
+  is `motion-safe:duration-(--duration-fast)` and
+  `motion-safe:ease-(--ease-standard)` — parentheses, not brackets. Tailwind v3's
+  `duration-[--duration-fast]` compiles to an invalid value in v4, so
+  `transition-duration` silently computes to `0s` and the transition is dead. The
+  failure produces no build error, lint warning, or test failure, so CI greps for
+  the bracket form; see `.github/workflows/ci.yml`.
 - **Animate `opacity` and `transform` only.** Layout properties (`height`,
   `width`, `padding`, `margin`) force reflows — never animate them.
 - **`cn()` / tailwind-merge gotcha.** When adding `transition-*` classes via
@@ -241,6 +248,7 @@ update the relevant skill so it doesn't drift from the code.
 - Don't use Radix or `asChild`; use Base UI `useRender`.
 - Don't hard-code colors or add `dark:` variants; use semantic tokens.
 - Don't hard-code animation durations or easing — use `--duration-*` / `--ease-*` token vars and always gate with `motion-safe:`.
+- Don't write `duration-[--token]` / `ease-[--token]`; Tailwind v4 needs the paren form `duration-(--token)` / `ease-(--token)` or the transition silently dies.
 - Don't co-locate stories/tests with components.
 - Don't hand-format or manually order imports; Biome owns that.
 - Don't edit `logo-mark/` or `symbol/` brand assets.

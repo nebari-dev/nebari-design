@@ -57,6 +57,18 @@ jobs:
             git push
           fi
 
+      - name: Guard against Tailwind v3 motion-token syntax
+        # `duration-[--token]` / `ease-[--token]` compiles to an invalid value
+        # under Tailwind v4, so `transition-duration` resets to `0s` and the
+        # transition silently does nothing. Nothing else in this pipeline
+        # catches it — see AGENTS.md "Motion & animation". Markdown is excluded
+        # because the docs cite the broken form as a counterexample.
+        run: |
+          if git grep -nE '(duration|ease)-\[--' -- '*.tsx' '*.ts' '*.css'; then
+            echo "::error::Tailwind v3 motion-token syntax found. Use duration-(--token) / ease-(--token) instead."
+            exit 1
+          fi
+
       - name: Biome (format + lint + imports)
         run: bun run ci
 

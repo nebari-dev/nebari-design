@@ -48,7 +48,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium motion-safe:transition-[color,background-color,border-color,opacity,transform] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] motion-safe:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium motion-safe:transition-[color,background-color,border-color,opacity,transform] motion-safe:duration-(--duration-fast) motion-safe:ease-(--ease-standard) motion-safe:active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
@@ -123,7 +123,7 @@ The rules this encodes:
   add `dark:` utilities — the `.dark` class on an ancestor remaps the tokens.
 - **Motion via tokens (where it makes sense).** For interactive components, add
   `motion-safe:transition-[color,background-color,border-color,opacity,transform]`,
-  `motion-safe:duration-[--duration-fast]`, and `motion-safe:ease-[--ease-standard]`
+  `motion-safe:duration-(--duration-fast)`, and `motion-safe:ease-(--ease-standard)`
   to the `cva` base class, plus `motion-safe:active:scale-[0.97]` for press
   feedback. Static structure/content components stay still. See the
   [Motion](#motion) section for when to animate, the full rules, and overlay
@@ -220,9 +220,14 @@ time, so make the call deliberately rather than defaulting either way.
    (`prefers-reduced-motion`). Every animation or transition class must carry
    the prefix: `motion-safe:transition-[…]`, `motion-safe:active:scale-[0.97]`.
 2. **Use tokens, never hardcode durations or easing.** In `cva` strings, use
-   the Tailwind arbitrary-value syntax: `motion-safe:duration-[--duration-fast]`,
-   `motion-safe:ease-[--ease-standard]`. In hand-written CSS, use
-   `var(--duration-fast)` / `var(--ease-standard)`.
+   Tailwind v4's CSS-variable shorthand — **parentheses, not brackets**:
+   `motion-safe:duration-(--duration-fast)`, `motion-safe:ease-(--ease-standard)`.
+   In hand-written CSS, use `var(--duration-fast)` / `var(--ease-standard)`.
+   Tailwind v3's bracket form `duration-[--duration-fast]` compiles to
+   `transition-duration: --duration-fast`, which is invalid, so the property
+   resets to its initial `0s` and the transition is silently dead — no build
+   error, no lint warning, no failing test. CI greps for the bracket form to
+   catch a regression.
 3. **Animate `opacity` and `transform` only.** Layout properties (`height`,
    `width`, `padding`, `margin`) force reflows — never animate them.
 4. **Enumerate transition properties explicitly.** When `transform` or `opacity`
@@ -238,8 +243,8 @@ hover/focus/press — add to the `cva` base class:
 
 ```
 motion-safe:transition-[color,background-color,border-color,opacity,transform]
-motion-safe:duration-[--duration-fast]
-motion-safe:ease-[--ease-standard]
+motion-safe:duration-(--duration-fast)
+motion-safe:ease-(--ease-standard)
 motion-safe:active:scale-[0.97]
 ```
 
@@ -273,8 +278,8 @@ const panelVariants = cva([
   'data-[ending-style]:opacity-0 data-[ending-style]:translate-y-1',
   // transition — enumerate both opacity and transform
   'motion-safe:transition-[opacity,transform]',
-  'motion-safe:duration-[--duration-base]',
-  'motion-safe:ease-[--ease-emphasized]',
+  'motion-safe:duration-(--duration-base)',
+  'motion-safe:ease-(--ease-emphasized)',
 ]);
 ```
 

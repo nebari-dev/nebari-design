@@ -109,7 +109,7 @@ describe('Breadcrumb', () => {
       'hover:underline',
       'rounded-[4px]',
       'focus-visible:ring-2',
-      'motion-safe:duration-[--duration-fast]',
+      'motion-safe:duration-(--duration-fast)',
     );
   });
 

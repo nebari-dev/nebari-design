@@ -170,7 +170,7 @@ function TableRow({ className, ...props }: React.ComponentProps<'tr'>) {
     <tr
       data-slot="table-row"
       className={cn(
-        'border-b border-border hover:bg-muted/50 data-[state=selected]:bg-muted data-[state=selected]:hover:bg-muted motion-safe:transition-[color,background-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]',
+        'border-b border-border hover:bg-muted/50 data-[state=selected]:bg-muted data-[state=selected]:hover:bg-muted motion-safe:transition-[color,background-color] motion-safe:duration-(--duration-fast) motion-safe:ease-(--ease-standard)',
         className,
       )}
       {...props}
@@ -203,7 +203,7 @@ function TableHead({
     >
       {isInteractive ? (
         <button
-          className="inline-flex h-10 w-full cursor-pointer items-center justify-start gap-1 bg-transparent px-4 text-left font-medium text-foreground text-sm leading-5 tracking-normal underline-offset-4 outline-none hover:bg-muted-foreground/10 hover:underline focus-visible:bg-muted-foreground/10 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset motion-safe:transition-[color,background-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]"
+          className="inline-flex h-10 w-full cursor-pointer items-center justify-start gap-1 bg-transparent px-4 text-left font-medium text-foreground text-sm leading-5 tracking-normal underline-offset-4 outline-none hover:bg-muted-foreground/10 hover:underline focus-visible:bg-muted-foreground/10 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset motion-safe:transition-[color,background-color] motion-safe:duration-(--duration-fast) motion-safe:ease-(--ease-standard)"
           data-slot="table-head-button"
           onClick={onClick}
           onKeyDown={onKeyDown}

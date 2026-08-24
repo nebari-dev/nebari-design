@@ -213,7 +213,7 @@ function AccordionContent({
       data-slot="accordion-content"
       aria-labelledby={triggerId}
       className={cn(
-        'h-(--accordion-panel-height) overflow-hidden text-sm leading-5 text-muted-foreground data-[ending-style]:h-0 data-[starting-style]:h-0 motion-safe:transition-[height] motion-safe:duration-[--duration-base] motion-safe:ease-[--ease-emphasized]',
+        'h-(--accordion-panel-height) overflow-hidden text-sm leading-5 text-muted-foreground data-[ending-style]:h-0 data-[starting-style]:h-0 motion-safe:transition-[height] motion-safe:duration-(--duration-base) motion-safe:ease-(--ease-emphasized)',
         className,
       )}
       id={panelId}
