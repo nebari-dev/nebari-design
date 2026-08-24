@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { Button, type ButtonProps } from '@/ui/button';
 
 const dropdownMenuItemVariants = cva(
-  'relative flex w-full cursor-default items-center gap-2 rounded-[calc(var(--radius-md)-var(--spacing))] px-1.5 py-1 text-sm outline-hidden select-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring motion-safe:transition-[color,background-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]',
+  'relative flex w-full cursor-default items-center gap-2 rounded-[calc(var(--radius-md)-var(--spacing))] px-1.5 py-1 text-sm outline-hidden select-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring motion-safe:transition-[color,background-color] motion-safe:duration-(--duration-fast) motion-safe:ease-(--ease-standard)',
   {
     variants: {
       variant: {
@@ -155,7 +155,7 @@ function DropdownMenuContent({
       <MenuPrimitive.Popup
         data-slot="dropdown-menu-content"
         className={cn(
-          'z-50 min-w-60 origin-(--transform-origin) rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 data-[starting-style]:translate-y-1 data-[starting-style]:opacity-0 data-[ending-style]:translate-y-1 data-[ending-style]:opacity-0 motion-safe:transition-[opacity,transform] motion-safe:duration-[--duration-base] motion-safe:ease-[--ease-emphasized]',
+          'z-50 min-w-60 origin-(--transform-origin) rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 data-[starting-style]:translate-y-1 data-[starting-style]:opacity-0 data-[ending-style]:translate-y-1 data-[ending-style]:opacity-0 motion-safe:transition-[opacity,transform] motion-safe:duration-(--duration-base) motion-safe:ease-(--ease-emphasized)',
           className,
         )}
         {...props}

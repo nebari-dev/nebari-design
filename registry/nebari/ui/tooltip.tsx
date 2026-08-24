@@ -115,7 +115,7 @@ function TooltipContent({
           role="tooltip"
           className={(state) =>
             cn(
-              'pointer-events-auto relative z-50 w-max max-w-xs origin-(--transform-origin) rounded-sm bg-foreground px-2.5 py-1.5 text-background text-xs leading-4 shadow-md outline-none data-[starting-style]:scale-95 data-[starting-style]:opacity-0 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 motion-safe:transition-[opacity,transform] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-emphasized] has-data-[slot=kbd]:pr-1.5 **:data-[slot=kbd]:ml-1.5 **:data-[slot=kbd]:rounded-sm **:data-[slot=kbd]:bg-background/10 **:data-[slot=kbd]:px-1.5 **:data-[slot=kbd]:py-0.5 **:data-[slot=kbd]:font-mono **:data-[slot=kbd]:text-[0.6875rem] **:data-[slot=kbd]:leading-3',
+              'pointer-events-auto relative z-50 w-max max-w-xs origin-(--transform-origin) rounded-sm bg-foreground px-2.5 py-1.5 text-background text-xs leading-4 shadow-md outline-none data-[starting-style]:scale-95 data-[starting-style]:opacity-0 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 motion-safe:transition-[opacity,transform] motion-safe:duration-(--duration-fast) motion-safe:ease-(--ease-emphasized) has-data-[slot=kbd]:pr-1.5 **:data-[slot=kbd]:ml-1.5 **:data-[slot=kbd]:rounded-sm **:data-[slot=kbd]:bg-background/10 **:data-[slot=kbd]:px-1.5 **:data-[slot=kbd]:py-0.5 **:data-[slot=kbd]:font-mono **:data-[slot=kbd]:text-[0.6875rem] **:data-[slot=kbd]:leading-3',
               typeof className === 'function' ? className(state) : className,
             )
           }

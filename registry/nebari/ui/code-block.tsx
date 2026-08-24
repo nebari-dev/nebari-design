@@ -230,7 +230,7 @@ function CodeBlockBody({
 }
 
 const codeBlockCopyButtonVariants = cva(
-  'inline-flex shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none motion-safe:transition-[color,background-color,opacity,transform] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] motion-safe:active:scale-[0.97] hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring [&_svg]:pointer-events-none',
+  'inline-flex shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none motion-safe:transition-[color,background-color,opacity,transform] motion-safe:duration-(--duration-fast) motion-safe:ease-(--ease-standard) motion-safe:active:scale-[0.97] hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring [&_svg]:pointer-events-none',
   {
     variants: {
       size: {

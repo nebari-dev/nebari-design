@@ -2,7 +2,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ComponentProps, ReactNode } from 'react';
 import { useState } from 'react';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { Button } from '@/ui/button';
 import {
   Dialog,
@@ -246,7 +246,11 @@ export const Default: Story = {
     const dialog = await page.findByRole('dialog', {
       name: 'Are you absolutely sure?',
     });
-    await expect(dialog).toBeVisible();
+    // The popup mounts at `opacity-0` and eases in, so poll rather than
+    // asserting once — `findByRole` resolves as soon as it is in the DOM.
+    await waitFor(() => {
+      expect(dialog).toBeVisible();
+    });
   },
 };
 

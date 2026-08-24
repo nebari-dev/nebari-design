@@ -214,6 +214,6 @@ describe('NavigationMenu', () => {
     expect(classes).toContain('h-10');
     expect(classes).toContain('focus-visible:ring-2');
     expect(classes).toContain('data-[active=true]:after:bg-primary');
-    expect(classes).toContain('motion-safe:duration-[--duration-fast]');
+    expect(classes).toContain('motion-safe:duration-(--duration-fast)');
   });
 });

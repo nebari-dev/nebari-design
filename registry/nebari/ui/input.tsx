@@ -24,7 +24,7 @@ function Input({ className, ...props }: InputProps) {
       <InputPrimitive
         data-slot="input"
         className={cn(
-          'peer flex w-full rounded-md border border-input bg-background px-3 py-1.5 text-foreground text-sm outline-none placeholder:text-muted-foreground motion-safe:transition-[color,background-color,border-color,box-shadow] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] hover:border-border-strong focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-50 aria-invalid:border-destructive-foreground aria-invalid:pr-9 aria-invalid:ring-2 aria-invalid:ring-destructive-foreground aria-invalid:focus-visible:ring-destructive-foreground data-[invalid]:border-destructive-foreground data-[invalid]:pr-9 data-[invalid]:ring-2 data-[invalid]:ring-destructive-foreground',
+          'peer flex w-full rounded-md border border-input bg-background px-3 py-1.5 text-foreground text-sm outline-none placeholder:text-muted-foreground motion-safe:transition-[color,background-color,border-color,box-shadow] motion-safe:duration-(--duration-fast) motion-safe:ease-(--ease-standard) hover:border-border-strong focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-50 aria-invalid:border-destructive-foreground aria-invalid:pr-9 aria-invalid:ring-2 aria-invalid:ring-destructive-foreground aria-invalid:focus-visible:ring-destructive-foreground data-[invalid]:border-destructive-foreground data-[invalid]:pr-9 data-[invalid]:ring-2 data-[invalid]:ring-destructive-foreground',
           className,
         )}
         {...props}

@@ -522,6 +522,11 @@ that the theme installs):
    Every animation class must be prefixed: `motion-safe:animate-fade-in`.
 2. **Use tokens, never hardcode durations** — write `var(--duration-base)` in
    custom CSS, or use the pre-built `animate-*` utilities. Never `0.2s`.
+   In Tailwind class names, reference a token with **parentheses, not
+   brackets**: `motion-safe:duration-(--duration-base)`,
+   `motion-safe:ease-(--ease-emphasized)`. Tailwind v3's bracket form
+   `duration-[--duration-base]` is invalid in v4 — `transition-duration` resets
+   to `0s` and the transition silently does nothing.
 3. **Animate `opacity` and `transform` only** — layout properties (`height`,
    `width`, `padding`, `top`) force reflows; don't animate them.
 4. **CSS + Base UI first** — reach for JS animation libraries only when the
@@ -599,7 +604,7 @@ transition property you need** so no property silently disappears:
 <Button
   className={cn(
     'motion-safe:transition-[color,background-color,transform]',
-    'motion-safe:duration-[--duration-base]',
+    'motion-safe:duration-(--duration-base)',
     'motion-safe:active:scale-95',
   )}
 />

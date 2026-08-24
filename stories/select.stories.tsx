@@ -245,6 +245,11 @@ export const Default: Story = {
 
     await userEvent.click(page.getByRole('option', { name: 'Remix' }));
     await expect(trigger).toHaveTextContent('Remix');
+    // Wait out the exit transition: Base UI's focus guards stay in the DOM
+    // while the popup unmounts, and the a11y run would flag them.
+    await waitFor(() => {
+      expect(page.queryByRole('listbox')).not.toBeInTheDocument();
+    });
   },
 };
 
