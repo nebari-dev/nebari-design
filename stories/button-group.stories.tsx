@@ -11,7 +11,7 @@ import {
   Underline,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { Button } from '@/ui/button';
 import {
   ButtonGroup,
@@ -163,8 +163,12 @@ export const Default: Story = {
     await userEvent.keyboard('{ArrowDown}');
     await expect(secondItem).toHaveFocus();
     await userEvent.keyboard('{Escape}');
+    // The menu stays mounted through its exit transition, and focus returns to
+    // the trigger only once it unmounts — so poll for both.
+    await waitFor(() => {
+      expect(page.queryByRole('menu')).not.toBeInTheDocument();
+    });
     await expect(trigger).toHaveFocus();
-    await expect(page.queryByRole('menu')).not.toBeInTheDocument();
   },
 };
 

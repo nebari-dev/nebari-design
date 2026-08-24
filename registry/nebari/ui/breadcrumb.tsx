@@ -88,7 +88,7 @@ function BreadcrumbLink({
     props: {
       'data-slot': 'breadcrumb-link',
       className: cn(
-        'rounded-[4px] outline-none underline-offset-4 hover:text-foreground hover:underline focus-visible:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-safe:transition-[color,box-shadow] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]',
+        'rounded-[4px] outline-none underline-offset-4 hover:text-foreground hover:underline focus-visible:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-safe:transition-[color,box-shadow] motion-safe:duration-(--duration-fast) motion-safe:ease-(--ease-standard)',
         className,
       ),
       ...props,
@@ -150,7 +150,7 @@ function BreadcrumbEllipsis({
       data-slot="breadcrumb-ellipsis"
       type={type}
       className={cn(
-        'flex size-5 items-center justify-center rounded-[4px] text-muted-foreground outline-none hover:text-foreground focus-visible:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-safe:transition-[color,box-shadow] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] [&>svg]:size-4 [&>svg]:shrink-0',
+        'flex size-5 items-center justify-center rounded-[4px] text-muted-foreground outline-none hover:text-foreground focus-visible:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-safe:transition-[color,box-shadow] motion-safe:duration-(--duration-fast) motion-safe:ease-(--ease-standard) [&>svg]:size-4 [&>svg]:shrink-0',
         className,
       )}
       {...props}
@@ -190,7 +190,7 @@ function BreadcrumbDropdownTrigger({
       data-slot="breadcrumb-dropdown-trigger"
       type={type}
       className={cn(
-        'inline-flex items-center gap-1 rounded-[4px] font-normal text-foreground outline-none underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background data-[popup-open]:text-foreground motion-safe:transition-[color,box-shadow] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] [&_svg]:size-3.5 [&_svg]:shrink-0',
+        'inline-flex items-center gap-1 rounded-[4px] font-normal text-foreground outline-none underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background data-[popup-open]:text-foreground motion-safe:transition-[color,box-shadow] motion-safe:duration-(--duration-fast) motion-safe:ease-(--ease-standard) [&_svg]:size-3.5 [&_svg]:shrink-0',
         className,
       )}
       {...props}
@@ -225,7 +225,7 @@ function BreadcrumbDropdownContent({
         <Menu.Popup
           data-slot="breadcrumb-dropdown-content"
           className={cn(
-            'min-w-44 rounded-md bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 data-[starting-style]:translate-y-1 data-[starting-style]:opacity-0 data-[ending-style]:translate-y-1 data-[ending-style]:opacity-0 motion-safe:transition-[opacity,transform] motion-safe:duration-[--duration-base] motion-safe:ease-[--ease-emphasized]',
+            'min-w-44 rounded-md bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 data-[starting-style]:translate-y-1 data-[starting-style]:opacity-0 data-[ending-style]:translate-y-1 data-[ending-style]:opacity-0 motion-safe:transition-[opacity,transform] motion-safe:duration-(--duration-base) motion-safe:ease-(--ease-emphasized)',
             className,
           )}
           {...props}

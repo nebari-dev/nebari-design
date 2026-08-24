@@ -107,7 +107,7 @@ function Slider({
           <SliderPrimitive.Thumb
             className={(state) =>
               cn(
-                "relative block size-4 shrink-0 cursor-pointer rounded-full border border-primary bg-background shadow-sm outline-none select-none before:absolute before:top-1/2 before:left-1/2 before:size-6 before:-translate-x-1/2 before:-translate-y-1/2 before:content-[''] hover:border-primary-hover has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-background data-[disabled]:cursor-not-allowed data-[disabled]:border-border data-[disabled]:bg-muted data-[disabled]:shadow-none data-[dragging]:cursor-grabbing data-[dragging]:border-primary-hover data-[invalid]:border-destructive-foreground data-[invalid]:has-[:focus-visible]:ring-destructive-foreground motion-safe:transition-[border-color,background-color,box-shadow] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]",
+                "relative block size-4 shrink-0 cursor-pointer rounded-full border border-primary bg-background shadow-sm outline-none select-none before:absolute before:top-1/2 before:left-1/2 before:size-6 before:-translate-x-1/2 before:-translate-y-1/2 before:content-[''] hover:border-primary-hover has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-background data-[disabled]:cursor-not-allowed data-[disabled]:border-border data-[disabled]:bg-muted data-[disabled]:shadow-none data-[dragging]:cursor-grabbing data-[dragging]:border-primary-hover data-[invalid]:border-destructive-foreground data-[invalid]:has-[:focus-visible]:ring-destructive-foreground motion-safe:transition-[border-color,background-color,box-shadow] motion-safe:duration-(--duration-fast) motion-safe:ease-(--ease-standard)",
                 state.activeThumbIndex === thumb.index &&
                   '[&_[data-slot=slider-value-tooltip]]:visible [&_[data-slot=slider-value-tooltip]]:opacity-100',
               )
@@ -124,7 +124,7 @@ function Slider({
             {showValueTooltip && (
               <SliderPrimitive.Value
                 aria-hidden="true"
-                className="invisible pointer-events-none absolute z-10 min-w-8 rounded-sm bg-foreground px-2 py-1 text-background text-center text-xs opacity-0 shadow-md ring-1 ring-foreground/10 data-[orientation=horizontal]:bottom-full data-[orientation=horizontal]:left-1/2 data-[orientation=horizontal]:mb-2 data-[orientation=horizontal]:-translate-x-1/2 data-[orientation=vertical]:right-full data-[orientation=vertical]:top-1/2 data-[orientation=vertical]:mr-2 data-[orientation=vertical]:-translate-y-1/2 motion-safe:transition-opacity motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard]"
+                className="invisible pointer-events-none absolute z-10 min-w-8 rounded-sm bg-foreground px-2 py-1 text-background text-center text-xs opacity-0 shadow-md ring-1 ring-foreground/10 data-[orientation=horizontal]:bottom-full data-[orientation=horizontal]:left-1/2 data-[orientation=horizontal]:mb-2 data-[orientation=horizontal]:-translate-x-1/2 data-[orientation=vertical]:right-full data-[orientation=vertical]:top-1/2 data-[orientation=vertical]:mr-2 data-[orientation=vertical]:-translate-y-1/2 motion-safe:transition-opacity motion-safe:duration-(--duration-fast) motion-safe:ease-(--ease-standard)"
                 data-slot="slider-value-tooltip"
               >
                 {(formattedValues) => formattedValues[thumb.index]}

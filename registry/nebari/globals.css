@@ -211,6 +211,7 @@
   --duration-fast: 100ms;
   --duration-base: 200ms;
   --duration-slow: 350ms;
+  --duration-loading: 1600ms;
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
 }
@@ -311,6 +312,16 @@
   }
 }
 
+@keyframes nebari-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 @theme inline {
   --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
@@ -377,6 +388,7 @@
   --animate-fade-out: nebari-fade-out var(--duration-base) var(--ease-standard) both;
   --animate-slide-up-fade: nebari-slide-up-fade var(--duration-base) var(--ease-emphasized) both;
   --animate-slide-down-fade: nebari-slide-down-fade var(--duration-base) var(--ease-emphasized) both;
+  --animate-skeleton-pulse: nebari-skeleton-pulse var(--duration-loading) var(--ease-standard) infinite;
 }
 
 @layer base {
