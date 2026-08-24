@@ -3,7 +3,7 @@ name: nebari-ui
 description: >-
   Add and use components from the Nebari design system (the @nebari shadcn
   registry) in this app. Use when asked to "add a nebari component", "use the
-  nebari button/badge/alert/spinner", "install the nebari theme", "animate,
+  nebari button/badge/alert/spinner/skeleton", "install the nebari theme", "animate,
   add a transition, make it feel polished, or add an entrance animation with
   nebari", "build <something> with nebari components", or "build/update the app
   header (top bar, navigation bar, profile menu, notifications menu, theme
@@ -501,10 +501,11 @@ tokens. Use them to add consistent, accessible, on-brand animation at the
 | `--duration-fast` | `100ms` | Micro-interactions (icon swap, badge count) |
 | `--duration-base` | `200ms` | Standard enter/exit (tooltip, dropdown) |
 | `--duration-slow` | `350ms` | Page-level overlays (dialog, sheet, drawer) |
+| `--duration-loading` | `1600ms` | Non-essential loading pulse (skeleton) |
 | `--ease-standard` | `cubic-bezier(0.4, 0, 0.2, 1)` | Most transitions |
 | `--ease-emphasized` | `cubic-bezier(0.2, 0, 0, 1)` | Overlays sliding into view |
 
-And four ready-made Tailwind `animate-*` utilities (backed by `@keyframes`
+And five ready-made Tailwind `animate-*` utilities (backed by `@keyframes`
 that the theme installs):
 
 | Utility | Effect |
@@ -513,6 +514,7 @@ that the theme installs):
 | `animate-fade-out` | `opacity: 1 → 0` |
 | `animate-slide-up-fade` | fade + `translateY(6px → 0)` |
 | `animate-slide-down-fade` | fade + `translateY(0 → 6px)` |
+| `animate-skeleton-pulse` | repeating `opacity: 1 → 0.5 → 1` |
 
 ### Hard rules
 
@@ -569,21 +571,21 @@ module — do **not** add inline styles to the component source:
 }
 ```
 
-#### Loading / skeleton shimmer
+#### Loading / skeleton pulse
 
-Skeletons use a repeating animation; stay within the token vocabulary:
+Use the `Skeleton` component for decorative loading placeholders. Its pulse is
+already reduced-motion gated and token-driven:
 
 ```tsx
-<div
-  className={cn(
-    'rounded bg-muted',
-    'motion-safe:animate-[shimmer_1.5s_var(--ease-standard)_infinite]',
-  )}
-/>
+import { Skeleton } from '@/components/ui/skeleton';
+
+<Skeleton className="w-48" />
+<Skeleton className="size-10" shape="circle" />
+<Skeleton className="h-40" shape="block" />
 ```
 
-Add the `@keyframes shimmer` rule to `globals.css` only if you adopt this
-pattern in your project — it is not shipped by the theme.
+For app-specific loading artwork, reuse
+`motion-safe:animate-skeleton-pulse` instead of hardcoding a duration.
 
 ### `cn()` / tailwind-merge gotcha
 
