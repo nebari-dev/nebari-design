@@ -50,7 +50,7 @@ const datePickerVariants = cva('flex w-72 flex-col gap-1.5', {
 });
 
 const datePickerTriggerVariants = cva(
-  "flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-md border border-input bg-background py-2 pr-2 pl-3 text-left text-foreground text-sm shadow-xs outline-none motion-safe:transition-[color,background-color,border-color,box-shadow] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] hover:border-border-strong focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring has-[:focus-visible]:border-ring has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring data-[invalid]:border-destructive-foreground data-[invalid]:pr-9 data-[invalid]:ring-2 data-[invalid]:ring-destructive-foreground data-[invalid]:hover:border-destructive-foreground data-[popup-open]:border-ring data-[popup-open]:ring-2 data-[popup-open]:ring-ring data-[disabled]:cursor-not-allowed data-[disabled]:bg-muted data-[disabled]:text-muted-foreground data-[disabled]:opacity-50 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-md border border-input bg-background py-2 pr-2 pl-3 text-left text-foreground text-sm shadow-xs outline-none motion-safe:transition-[color,background-color,border-color,box-shadow] motion-safe:duration-(--duration-fast) motion-safe:ease-(--ease-standard) hover:border-border-strong focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring has-[:focus-visible]:border-ring has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring data-[invalid]:border-destructive-foreground data-[invalid]:pr-9 data-[invalid]:ring-2 data-[invalid]:ring-destructive-foreground data-[invalid]:hover:border-destructive-foreground data-[popup-open]:border-ring data-[popup-open]:ring-2 data-[popup-open]:ring-ring data-[disabled]:cursor-not-allowed data-[disabled]:bg-muted data-[disabled]:text-muted-foreground data-[disabled]:opacity-50 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       type: {
@@ -71,7 +71,7 @@ const datePickerTriggerVariants = cva(
 );
 
 const timeOptionVariants = cva(
-  'flex h-8 w-full items-center justify-center rounded-sm px-3 text-sm outline-none motion-safe:transition-[color,background-color] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring data-[selected]:bg-primary data-[selected]:text-primary-foreground',
+  'flex h-8 w-full items-center justify-center rounded-sm px-3 text-sm outline-none motion-safe:transition-[color,background-color] motion-safe:duration-(--duration-fast) motion-safe:ease-(--ease-standard) hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring data-[selected]:bg-primary data-[selected]:text-primary-foreground',
   {
     variants: {
       size: {
@@ -601,7 +601,7 @@ function DatePicker({
                     ? triggerLabelledBy
                     : undefined
                 }
-                className="flex origin-(--transform-origin) items-start gap-2 outline-none data-[starting-style]:translate-y-1 data-[starting-style]:opacity-0 data-[ending-style]:translate-y-1 data-[ending-style]:opacity-0 motion-safe:transition-[opacity,transform] motion-safe:duration-[--duration-base] motion-safe:ease-[--ease-emphasized]"
+                className="flex origin-(--transform-origin) items-start gap-2 outline-none data-[starting-style]:translate-y-1 data-[starting-style]:opacity-0 data-[ending-style]:translate-y-1 data-[ending-style]:opacity-0 motion-safe:transition-[opacity,transform] motion-safe:duration-(--duration-base) motion-safe:ease-(--ease-emphasized)"
                 data-slot="date-picker-content"
                 initialFocus={false}
                 role="dialog"

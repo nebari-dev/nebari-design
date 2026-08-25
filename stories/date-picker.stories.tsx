@@ -147,13 +147,19 @@ export const Default: Story = {
     const dialog = await page.findByRole('dialog', {
       name: 'Date: Pick a date',
     });
-    await expect(dialog).toBeVisible();
+    await waitFor(() => expect(dialog).toBeVisible());
 
     await userEvent.click(
       page.getByRole('button', { name: formatDate(storyToday, 'dayLabel') }),
     );
 
     await waitFor(() => {
+      expect(
+        page.queryByRole('dialog', { name: 'Date: Pick a date' }),
+      ).not.toBeInTheDocument();
+      expect(
+        canvasElement.ownerDocument.querySelector('[data-base-ui-focus-guard]'),
+      ).not.toBeInTheDocument();
       expect(trigger).toHaveTextContent(formatDate(storyToday, 'long'));
     });
   },

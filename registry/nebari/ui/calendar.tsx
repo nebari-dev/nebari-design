@@ -46,7 +46,7 @@ const calendarVariants = cva(
 );
 
 const dayVariants = cva(
-  'inline-flex size-9 items-center justify-center rounded-md border border-transparent text-sm outline-none motion-safe:transition-[color,background-color,border-color,box-shadow] motion-safe:duration-[--duration-fast] motion-safe:ease-[--ease-standard] hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed',
+  'inline-flex size-9 items-center justify-center rounded-md border border-transparent text-sm outline-none motion-safe:transition-[color,background-color,border-color,box-shadow] motion-safe:duration-(--duration-fast) motion-safe:ease-(--ease-standard) hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed',
   {
     variants: {
       state: {
@@ -328,7 +328,7 @@ function Calendar({
       ?.querySelector<HTMLButtonElement>(
         `[data-slot="calendar-day"][data-date="${formatDateKey(focusedDate)}"]`,
       )
-      ?.focus();
+      ?.focus({ preventScroll: true });
     shouldFocusDayRef.current = false;
   }, [focusedDate]);
 
