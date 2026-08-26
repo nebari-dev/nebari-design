@@ -176,6 +176,9 @@
 
   /* Feedback pairs: a soft background fill + a strong foreground for text and
    * borders. Mirrors Figma's color/background/* and color/foreground/* roles. */
+  --info: var(--blue-100);
+  --info-foreground: var(--blue-600);
+
   --destructive: var(--red-100);
   --destructive-foreground: var(--red-600);
 
@@ -241,6 +244,9 @@
 
   --accent: var(--neutral-800);
   --accent-foreground: var(--neutral-100);
+
+  --info: var(--blue-900);
+  --info-foreground: var(--blue-400);
 
   --destructive: var(--red-900);
   --destructive-foreground: var(--red-300);
@@ -349,6 +355,9 @@
 
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
 
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
