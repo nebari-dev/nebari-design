@@ -80,6 +80,7 @@
   --zinc-800: oklch(39.94% 0.0066 286.10); /* #47474b */
   --zinc-900: oklch(33.01% 0.0052 286.11); /* #353538 */
   --zinc-950: oklch(26.94% 0.0037 286.15); /* #262628 */
+  --zinc-975: oklch(21.86% 0.0039 286.08); /* #1a1a1c */
 
   /* ── Primitives: Blue ────────────────────────────────────────────────── */
   --blue-50: oklch(97.93% 0.0083 271.33); /* #f6f8fe */
@@ -148,13 +149,34 @@
 :root {
   --radius: 0.625rem;
 
+  /*
+   * Surface stack (Figma "color/background/*"). Four layers, stacked:
+   *   canvas → header → card / popover → muted.
+   * `--background` is Figma's background/default, which is DEPRECATED: its
+   * light value is identical to the header layer, which made headers invisible
+   * on pages painted with it. It is kept so existing consumers do not shift —
+   * migrate uses to canvas, header, card, or muted.
+   */
   --background: var(--zinc-50);
   --foreground: var(--zinc-950);
   --scrim: rgba(0, 0, 0, 0.5);
 
+  /* Layer 0 — PAGE. The app body. Use on every page root. Nothing sits below. */
+  --canvas: var(--white);
+  --canvas-foreground: var(--zinc-950);
+
+  /* Layer 1 — CHROME. App furniture framing the page: top bar / MenuBar,
+   * sidebar, toolbars, table head, sticky footer. Sits directly on canvas. */
+  --header: var(--zinc-50);
+  --header-foreground: var(--zinc-950);
+
+  /* Layer 2 — RAISED. Cards, panels, dialogs, sheets. In light mode this is
+   * separated from canvas by border/default, NOT by fill. */
   --card: var(--white);
   --card-foreground: var(--zinc-950);
 
+  /* Layer 2 — RAISED, FLOATING. Popovers, dropdowns, tooltips, comboboxes.
+   * Same fill as card; differentiated by elevation shadow, not colour. */
   --popover: var(--white);
   --popover-foreground: var(--zinc-950);
 
@@ -166,9 +188,14 @@
   --secondary: var(--neutral-100);
   --secondary-foreground: var(--neutral-900);
 
+  /* Layer 3 — RECESSED. Only INSIDE a card or chrome: input fills, table zebra
+   * rows, progress/slider tracks, disabled states. In dark mode recesses lift,
+   * they do not dig. Muted text on this surface must use
+   * `--muted-foreground-strong`, not `--muted-foreground`. */
   --muted: var(--zinc-100);
   --muted-foreground: var(--zinc-600);
-  /* Figma color/foreground/muted-strong — pressed interactive text. */
+  /* Figma color/foreground/muted-strong — pressed interactive text, and any
+   * muted text sitting on `--muted`. */
   --muted-foreground-strong: var(--zinc-700);
 
   --accent: var(--neutral-100);
@@ -222,10 +249,16 @@
   --foreground: var(--zinc-50);
   --scrim: rgba(0, 0, 0, 0.6);
 
+  --canvas: var(--zinc-975);
+  --canvas-foreground: var(--zinc-50);
+
+  --header: var(--zinc-950);
+  --header-foreground: var(--zinc-50);
+
   --card: var(--zinc-900);
   --card-foreground: var(--zinc-50);
 
-  --popover: var(--zinc-950);
+  --popover: var(--zinc-900);
   --popover-foreground: var(--zinc-50);
 
   --primary: var(--primary-magenta-500);
@@ -235,7 +268,7 @@
   --secondary: var(--neutral-800);
   --secondary-foreground: var(--neutral-100);
 
-  --muted: var(--zinc-900);
+  --muted: var(--zinc-800);
   --muted-foreground: var(--zinc-400);
   --muted-foreground-strong: var(--zinc-300);
 
@@ -329,6 +362,12 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-scrim: var(--scrim);
+
+  --color-canvas: var(--canvas);
+  --color-canvas-foreground: var(--canvas-foreground);
+
+  --color-header: var(--header);
+  --color-header-foreground: var(--header-foreground);
 
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);

@@ -9,8 +9,8 @@
 }
 
 .dark .sbdocs-wrapper {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: var(--canvas);
+  color: var(--canvas-foreground);
 }
 
 .dark
