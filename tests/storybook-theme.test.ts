@@ -78,7 +78,7 @@ describe('Storybook manager theme', () => {
 
     expect(document.documentElement).toHaveClass('dark');
     expect(document.body).toHaveStyle({
-      backgroundColor: 'var(--background)',
+      backgroundColor: 'var(--canvas)',
     });
   });
 });

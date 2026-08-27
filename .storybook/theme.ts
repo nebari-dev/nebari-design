@@ -18,7 +18,7 @@ export function syncPreviewTheme(channel: ThemeChannel, target = document) {
 
     currentTheme = nextTheme;
     target.documentElement.classList.toggle('dark', nextTheme === 'dark');
-    target.body.style.backgroundColor = 'var(--background)';
+    target.body.style.backgroundColor = 'var(--canvas)';
   };
 
   setTheme('light');
