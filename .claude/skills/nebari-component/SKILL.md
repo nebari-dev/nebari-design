@@ -4,12 +4,14 @@ description: >-
   House recipe for adding a new component to the nebari-design shadcn registry.
   Use when adding, creating, or scaffolding a registry component — e.g. "add a
   Button component to the registry", "create a new nebari component", "scaffold
-  <X> in registry/nebari/ui", or "animate / add motion to a component". Covers
-  the component file pattern (cva variants, data-slot/data-variant/data-size
-  attributes, cn() merging, Base UI render-prop composition), the registry.json
-  entry shape (dependencies vs registryDependencies), motion and animation
-  (interaction states, overlay enter/exit, motion-safe gating, token usage),
-  story and test templates, and the verification gate.
+  a component in registry/nebari/ui", "animate / add motion to a component", or
+  "add a Storybook story for a registry hook". Covers the component file pattern
+  (cva variants, data-slot/data-variant/data-size attributes, cn() merging, Base
+  UI render-prop composition), the registry.json entry shape (dependencies vs
+  registryDependencies), motion and animation (interaction states, overlay
+  enter/exit, motion-safe gating, token usage), story and test templates
+  (including Hooks/* stories for exported registry hooks), and the verification
+  gate.
 ---
 
 # Authoring a nebari-design registry component
@@ -27,6 +29,8 @@ Conventions that are easy to get wrong, encoded once here:
   Radix `asChild`.
 - Stories live in top-level `stories/<name>.stories.tsx`, tests in top-level
   `tests/<name>.test.tsx` — **not** co-located with the component.
+- Exported hooks are documented too, under `Hooks/*` — see
+  [Hook stories](#hook-stories).
 - Styling uses semantic theme tokens (`bg-primary`, `text-muted-foreground`, …),
   never raw hex or `dark:` variants — the theme handles light/dark.
 
@@ -482,6 +486,55 @@ transitions; Storybook stories are the right place to visually verify motion.
 Add a comment in the test file where CSS transition coverage is intentionally
 absent (e.g. `// CSS transitions are not testable in jsdom; animated states are
 // verified in Storybook`).
+
+### Hook stories
+
+Give every hook exported to consumers its own Storybook page, whether it lives
+in `registry/nebari/hooks` or is exported beside a component. Do not make pages
+for unexported context readers or hooks owned by Base UI that Nebari does not
+re-export; their component stories cover the public behavior.
+
+This is a documentation-only workflow. Do not add or extract hooks, or change a
+hook's signature, return shape, or behavior to make a demo easier. If an
+existing hook is awkward to demonstrate, file a follow-up instead. A hook story
+does not change `registry.json` or require a component test.
+
+- Title the page `Hooks/<exportedHookName>` and normally name the file after the
+  hook in kebab case: `useSidebar` becomes `use-sidebar.stories.tsx`. A
+  provider/hook pair may use the owning provider file instead; for example,
+  `theme-provider.stories.tsx` documents `Hooks/useTheme`. Keep an existing
+  hook title stable when renaming a mismatched story file.
+- Point Storybook's `component` at a local demo component that calls the real
+  hook beneath any required provider. The demo must be interactive: let the
+  reader change state through a visible control and display the live returned
+  state. A prose-only page is not sufficient.
+- Make the demo expose the reason to use the hook, not merely repeat its
+  component's existing stories. For a component-owned hook, show an external
+  consumer reading and driving state without the component's usual built-in
+  trigger. For a shared provider hook, mount one provider at the demo root and
+  use separate descendants to read and set the same state.
+- Explain the hook, its required context, and relevant misuse behavior in
+  `parameters.docs.description.component`. When the provider avoids competing
+  hook instances or global side effects, explain that advantage. If misuse
+  throws, show or describe the exact failure without deliberately crashing the
+  Storybook preview.
+- Document every public option, provider prop, and returned value with
+  descriptive `argTypes`, explicit `table.type` summaries, and distinct
+  categories such as `useThemePreference options`, `ThemeProvider props`, and
+  `useTheme return`. Hook API rows are documentation rather than knobs, so set
+  `control: false`; reserve `table.disable` for story-only plumbing. A local
+  demo props type may add optional documentation-only fields for return values
+  so the complete API table renders.
+- Isolate demos that mutate browser-global state. Use a story-specific
+  `localStorage` key and restore any toolbar-owned `<html>` class on unmount so
+  the demo cannot affect another story.
+- Add a `play` function that performs the documented interaction and asserts
+  the visible returned state. The component control conventions and
+  `tests/story-controls.test.ts` deliberately apply only to `Components/*`, not
+  `Hooks/*`.
+
+In addition to the normal verification gate, hook-story documentation must pass
+`bun run build:storybook` so the published docs surface is proven to build.
 
 ## Step 4 — the test
 
