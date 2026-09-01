@@ -22,7 +22,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Tabs switch between related panels. Base UI provides keyboard navigation, `aria-selected`, and panel association; Nebari provides bordered pill and underline visual variants.',
+          'Tabs switch between related panels. Base UI provides keyboard navigation, `aria-selected`, and panel association; Nebari provides pill (active tab outlined) and underline visual variants.',
       },
     },
   },
@@ -36,7 +36,7 @@ const meta = {
   argTypes: {
     variant: {
       description:
-        'Visual style, set on `TabsList` and propagated to `TabsTab` and `TabsIndicator` through context. `pill` is a bordered card-colored pill; `underline` and `line` use an underline indicator; `toggle` renders a segmented control.',
+        'Visual style, set on `TabsList` and propagated to `TabsTab` and `TabsIndicator` through context. `pill` outlines only the active tab as a bordered card-colored pill; `underline` and `line` use an underline indicator; `toggle` renders a segmented control.',
       control: 'select',
       options: ['pill', 'underline', 'line', 'toggle'],
       table: { defaultValue: { summary: 'pill' } },
@@ -174,7 +174,7 @@ export const Default: Story = {
     docs: {
       description: {
         story:
-          'The default pill style. Each tab is a bordered card-colored pill; disabled pills keep the same sizing and switch to the muted background. Use the controls to preview every variant, orientation, and the icon and disabled states.',
+          'The default pill style. Only the active tab renders as a bordered card-colored pill; inactive tabs are plain text. Disabled pills keep the same sizing and switch to the muted background. Use the controls to preview every variant, orientation, and the icon and disabled states.',
       },
     },
   },

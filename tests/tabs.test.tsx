@@ -124,8 +124,15 @@ describe('Tabs', () => {
       'h-[calc(100%-1px)]',
     );
     expect(tabsTabVariants({ variant: 'pill' })).toContain('rounded-sm');
-    expect(tabsTabVariants({ variant: 'pill' })).toContain('border-border');
-    expect(tabsTabVariants({ variant: 'pill' })).toContain('bg-card');
+    expect(tabsTabVariants({ variant: 'pill' })).toContain(
+      'border-transparent',
+    );
+    expect(tabsTabVariants({ variant: 'pill' })).toContain(
+      'data-[active]:border-border-strong',
+    );
+    expect(tabsTabVariants({ variant: 'pill' })).toContain(
+      'data-[active]:bg-card',
+    );
     expect(tabsTabVariants({ variant: 'pill' })).toContain('px-2');
     expect(tabsTabVariants({ variant: 'pill' })).toContain('py-1');
     expect(tabsTabVariants({ variant: 'pill' })).toContain(
@@ -144,7 +151,9 @@ describe('Tabs', () => {
     expect(tabsListVariants({ variant: 'line' })).toContain('border-b');
     expect(tabsListVariants({ variant: 'toggle' })).toContain('bg-background');
     expect(tabsTabVariants({ variant: 'toggle' })).toContain('rounded-sm');
-    expect(tabsTabVariants({ variant: 'toggle' })).toContain('bg-card');
+    expect(tabsTabVariants({ variant: 'toggle' })).toContain(
+      'data-[active]:bg-card',
+    );
     expect(tabsTabVariants({ variant: 'toggle' })).toContain(
       'data-[active]:shadow-[0_1px_1.5px_rgb(0_0_0_/_0.1)]',
     );
