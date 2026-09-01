@@ -16,6 +16,18 @@
       ]
     },
     {
+      "name": "date-utils",
+      "type": "registry:lib",
+      "title": "Date utilities",
+      "description": "Small calendar-date helpers for arithmetic, comparison, formatting, and segmented entry parsing.",
+      "files": [
+        {
+          "path": "registry/nebari/lib/date.ts",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "spinner",
       "type": "registry:ui",
       "title": "Spinner",
@@ -181,6 +193,53 @@
       "files": [
         {
           "path": "registry/nebari/ui/input.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "calendar",
+      "type": "registry:ui",
+      "title": "Calendar",
+      "description": "Single-month calendar grid with reusable day cells, range states, keyboard navigation, and Nebari popover-surface styling.",
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "@nebari/utils",
+        "@nebari/date-utils",
+        "@nebari/button",
+        "@nebari/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/nebari/ui/calendar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "date-picker",
+      "type": "registry:ui",
+      "title": "Date Picker",
+      "description": "Date picker field for single dates, ranges, date and time selection, and segmented typed entry, backed by Base UI Popover.",
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "@nebari/utils",
+        "@nebari/date-utils",
+        "@nebari/field",
+        "@nebari/calendar",
+        "@nebari/theme"
+      ],
+      "files": [
+        {
+          "path": "registry/nebari/ui/date-picker.tsx",
           "type": "registry:ui"
         }
       ]
