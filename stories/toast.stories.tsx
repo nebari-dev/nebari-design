@@ -1,13 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { Button } from '@/ui/button';
-import {
-  createToastManager,
-  Toaster,
-  type ToasterProps,
-  type ToastType,
-} from '@/ui/toast';
+import { Toaster, type ToasterProps, type ToastType, toast } from '@/ui/toast';
 
 /**
  * `auto` leaves `priority` unset on the manager item so `Toaster` derives it
@@ -42,10 +37,18 @@ const meta = {
     docs: {
       description: {
         component:
-          'A transient notification implemented from the Nebari Figma `Toast` variant set with Base UI. Mount `Toaster` once, then call `toast.add`, `toast.update`, or `toast.promise`. The neutral popover surface keeps its copy readable while the icon communicates default, success, warning, error, info, or loading status. `warning` and `error` are announced assertively; the calmer statuses go through the viewport’s polite live region. Press `F6` to move focus onto the viewport, `Tab` to reach the frontmost toast, then `Escape` to dismiss it.',
+          'A transient notification implemented from the Nebari Figma `Toast` variant set with Base UI. Mount `Toaster` once, then call `toast.add`, `toast.update`, or `toast.promise`. The neutral popover surface keeps its copy readable while the icon communicates default, success, warning, error, info, or loading status. `warning` and `error` are announced assertively; the calmer statuses go through the viewport’s polite live region. The toast surface is kept out of the sequential tab order, so only its action and dismiss controls are stops for someone tabbing the page. Press `F6` to move focus onto the viewport, `Tab` to enter the frontmost toast, then `Escape` to dismiss it. Every story on this page feeds the one exported `toast` manager and the single `Toaster` mounted alongside them, so their toasts share one stack in the bottom-right corner — the same way an application mounts `Toaster` once at its root.',
       },
     },
   },
+  decorators: [
+    (Story, { args }) => (
+      <>
+        <Story />
+        <StoryToaster limit={args.limit} timeout={args.timeout} />
+      </>
+    ),
+  ],
   args: {
     actionLabel: 'Undo',
     description: 'Toast description goes here.',
@@ -87,7 +90,7 @@ const meta = {
     },
     showAction: {
       description:
-        'Story-only toggle. Adds the Figma action button through the manager item’s `actionProps`. Actionable toasts do not auto-dismiss and always retain the close control.',
+        'Story-only toggle. Adds the Figma action button through the manager item’s `actionProps`. A toast carrying an action never auto-dismisses — whatever `timeout` says — and always retains the close control.',
       control: 'boolean',
       table: { defaultValue: { summary: 'false' } },
     },
@@ -117,7 +120,7 @@ const meta = {
     },
     timeout: {
       description:
-        'Default auto-dismiss delay in milliseconds. Set to `0` to keep toasts open. Base UI keeps loading toasts open regardless; actionable toasts stay open unless their manager item supplies an explicit timeout.',
+        'Default auto-dismiss delay in milliseconds. Set to `0` to keep toasts open. Two kinds of toast ignore it and stay open regardless: a `loading` toast, and any toast carrying an action — so turning `showAction` on makes this knob a no-op.',
       control: { type: 'number', min: 0, step: 500 },
       table: { defaultValue: { summary: '5000' } },
     },
@@ -146,12 +149,56 @@ export default meta;
 
 type Story = StoryObj<ToastStoryArgs>;
 
-function ToastPlayground(args: ToastStoryArgs) {
-  const manager = useMemo(() => createToastManager(), []);
+/**
+ * Elects exactly one host for the page's single `Toaster`.
+ *
+ * Storybook draws every story on a Docs page into one document, so a decorator
+ * that rendered a `Toaster` per story would stand up one stack per story in the
+ * same corner — overlapping piles, each expanding on its own hover, which is
+ * the behaviour reported on this component. Applications avoid it by mounting
+ * `Toaster` once at the root and raising toasts from anywhere through the
+ * exported manager; shadcn's docs do the same. The stories now do too: the
+ * first to mount owns the only `Toaster`, every demo feeds the global `toast`
+ * manager, and they all land in one stack at the bottom-right of the page.
+ */
+const toasterHosts = new Set<(isHost: boolean) => void>();
 
+function useIsToasterHost() {
+  const [isHost, setIsHost] = useState(false);
+
+  useEffect(() => {
+    const claim = (value: boolean) => setIsHost(value);
+    toasterHosts.add(claim);
+    // First one in takes the role; when it leaves, the next in line is
+    // promoted, so a Docs page never ends up with no viewport at all.
+    claim(toasterHosts.size === 1);
+
+    return () => {
+      toasterHosts.delete(claim);
+      const next = toasterHosts.values().next();
+      if (!next.done) {
+        next.value(true);
+      }
+    };
+  }, []);
+
+  return isHost;
+}
+
+/** The one `Toaster` on the page, rendered by the meta decorator below. */
+function StoryToaster({
+  limit,
+  timeout,
+}: Pick<ToasterProps, 'limit' | 'timeout'>) {
+  return useIsToasterHost() ? (
+    <Toaster limit={limit} timeout={timeout} />
+  ) : null;
+}
+
+function ToastPlayground(args: ToastStoryArgs) {
   function showToast() {
     let id = '';
-    id = manager.add({
+    id = toast.add({
       title: args.title,
       description: args.showDescription ? args.description : undefined,
       type: args.type === 'default' ? undefined : args.type,
@@ -163,22 +210,13 @@ function ToastPlayground(args: ToastStoryArgs) {
       actionProps: args.showAction
         ? {
             children: args.actionLabel,
-            onClick: () => manager.close(id),
+            onClick: () => toast.close(id),
           }
         : undefined,
     });
   }
 
-  return (
-    <>
-      <Button onClick={showToast}>Show toast</Button>
-      <Toaster
-        limit={args.limit}
-        timeout={args.timeout}
-        toastManager={manager}
-      />
-    </>
-  );
+  return <Button onClick={showToast}>Show toast</Button>;
 }
 
 /** Interactive playground for every Figma toast property. */
@@ -196,30 +234,25 @@ const TYPE_OPTIONS: readonly ToastType[] = [
 ];
 
 function ToastTypesDemo() {
-  const manager = useMemo(() => createToastManager(), []);
-
   return (
-    <>
-      <div className="flex flex-wrap justify-center gap-2">
-        {TYPE_OPTIONS.map((type) => (
-          <Button
-            key={type}
-            variant="outline"
-            onClick={() =>
-              manager.add({
-                title: `${type[0].toUpperCase()}${type.slice(1)} toast`,
-                description: 'Toast description goes here.',
-                type: type === 'default' ? undefined : type,
-              })
-            }
-          >
-            {type[0].toUpperCase()}
-            {type.slice(1)}
-          </Button>
-        ))}
-      </div>
-      <Toaster limit={6} timeout={0} toastManager={manager} />
-    </>
+    <div className="flex flex-wrap justify-center gap-2">
+      {TYPE_OPTIONS.map((type) => (
+        <Button
+          key={type}
+          variant="outline"
+          onClick={() =>
+            toast.add({
+              title: `${type[0].toUpperCase()}${type.slice(1)} toast`,
+              description: 'Toast description goes here.',
+              type: type === 'default' ? undefined : type,
+            })
+          }
+        >
+          {type[0].toUpperCase()}
+          {type.slice(1)}
+        </Button>
+      ))}
+    </div>
   );
 }
 
@@ -238,25 +271,24 @@ export const Types: Story = {
 };
 
 function ActionDemo() {
-  const manager = useMemo(() => createToastManager(), []);
-
   function showToast() {
     let id = '';
-    id = manager.add({
+    id = toast.add({
       title: 'Deployment complete',
       description: 'nebari-prod is live.',
       type: 'success',
       actionProps: {
         children: 'View',
-        onClick: () => manager.close(id),
+        onClick: () => toast.close(id),
       },
     });
   }
 
   return (
     <>
+      {/* No `timeout` override: the toast carries an action, so
+          `withToastA11yDefaults` already makes it persistent. */}
       <Button onClick={showToast}>Deploy</Button>
-      <Toaster timeout={0} toastManager={manager} />
     </>
   );
 }
@@ -268,7 +300,7 @@ export const Action: Story = {
     docs: {
       description: {
         story:
-          'Pass button props through `actionProps`. This success toast uses the Figma “Deployment complete” example and closes when View is selected. A toast carrying an action never auto-dismisses and always keeps its close control, so the action can’t vanish before it is used.',
+          'Pass button props through `actionProps`. This success toast uses the Figma “Deployment complete” example and closes when View is selected. A toast carrying an action never auto-dismisses and always keeps its close control, so the action can’t vanish before it is used. Persistence is a rule rather than a default here: an explicit `timeout` on the manager item does not override it.',
       },
     },
   },
@@ -276,14 +308,12 @@ export const Action: Story = {
 };
 
 function PromiseDemo() {
-  const manager = useMemo(() => createToastManager(), []);
-
   function createEnvironment() {
     const request = new Promise<string>((resolve) => {
       window.setTimeout(() => resolve('nebari-prod'), 1000);
     });
 
-    void manager.promise(request, {
+    void toast.promise(request, {
       loading: {
         title: 'Building environment',
         description: 'This usually takes a minute.',
@@ -304,12 +334,7 @@ function PromiseDemo() {
     });
   }
 
-  return (
-    <>
-      <Button onClick={createEnvironment}>Create environment</Button>
-      <Toaster toastManager={manager} />
-    </>
-  );
+  return <Button onClick={createEnvironment}>Create environment</Button>;
 }
 
 /** Loading-to-success updates through Base UI's promise manager. */
@@ -328,38 +353,33 @@ export const PromiseStates: Story = {
 };
 
 function FigmaExamplesDemo() {
-  const manager = useMemo(() => createToastManager(), []);
-
   return (
-    <>
-      <div className="flex flex-wrap justify-center gap-2">
-        <Button
-          variant="outline"
-          onClick={() =>
-            manager.add({
-              title: 'Copied to clipboard',
-              data: { dismissible: true },
-            })
-          }
-        >
-          Title only
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() =>
-            manager.add({
-              title: 'Building environment',
-              description: 'This usually takes a minute.',
-              type: 'loading',
-              data: { dismissible: false },
-            })
-          }
-        >
-          Loading
-        </Button>
-      </div>
-      <Toaster timeout={0} toastManager={manager} />
-    </>
+    <div className="flex flex-wrap justify-center gap-2">
+      <Button
+        variant="outline"
+        onClick={() =>
+          toast.add({
+            title: 'Copied to clipboard',
+            data: { dismissible: true },
+          })
+        }
+      >
+        Title only
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() =>
+          toast.add({
+            title: 'Building environment',
+            description: 'This usually takes a minute.',
+            type: 'loading',
+            data: { dismissible: false },
+          })
+        }
+      >
+        Loading
+      </Button>
+    </div>
   );
 }
 
@@ -379,33 +399,26 @@ export const FigmaExamples: Story = {
 };
 
 function PlacementDemo() {
-  const manager = useMemo(() => createToastManager(), []);
-
   function addStack() {
-    manager.add({
+    toast.add({
       title: 'Deployment complete',
       description: 'nebari-prod is live.',
       type: 'success',
       actionProps: { children: 'View' },
     });
-    manager.add({
+    toast.add({
       title: 'Storage almost full',
       description: '92% of your quota is in use.',
       type: 'warning',
     });
-    manager.add({
+    toast.add({
       title: 'New version available',
       description: 'Nebari 2026.8 is ready to install.',
       type: 'info',
     });
   }
 
-  return (
-    <>
-      <Button onClick={addStack}>Show stack</Button>
-      <Toaster timeout={0} toastManager={manager} />
-    </>
-  );
+  return <Button onClick={addStack}>Show stack</Button>;
 }
 
 /** Bottom-right placement and newest-first stack behavior. */
@@ -415,7 +428,7 @@ export const Placement: Story = {
     docs: {
       description: {
         story:
-          'Toasts appear in a bottom-right stack with the newest item in front. Hover or focus the viewport to expand the pile; Nebari caps the visible stack at five by default.',
+          'Toasts appear in a bottom-right stack with the newest item in front. Hover or focus the viewport to expand the pile; Nebari caps the visible stack at five by default. The stack drains after a few idle seconds and holds for as long as you rest on it — except the actionable toast, which stays until it is used or dismissed.',
       },
     },
   },
@@ -435,7 +448,7 @@ export const Interactive: Story = {
     docs: {
       description: {
         story:
-          '`F6` moves focus into the viewport and pauses the auto-dismiss timers, `Tab` from there lands on the frontmost toast, and `Escape` dismisses the focused toast — the keyboard equivalent of swiping it away. `Shift+Tab` off the viewport hands focus back to where it came from and resumes the timers.',
+          '`F6` moves focus into the viewport and pauses the auto-dismiss timers, `Tab` from there enters the frontmost toast and then its controls, and `Escape` dismisses the toast holding focus — the keyboard equivalent of swiping it away. The surface is out of the sequential tab order, so it is never a stop ahead of the action while tabbing the page; `F6` is the way in. `Shift+Tab` off the viewport hands focus back to where it came from and resumes the timers.',
       },
     },
   },
@@ -456,33 +469,48 @@ export const Interactive: Story = {
     await waitFor(() => expect(viewport).toHaveFocus());
     await expect(viewport).toHaveAttribute('data-expanded');
 
-    await userEvent.keyboard('{Tab}');
-    const focused = await waitFor(() => {
-      const toast = page
-        .getAllByRole('dialog')
-        .find((candidate) => candidate === document.activeElement);
-      expect(toast).toBeDefined();
-      return toast as HTMLElement;
+    // Taking the surface out of the sequential tab order does not close this
+    // route into it: Base UI's focus guard focuses the frontmost root itself,
+    // which `tabindex="-1"` still allows.
+    const frontmost = await page.findByRole('dialog', {
+      name: 'New version available',
     });
+    await userEvent.keyboard('{Tab}');
+    await waitFor(() => expect(frontmost).toHaveFocus());
+    await expect(frontmost).toHaveAttribute('tabindex', '-1');
 
-    // The dismiss control is only exposed to assistive tech once expanded.
-    await expect(
-      page.getAllByRole('button', { name: 'Dismiss' })[0],
-    ).toBeVisible();
+    // The toast's own controls follow it in DOM order. Base UI only exposes the
+    // dismiss control to assistive tech once the stack is expanded or the
+    // control holds focus — both true by this point.
+    const dismiss = within(frontmost).getByRole('button', { name: 'Dismiss' });
+    await userEvent.keyboard('{Tab}');
+    await waitFor(() => expect(dismiss).toHaveFocus());
+    await expect(dismiss).toBeVisible();
 
+    // Escape is handled on the root, so it reaches the toast from the control.
     await userEvent.keyboard('{Escape}');
-    await waitFor(() => expect(focused).not.toBeInTheDocument());
+    await waitFor(() => expect(frontmost).not.toBeInTheDocument());
 
-    // Two toasts survive, so axe still has a rendered stack to scan — and one
-    // of them is the `warning`, which Base UI gives `role="alertdialog"` and
-    // holds out of the accessibility tree while unfocused. Counted through the
-    // `data-slot` hook so the assertion covers both priorities.
-    await waitFor(() =>
-      expect(
-        Array.from(
-          canvasElement.ownerDocument.querySelectorAll('[data-slot="toast"]'),
-        ),
-      ).toHaveLength(2),
+    // Dismissing the focused toast hands focus back and restarts the timers, so
+    // the survivors below are now on a five-second clock and the a11y addon
+    // does not scan until `play` returns. Hold them the way a reader would —
+    // hovering pauses the timers — rather than racing it. The viewport is
+    // `pointer-events-none` so the page stays clickable around the stack; the
+    // toasts themselves are what take the pointer.
+    await userEvent.hover(
+      await page.findByRole('dialog', { name: 'Deployment complete' }),
     );
+    await waitFor(() => expect(viewport).toHaveAttribute('data-expanded'));
+
+    // Both survivors are still up, so axe has a rendered stack to scan — and
+    // one of them is the `warning`, which Base UI gives `role="alertdialog"`
+    // and holds out of the accessibility tree while unfocused, so it is found
+    // by its text rather than its role. Named rather than counted: every story
+    // on this page shares the one global manager, so anything raised elsewhere
+    // first would be in this stack too and a total would be wrong.
+    await waitFor(() => {
+      expect(page.getByText('Deployment complete')).toBeInTheDocument();
+      expect(page.getByText('Storage almost full')).toBeInTheDocument();
+    });
   },
 };

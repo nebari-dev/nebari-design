@@ -1,5 +1,12 @@
 import type { UseToastManagerReturnValue } from '@base-ui/react/toast';
-import { act, render, screen, waitFor, within } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactElement } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -44,6 +51,8 @@ function renderToaster(timeout = 0) {
 function renderComposed(options: {
   rootClassName?: string;
   actionRender?: ReactElement;
+  /** Pass `false` when `actionRender` is not a native `<button>`. */
+  actionNativeButton?: boolean;
 }) {
   const manager = createToastManager<ToastData>();
 
@@ -58,7 +67,10 @@ function renderComposed(options: {
       >
         <ToastContent>
           <ToastTitle />
-          <ToastAction render={options.actionRender} />
+          <ToastAction
+            nativeButton={options.actionNativeButton}
+            render={options.actionRender}
+          />
         </ToastContent>
       </Toast>
     ));
@@ -207,6 +219,32 @@ describe('Toast', () => {
     expect(queryToastClose(root)).toBeNull();
   });
 
+  it('keeps the dismiss control on a toast that carries an action', () => {
+    const manager = renderToaster();
+
+    act(() => {
+      manager.add({
+        title: 'Message archived',
+        actionProps: { children: 'Undo' },
+        data: { dismissible: false },
+      });
+    });
+
+    // The action must not be the only way out, so `dismissible: false` loses.
+    expect(queryToastClose(getToastByTitle('Message archived'))).not.toBeNull();
+  });
+
+  it('omits the action when the manager item carries none', () => {
+    const manager = renderToaster();
+
+    act(() => {
+      manager.add({ title: 'Copied to clipboard' });
+    });
+
+    // Base UI renders nothing for an action with no `actionProps`.
+    expect(queryToastAction(getToastByTitle('Copied to clipboard'))).toBeNull();
+  });
+
   it('runs an action supplied through actionProps', async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();
@@ -221,17 +259,6 @@ describe('Toast', () => {
 
     await user.click(screen.getByRole('button', { name: 'View' }));
     expect(onClick).toHaveBeenCalledOnce();
-  });
-
-  it('omits the action when the manager item carries none', () => {
-    const manager = renderToaster();
-
-    act(() => {
-      manager.add({ title: 'Copied to clipboard' });
-    });
-
-    // Base UI renders nothing for an action with no `actionProps`.
-    expect(queryToastAction(getToastByTitle('Copied to clipboard'))).toBeNull();
   });
 
   it('notifies the manager when the dismiss control is clicked', async () => {
@@ -260,43 +287,27 @@ describe('Toast', () => {
     expect(getToastByTitle('Toast 6')).not.toHaveAttribute('data-limited');
   });
 
-  it('updates a promise toast from loading to success', async () => {
-    const manager = renderToaster();
-    let resolvePromise: (value: string) => void = () => {};
-    const request = new Promise<string>((resolve) => {
-      resolvePromise = resolve;
-    });
+  it('renders a hidden placeholder when no toast item is supplied', () => {
+    render(<Toast />);
 
-    act(() => {
-      void manager.promise(request, {
-        loading: { title: 'Building', type: 'loading' },
-        success: (name) => ({ title: `${name} is live`, type: 'success' }),
-        error: { title: 'Failed', type: 'error' },
-      });
-    });
-
-    expect(getToastByTitle('Building')).toHaveAttribute(
-      'data-variant',
-      'loading',
-    );
-
-    await act(async () => {
-      resolvePromise('nebari-prod');
-      await request;
-    });
-
-    await waitFor(() => {
-      expect(getToastByTitle('nebari-prod is live')).toHaveAttribute(
-        'data-variant',
-        'success',
-      );
-    });
+    const root = document.querySelector<HTMLElement>('[data-slot="toast"]');
+    expect(root).toHaveAttribute('data-variant', 'default');
+    expect(root).not.toBeVisible();
   });
+
+  // CSS transitions are not testable in jsdom; enter, exit, stack, and swipe
+  // motion are verified in Storybook.
 
   it('preserves data-slot when ToastAction composes into a link', () => {
     const manager = renderComposed({
+      // Base UI treats an action as a button and applies `role="button"` to
+      // any non-native element, so a link needs all three: `nativeButton`
+      // false to stop the native-semantics warning, the anchor, and an
+      // explicit role to win the link semantics back.
+      actionNativeButton: false,
       // biome-ignore lint/a11y/useAnchorContent: ToastAction injects the label
-      actionRender: <a href="/deployments" />,
+      // biome-ignore lint/a11y/noRedundantRoles: Base UI overrides it above
+      actionRender: <a href="/deployments" role="link" />,
     });
 
     act(() => {
@@ -337,22 +348,27 @@ describe('Toast', () => {
     ).toBeVisible();
   });
 
+  // An object table, so the reported name names the role under test. The
+  // positional form printed the second column — the type — where it said role.
   it.each([
-    ['default', undefined, 'dialog'],
-    ['success', 'success', 'dialog'],
-    ['info', 'info', 'dialog'],
-    ['loading', 'loading', 'dialog'],
-    ['warning', 'warning', 'alertdialog'],
-    ['error', 'error', 'alertdialog'],
-  ] as const)('gives a %s toast the %s role', (label, type, role) => {
-    const manager = renderToaster();
+    { label: 'default', type: undefined, role: 'dialog' },
+    { label: 'success', type: 'success', role: 'dialog' },
+    { label: 'info', type: 'info', role: 'dialog' },
+    { label: 'loading', type: 'loading', role: 'dialog' },
+    { label: 'warning', type: 'warning', role: 'alertdialog' },
+    { label: 'error', type: 'error', role: 'alertdialog' },
+  ] as const)(
+    'gives a $label toast the $role role',
+    ({ label, type, role }) => {
+      const manager = renderToaster();
 
-    act(() => {
-      manager.add({ title: `${label} toast`, type });
-    });
+      act(() => {
+        manager.add({ title: `${label} toast`, type });
+      });
 
-    expect(getToastByTitle(`${label} toast`)).toHaveAttribute('role', role);
-  });
+      expect(getToastByTitle(`${label} toast`)).toHaveAttribute('role', role);
+    },
+  );
 
   it.each(['warning', 'error'] as const)(
     'mirrors a %s toast into an assertive live region',
@@ -378,106 +394,6 @@ describe('Toast', () => {
     expect(getToastByTitle('Quiet failure')).toHaveAttribute('role', 'dialog');
   });
 
-  it('marks a loading toast as busy', () => {
-    const manager = renderToaster();
-
-    act(() => {
-      manager.add({ title: 'Building', type: 'loading' });
-      manager.add({ title: 'Built', type: 'success' });
-    });
-
-    expect(getToastByTitle('Building')).toHaveAttribute('aria-busy', 'true');
-    expect(getToastByTitle('Built')).not.toHaveAttribute('aria-busy');
-  });
-
-  it('keeps the dismiss control on a toast that carries an action', () => {
-    const manager = renderToaster();
-
-    act(() => {
-      manager.add({
-        title: 'Message archived',
-        actionProps: { children: 'Undo' },
-        data: { dismissible: false },
-      });
-    });
-
-    // The action must not be the only way out, so `dismissible: false` loses.
-    expect(queryToastClose(getToastByTitle('Message archived'))).not.toBeNull();
-  });
-
-  it('never auto-dismisses a toast that carries an action', () => {
-    vi.useFakeTimers();
-
-    try {
-      const manager = renderToaster(1000);
-
-      act(() => {
-        manager.add({ title: 'Plain', type: 'success' });
-        manager.add({
-          title: 'Actionable',
-          actionProps: { children: 'Undo' },
-        });
-      });
-
-      act(() => {
-        vi.advanceTimersByTime(5000);
-      });
-
-      expect(
-        screen.queryByRole('heading', { name: 'Plain' }),
-      ).not.toBeInTheDocument();
-      expect(screen.getByRole('heading', { name: 'Actionable' })).toBeVisible();
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
-  it('never auto-dismisses a loading toast', () => {
-    vi.useFakeTimers();
-
-    try {
-      const manager = renderToaster(1000);
-
-      act(() => {
-        manager.add({ title: 'Building', type: 'loading' });
-      });
-
-      act(() => {
-        vi.advanceTimersByTime(5000);
-      });
-
-      expect(getToastByTitle('Building')).toBeInTheDocument();
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
-  it('honors an explicit timeout on a toast that carries an action', () => {
-    vi.useFakeTimers();
-
-    try {
-      const manager = renderToaster(0);
-
-      act(() => {
-        manager.add({
-          title: 'Actionable',
-          timeout: 1000,
-          actionProps: { children: 'Undo' },
-        });
-      });
-
-      act(() => {
-        vi.advanceTimersByTime(5000);
-      });
-
-      expect(
-        screen.queryByRole('heading', { name: 'Actionable' }),
-      ).not.toBeInTheDocument();
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
   it('raises a toast to assertive when an update names a louder type', () => {
     const manager = renderToaster();
     let id = '';
@@ -496,46 +412,95 @@ describe('Toast', () => {
     );
   });
 
-  it('applies the same defaults through the useToastManager hook', () => {
-    const getManager = renderWithHookManager();
-    let id = '';
+  it('marks a loading toast as busy', () => {
+    const manager = renderToaster();
 
     act(() => {
-      id = getManager().add({ title: 'Deploy failed', type: 'error' });
+      manager.add({ title: 'Building', type: 'loading' });
+      manager.add({ title: 'Built', type: 'success' });
     });
-    expect(getToastByTitle('Deploy failed')).toHaveAttribute(
-      'role',
-      'alertdialog',
-    );
 
-    act(() => {
-      getManager().update(id, { title: 'Deploy recovered', type: 'success' });
-    });
-    expect(getToastByTitle('Deploy recovered')).toHaveAttribute(
-      'role',
-      'dialog',
-    );
+    expect(getToastByTitle('Building')).toHaveAttribute('aria-busy', 'true');
+    expect(getToastByTitle('Built')).not.toHaveAttribute('aria-busy');
   });
 
-  it('passes the string form of a promise state through untouched', async () => {
-    const getManager = renderWithHookManager();
-    const request = Promise.resolve('done');
+  it('keeps the toast surface out of the tab order', async () => {
+    const user = userEvent.setup();
+    const manager = renderToaster();
 
     act(() => {
-      // Base UI resolves a string state to a description-only toast, so these
-      // read out of the description rather than a title.
-      void getManager().promise(request, {
-        loading: 'Working…',
-        success: 'Finished',
-        error: 'Failed',
+      manager.add({ title: 'Copied to clipboard' });
+      manager.add({
+        title: 'Deployment complete',
+        actionProps: { children: 'View' },
       });
     });
-    expect(screen.getByText('Working…')).toBeVisible();
 
-    await act(async () => {
-      await request;
+    // Neither a passive nor an actionable surface is a stop: activating one
+    // does nothing, and on the actionable one it would sit ahead of the action.
+    const actionable = getToastByTitle('Deployment complete');
+    expect(getToastByTitle('Copied to clipboard')).toHaveAttribute(
+      'tabindex',
+      '-1',
+    );
+    expect(actionable).toHaveAttribute('tabindex', '-1');
+
+    // Tabbing in from the page skips it and lands on the newest toast's action.
+    await user.tab();
+    expect(queryToastAction(actionable)).toHaveFocus();
+
+    // `-1` only removes the surface from the sequential order. Base UI's
+    // viewport focus guard still reaches it with a programmatic `focus()` on
+    // the `F6` route, which the `Interactive` story exercises in a browser.
+    act(() => {
+      actionable.focus();
     });
-    await waitFor(() => expect(screen.getByText('Finished')).toBeVisible());
+    expect(actionable).toHaveFocus();
+  });
+
+  it('leaves the toast surface in the accessibility tree', () => {
+    const manager = renderToaster();
+
+    act(() => {
+      manager.add({
+        title: 'Copied to clipboard',
+        description: 'Paste it wherever you need it.',
+      });
+    });
+
+    // Dropping the surface from the tab order must not drop it from the
+    // accessibility tree: a screen reader still reaches it by virtual cursor.
+    const root = screen.getByRole('dialog', { name: 'Copied to clipboard' });
+    expect(root).toHaveAttribute('tabindex', '-1');
+    expect(root).toHaveAccessibleDescription('Paste it wherever you need it.');
+  });
+
+  it('lets a caller opt the surface back into the tab order', () => {
+    const manager = createToastManager<ToastData>();
+
+    function ComposedList() {
+      const { toasts } = useToastManager<ToastData>();
+
+      return toasts.map((toastItem) => (
+        <Toast key={toastItem.id} toast={toastItem} tabIndex={0}>
+          <ToastContent>
+            <ToastTitle />
+          </ToastContent>
+        </Toast>
+      ));
+    }
+
+    render(
+      <ToastProvider timeout={0} toastManager={manager}>
+        <ComposedList />
+      </ToastProvider>,
+    );
+
+    act(() => {
+      manager.add({ title: 'Open deployment' });
+    });
+
+    expect(getToastByTitle('Open deployment')).toHaveAttribute('tabindex', '0');
   });
 
   it('puts the action before the dismiss control in tab order', async () => {
@@ -581,14 +546,139 @@ describe('Toast', () => {
       manager.add({ title: 'Copied to clipboard', onClose });
     });
 
-    // Escape is handled on the toast root, not the viewport, so focus has to be
-    // inside a toast. The realistic F6 → Tab → Escape path needs Base UI's focus
-    // guards and is covered by the `Interactive` story in a real browser.
+    // Escape is handled on the toast root, not the viewport, and the root is
+    // not a focus stop — so the reachable path is the dismiss control, which
+    // the event bubbles up from. The full F6 → Tab → Escape journey needs Base
+    // UI's focus guards and is covered by the `Interactive` story in a browser.
     act(() => {
-      getToastByTitle('Copied to clipboard').focus();
+      getToastClose(getToastByTitle('Copied to clipboard')).focus();
     });
     await user.keyboard('{Escape}');
     expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it('never auto-dismisses a loading toast', () => {
+    vi.useFakeTimers();
+
+    try {
+      const manager = renderToaster(1000);
+
+      act(() => {
+        manager.add({ title: 'Building', type: 'loading' });
+      });
+
+      act(() => {
+        vi.advanceTimersByTime(5000);
+      });
+
+      expect(getToastByTitle('Building')).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('never auto-dismisses a toast that carries an action', () => {
+    vi.useFakeTimers();
+
+    try {
+      const manager = renderToaster(1000);
+
+      act(() => {
+        manager.add({ title: 'Plain', type: 'success' });
+        manager.add({
+          title: 'Actionable',
+          actionProps: { children: 'Undo' },
+        });
+      });
+
+      act(() => {
+        vi.advanceTimersByTime(5000);
+      });
+
+      expect(
+        screen.queryByRole('heading', { name: 'Plain' }),
+      ).not.toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Actionable' })).toBeVisible();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('overrides an explicit timeout on a toast that carries an action', () => {
+    vi.useFakeTimers();
+
+    try {
+      const manager = renderToaster(0);
+
+      // Persistence is a rule, not a default: a toast is either a notification
+      // that may time out or a prompt to act that waits, and a caller asking
+      // for both does not get a vanishing action.
+      act(() => {
+        manager.add({
+          title: 'Actionable',
+          timeout: 1000,
+          actionProps: { children: 'Undo' },
+        });
+      });
+
+      act(() => {
+        vi.advanceTimersByTime(60_000);
+      });
+
+      expect(getToastByTitle('Actionable')).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('overrides an explicit timeout when an update adds an action', () => {
+    vi.useFakeTimers();
+
+    try {
+      const manager = renderToaster(0);
+      let id = '';
+
+      act(() => {
+        id = manager.add({ title: 'Message archived', timeout: 1000 });
+      });
+
+      act(() => {
+        manager.update(id, {
+          timeout: 1000,
+          actionProps: { children: 'Undo' },
+        });
+      });
+
+      act(() => {
+        vi.advanceTimersByTime(60_000);
+      });
+
+      expect(getToastByTitle('Message archived')).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('still auto-dismisses a notification toast that carries no action', () => {
+    vi.useFakeTimers();
+
+    try {
+      const manager = renderToaster(0);
+
+      act(() => {
+        manager.add({ title: 'Copied to clipboard', timeout: 1000 });
+      });
+
+      act(() => {
+        vi.advanceTimersByTime(5000);
+      });
+
+      expect(
+        screen.queryByRole('heading', { name: 'Copied to clipboard' }),
+      ).not.toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('pauses the auto-dismiss timer while the viewport is hovered', async () => {
@@ -616,14 +706,138 @@ describe('Toast', () => {
     });
   });
 
-  it('renders a hidden placeholder when no toast item is supplied', () => {
-    render(<Toast />);
+  it('pauses the auto-dismiss timer while the viewport holds focus', async () => {
+    const user = userEvent.setup();
+    const manager = renderToaster(1000);
 
-    const root = document.querySelector<HTMLElement>('[data-slot="toast"]');
-    expect(root).toHaveAttribute('data-variant', 'default');
-    expect(root).not.toBeVisible();
+    act(() => {
+      manager.add({ title: 'Copied to clipboard' });
+    });
+
+    // `F6` is the documented route onto the viewport, and it pauses the timers
+    // as it lands. Focus has to hold them for as long as hover does: a keyboard
+    // user reading a toast gets the same grace as a pointer user resting on it.
+    await user.keyboard('{F6}');
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1200);
+    });
+    expect(
+      screen.getByRole('heading', { name: 'Copied to clipboard' }),
+    ).toBeVisible();
+
+    // Shift+Tab is the deliberate way back out, and resumes them.
+    await user.tab({ shift: true });
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('heading', { name: 'Copied to clipboard' }),
+      ).not.toBeInTheDocument();
+    });
   });
 
-  // CSS transitions are not testable in jsdom; enter, exit, stack, and swipe
-  // motion are verified in Storybook.
+  it('pauses the auto-dismiss timer on a touch pointer-down', async () => {
+    const manager = renderToaster(500);
+
+    act(() => {
+      manager.add({ title: 'Copied to clipboard' });
+    });
+
+    // A touch tap has no hover to rest in, so Base UI holds the timers from
+    // pointer-down until a later touch lands outside the viewport. Modelled
+    // with `fireEvent` because jsdom emits no compatibility mouse events of its
+    // own for a touch pointer, and `pointerType` is what selects this branch.
+    const viewport = screen.getByRole('region', { name: 'Notifications' });
+    fireEvent.pointerDown(viewport, { pointerType: 'touch' });
+    fireEvent.mouseEnter(viewport);
+    await new Promise((resolve) => {
+      setTimeout(resolve, 900);
+    });
+    expect(
+      screen.getByRole('heading', { name: 'Copied to clipboard' }),
+    ).toBeVisible();
+
+    // A touch outside the viewport is explicit "done here", and resumes them.
+    // A mouse pointer-down there would not: the toast may simply be sitting
+    // over the page, and a click elsewhere is not a dismissal.
+    fireEvent.pointerDown(document.body, { pointerType: 'touch' });
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('heading', { name: 'Copied to clipboard' }),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it('updates a promise toast from loading to success', async () => {
+    const manager = renderToaster();
+    let resolvePromise: (value: string) => void = () => {};
+    const request = new Promise<string>((resolve) => {
+      resolvePromise = resolve;
+    });
+
+    act(() => {
+      void manager.promise(request, {
+        loading: { title: 'Building', type: 'loading' },
+        success: (name) => ({ title: `${name} is live`, type: 'success' }),
+        error: { title: 'Failed', type: 'error' },
+      });
+    });
+
+    expect(getToastByTitle('Building')).toHaveAttribute(
+      'data-variant',
+      'loading',
+    );
+
+    await act(async () => {
+      resolvePromise('nebari-prod');
+      await request;
+    });
+
+    await waitFor(() => {
+      expect(getToastByTitle('nebari-prod is live')).toHaveAttribute(
+        'data-variant',
+        'success',
+      );
+    });
+  });
+
+  it('passes the string form of a promise state through untouched', async () => {
+    const getManager = renderWithHookManager();
+    const request = Promise.resolve('done');
+
+    act(() => {
+      // Base UI resolves a string state to a description-only toast, so these
+      // read out of the description rather than a title.
+      void getManager().promise(request, {
+        loading: 'Working…',
+        success: 'Finished',
+        error: 'Failed',
+      });
+    });
+    expect(screen.getByText('Working…')).toBeVisible();
+
+    await act(async () => {
+      await request;
+    });
+    await waitFor(() => expect(screen.getByText('Finished')).toBeVisible());
+  });
+
+  it('applies the same defaults through the useToastManager hook', () => {
+    const getManager = renderWithHookManager();
+    let id = '';
+
+    act(() => {
+      id = getManager().add({ title: 'Deploy failed', type: 'error' });
+    });
+    expect(getToastByTitle('Deploy failed')).toHaveAttribute(
+      'role',
+      'alertdialog',
+    );
+
+    act(() => {
+      getManager().update(id, { title: 'Deploy recovered', type: 'success' });
+    });
+    expect(getToastByTitle('Deploy recovered')).toHaveAttribute(
+      'role',
+      'dialog',
+    );
+  });
 });
