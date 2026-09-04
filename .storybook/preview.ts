@@ -36,7 +36,8 @@ const preview: Preview = {
   },
   parameters: {
     // Sidebar order: the Introduction landing page first, then the Style
-    // Guide, then Components; anything else falls to the end alphabetically.
+    // Guide, then Components, then Hooks; anything else falls to the end
+    // alphabetically.
     options: {
       storySort: {
         order: [
@@ -44,6 +45,7 @@ const preview: Preview = {
           'Style Guide',
           ['Colors', 'Typography', 'Icons'],
           'Components',
+          'Hooks',
         ],
       },
     },

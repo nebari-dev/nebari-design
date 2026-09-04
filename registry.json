@@ -322,6 +322,28 @@
       ]
     },
     {
+      "name": "toast",
+      "type": "registry:ui",
+      "title": "Toast",
+      "description": "Transient notification with status types, actions, promise updates, a five-item stack, and swipe dismissal, built on Base UI Toast.",
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "@nebari/button",
+        "@nebari/theme",
+        "@nebari/utils"
+      ],
+      "files": [
+        {
+          "path": "registry/nebari/ui/toast.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "sidebar",
       "type": "registry:ui",
       "title": "Sidebar",
@@ -625,6 +647,8 @@
           "muted-foreground-strong": "oklch(47.01% 0.0112 285.96)",
           "accent": "oklch(95.04% 0.0042 236.50)",
           "accent-foreground": "oklch(32.95% 0.0209 254.12)",
+          "info": "oklch(95.08% 0.0232 264.46)",
+          "info-foreground": "oklch(55.04% 0.2158 264.34)",
           "destructive": "oklch(95.06% 0.0247 29.93)",
           "destructive-foreground": "oklch(54.97% 0.2151 27.33)",
           "warning": "oklch(95.02% 0.0692 92.11)",
@@ -671,6 +695,8 @@
           "muted-foreground-strong": "oklch(78.06% 0.0056 286.27)",
           "accent": "oklch(40% 0.0269 250.57)",
           "accent-foreground": "oklch(95.04% 0.0042 236.50)",
+          "info": "oklch(33.01% 0.1387 264.40)",
+          "info-foreground": "oklch(69.95% 0.1433 264.44)",
           "destructive": "oklch(33.1% 0.1332 27.42)",
           "destructive-foreground": "oklch(78.02% 0.1024 27.78)",
           "warning": "oklch(33.09% 0.0677 92.20)",
