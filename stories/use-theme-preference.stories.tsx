@@ -1,56 +1,39 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+import { expect, userEvent, within } from 'storybook/test';
 import {
   THEME_MODES,
   type ThemeMode,
   useThemePreference,
 } from '@/hooks/use-theme-preference';
 import { Button } from '@/ui/button';
+import {
+  THEME_MODE_LABELS,
+  useReturnThemeToToolbar,
+} from './theme-story-helpers';
 
 /** Keeps the demo's persisted writes off any other key on this origin. */
 const STORYBOOK_STORAGE_KEY = 'nebari-storybook:themeMode';
 
-const MODE_LABELS: Record<ThemeMode, string> = {
-  light: 'Light',
-  dark: 'Dark',
-  system: 'System',
-};
-
-/**
- * The hook writes `.dark` to `<html>` — that's what this story demonstrates —
- * but `.storybook/preview.tsx` keeps the toolbar `theme` global as the single
- * source of truth for the preview. So hand the class back to the toolbar on the
- * way out, or a demo override would follow the reader into every other story.
- *
- * The value is read through a ref so a toolbar change mid-story doesn't run the
- * cleanup with the stale value.
- */
-function useReturnThemeToToolbar(toolbarIsDark: boolean) {
-  const toolbarIsDarkRef = useRef(toolbarIsDark);
-  toolbarIsDarkRef.current = toolbarIsDark;
-
-  useEffect(
-    () => () => {
-      document.documentElement.classList.toggle(
-        'dark',
-        toolbarIsDarkRef.current,
-      );
-    },
-    [],
-  );
-}
-
 interface ThemeToggleDemoProps {
+  storageKey?: string;
+  /** Documentation-only row for the hook return value. */
+  themeMode?: ThemeMode;
+  /** Documentation-only row for the hook return value. */
+  isDarkMode?: boolean;
+  /** Documentation-only row for the hook return value. */
+  setThemeMode?: (mode: ThemeMode) => void;
   /** The Storybook toolbar's `theme` global, passed in by the story render. */
   toolbarMode?: 'light' | 'dark';
 }
 
-/**
- * Demonstration of `useThemePreference` driving a light/dark/system control.
- */
-function ThemeToggleDemo({ toolbarMode = 'light' }: ThemeToggleDemoProps) {
+/** Demonstration of `useThemePreference` driving a theme control. */
+function ThemeToggleDemo({
+  storageKey,
+  toolbarMode = 'light',
+}: ThemeToggleDemoProps) {
   const { themeMode, isDarkMode, setThemeMode } = useThemePreference({
-    storageKey: STORYBOOK_STORAGE_KEY,
+    storageKey,
   });
 
   // Adopt the toolbar on mount and on every toolbar change, so opening this
@@ -74,7 +57,7 @@ function ThemeToggleDemo({ toolbarMode = 'light' }: ThemeToggleDemoProps) {
             aria-pressed={themeMode === mode}
             onClick={() => setThemeMode(mode)}
           >
-            {MODE_LABELS[mode]}
+            {THEME_MODE_LABELS[mode]}
           </Button>
         ))}
       </fieldset>
@@ -89,8 +72,47 @@ function ThemeToggleDemo({ toolbarMode = 'light' }: ThemeToggleDemoProps) {
 const meta = {
   title: 'Hooks/useThemePreference',
   component: ThemeToggleDemo,
+  args: {
+    storageKey: STORYBOOK_STORAGE_KEY,
+  },
   argTypes: {
-    // Story plumbing, not part of the hook's API.
+    storageKey: {
+      description:
+        '`useThemePreference` option selecting the `localStorage` key used to persist the preference.',
+      control: false,
+      table: {
+        category: 'useThemePreference options',
+        defaultValue: { summary: 'nebari:themeMode' },
+        type: { summary: 'string' },
+      },
+    },
+    themeMode: {
+      description:
+        "Current persisted preference: `'light'`, `'dark'`, or `'system'`.",
+      control: false,
+      table: {
+        category: 'useThemePreference return',
+        type: { summary: "'light' | 'dark' | 'system'" },
+      },
+    },
+    isDarkMode: {
+      description:
+        'Resolved appearance; in system mode it follows the operating-system preference.',
+      control: false,
+      table: {
+        category: 'useThemePreference return',
+        type: { summary: 'boolean' },
+      },
+    },
+    setThemeMode: {
+      description:
+        'Updates the current preference and persists it under `storageKey`.',
+      control: false,
+      table: {
+        category: 'useThemePreference return',
+        type: { summary: '(mode: ThemeMode) => void' },
+      },
+    },
     toolbarMode: { table: { disable: true }, control: false },
   },
   parameters: {
@@ -119,9 +141,28 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: (_args, { globals }) => (
+  render: (args, { globals }) => (
     <ThemeToggleDemo
+      {...args}
       toolbarMode={globals.theme === 'dark' ? 'dark' : 'light'}
     />
   ),
+  // `system` is deliberately not asserted: it resolves from the host OS, which
+  // differs between a developer's browser and headless Chromium.
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const status = canvas.getByText(/^Preference:/);
+
+    const dark = canvas.getByRole('button', { name: 'Dark' });
+    await userEvent.click(dark);
+    await expect(dark).toHaveAttribute('aria-pressed', 'true');
+    await expect(status).toHaveTextContent('Preference: dark');
+    await expect(status).toHaveTextContent('resolved: dark');
+
+    const light = canvas.getByRole('button', { name: 'Light' });
+    await userEvent.click(light);
+    await expect(light).toHaveAttribute('aria-pressed', 'true');
+    await expect(status).toHaveTextContent('Preference: light');
+    await expect(status).toHaveTextContent('resolved: light');
+  },
 };

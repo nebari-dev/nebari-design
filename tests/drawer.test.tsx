@@ -13,7 +13,24 @@ import {
   type DrawerProps,
   DrawerTitle,
   DrawerTrigger,
+  useDrawerContext,
 } from '@/ui/drawer';
+
+function DrawerContextProbe() {
+  const { hasSnapPoints, modal, showSwipeHandle, side, swipeDirection } =
+    useDrawerContext('DrawerContextProbe');
+
+  return (
+    <output
+      data-testid="drawer-context"
+      data-has-snap-points={hasSnapPoints}
+      data-modal={modal}
+      data-show-swipe-handle={showSwipeHandle}
+      data-side={side}
+      data-swipe-direction={swipeDirection}
+    />
+  );
+}
 
 function TestDrawer({
   onOpenChange,
@@ -53,6 +70,49 @@ function TestDrawer({
 }
 
 describe('Drawer', () => {
+  it('exposes the resolved root configuration through useDrawerContext', () => {
+    const { rerender } = render(
+      <Drawer side="bottom">
+        <DrawerContextProbe />
+      </Drawer>,
+    );
+
+    const context = screen.getByTestId('drawer-context');
+    expect(context).toHaveAttribute('data-side', 'bottom');
+    expect(context).toHaveAttribute('data-swipe-direction', 'down');
+    expect(context).toHaveAttribute('data-show-swipe-handle', 'true');
+    expect(context).toHaveAttribute('data-modal', 'true');
+    expect(context).toHaveAttribute('data-has-snap-points', 'false');
+
+    rerender(
+      <Drawer
+        modal="trap-focus"
+        showSwipeHandle
+        side="right"
+        snapPoints={[0.5]}
+        swipeDirection="up"
+      >
+        <DrawerContextProbe />
+      </Drawer>,
+    );
+
+    expect(context).toHaveAttribute('data-side', 'top');
+    expect(context).toHaveAttribute('data-swipe-direction', 'up');
+    expect(context).toHaveAttribute('data-show-swipe-handle', 'true');
+    expect(context).toHaveAttribute('data-modal', 'trap-focus');
+    expect(context).toHaveAttribute('data-has-snap-points', 'true');
+  });
+
+  it('names the consumer part when useDrawerContext has no root', () => {
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    expect(() => render(<DrawerContextProbe />)).toThrow(
+      '<DrawerContextProbe> must be used within a <Drawer>.',
+    );
+
+    spy.mockRestore();
+  });
+
   it('opens with stable data hooks and accessible title/description', async () => {
     const user = userEvent.setup();
     render(<TestDrawer />);

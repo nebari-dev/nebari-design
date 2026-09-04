@@ -7,6 +7,7 @@ import {
   CodeBlockCopyButton,
   CodeBlockHeader,
   codeBlockCopyButtonVariants,
+  useCodeBlockContext,
 } from '@/ui/code-block';
 
 const snippet = 'const answer = 42;\n\nconsole.log(answer);';
@@ -18,6 +19,22 @@ function mockClipboard(writeText: ReturnType<typeof vi.fn>) {
     configurable: true,
     writable: true,
   });
+}
+
+function CodeBlockContextProbe() {
+  const { code, hasFloatingCopyButton, showLineNumbers } = useCodeBlockContext(
+    'CodeBlockContextProbe',
+  );
+
+  return (
+    <output
+      data-testid="code-block-context"
+      data-floating-copy-button={hasFloatingCopyButton}
+      data-line-numbers={showLineNumbers}
+    >
+      {code}
+    </output>
+  );
 }
 
 describe('CodeBlock', () => {
@@ -47,6 +64,34 @@ describe('CodeBlock', () => {
       .closest('[data-slot=code-block-body]');
     expect(body).toBeInTheDocument();
     expect(body).toHaveTextContent('console.log(answer);');
+  });
+
+  it('exposes the root configuration through useCodeBlockContext', () => {
+    render(
+      <CodeBlock code={snippet} showCopyButton={false} showLineNumbers>
+        <CodeBlockContextProbe />
+      </CodeBlock>,
+    );
+
+    expect(screen.getByTestId('code-block-context').textContent).toBe(snippet);
+    expect(screen.getByTestId('code-block-context')).toHaveAttribute(
+      'data-line-numbers',
+      'true',
+    );
+    expect(screen.getByTestId('code-block-context')).toHaveAttribute(
+      'data-floating-copy-button',
+      'false',
+    );
+  });
+
+  it('names the consumer part when useCodeBlockContext has no root', () => {
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    expect(() => render(<CodeBlockContextProbe />)).toThrow(
+      '<CodeBlockContextProbe> must be used within a <CodeBlock>.',
+    );
+
+    spy.mockRestore();
   });
 
   it('forces the dark palette via the dark class when the dark prop is set', () => {
