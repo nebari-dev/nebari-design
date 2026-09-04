@@ -58,7 +58,8 @@ covers:
 - **Hooks** — `use-theme-preference` (a hook + `ThemeProvider` that persists a
   light/dark/system preference and follows the OS).
 - **Forms & inputs** — `button`, `button-group`, `input`, `textarea`, `label`,
-  `field`, `checkbox`, `radio-group`, `switch`, `slider`, `select`.
+  `field`, `checkbox`, `radio-group`, `switch`, `slider`, `select`,
+  `combobox`.
 - **Overlays & menus** — `dialog`, `drawer`, `dropdown-menu`, `tooltip`.
 - **Navigation** — `navigation-menu`, `breadcrumb`, `tabs`.
 - **Feedback & display** — `alert`, `badge`, `card`, `table`, `code-block`,
