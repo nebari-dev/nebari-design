@@ -490,14 +490,26 @@ absent (e.g. `// CSS transitions are not testable in jsdom; animated states are
 ### Hook stories
 
 Give every hook exported to consumers its own Storybook page, whether it lives
-in `registry/nebari/hooks` or is exported beside a component. Do not make pages
-for unexported context readers or hooks owned by Base UI that Nebari does not
-re-export; their component stories cover the public behavior.
+in `registry/nebari/hooks` or is exported beside a component. Export is the
+test, not category: a context reader counts once it is in a component's
+`export {}` block, because consumers can then compose their own parts with it.
+Do not make pages for hooks that stay module-private, or for hooks owned by Base
+UI that Nebari does not re-export; their component stories cover the public
+behavior.
 
 This is a documentation-only workflow. Do not add or extract hooks, or change a
 hook's signature, return shape, or behavior to make a demo easier. If an
 existing hook is awkward to demonstrate, file a follow-up instead. A hook story
-does not change `registry.json` or require a component test.
+does not change `registry.json` and needs no test of its own. Publishing a
+previously module-private hook so it can be documented is the exception: that
+widens the component's public API, so cover the new export in the component's
+test — the values it returns, and the named error it throws without its root.
+
+If a task explicitly promotes an existing internal hook to public API, export
+the existing function without changing its signature or behavior, export any
+types consumers need to use its return value, and add focused contract tests for
+the newly public surface. The owning component's existing registry item already
+ships the source file, so this still does not require a `registry.json` change.
 
 - Title the page `Hooks/<exportedHookName>` and normally name the file after the
   hook in kebab case: `useSidebar` becomes `use-sidebar.stories.tsx`. A
@@ -517,7 +529,9 @@ does not change `registry.json` or require a component test.
   `parameters.docs.description.component`. When the provider avoids competing
   hook instances or global side effects, explain that advantage. If misuse
   throws, show or describe the exact failure without deliberately crashing the
-  Storybook preview.
+  Storybook preview. The established shape is a second story — `Outside
+  Provider`, or `Outside Root` for a component-owned hook — rendering the exact
+  message as `Alert` copy plus a button that mounts the provider and recovers.
 - Document every public option, provider prop, and returned value with
   descriptive `argTypes`, explicit `table.type` summaries, and distinct
   categories such as `useThemePreference options`, `ThemeProvider props`, and
@@ -525,6 +539,16 @@ does not change `registry.json` or require a component test.
   `control: false`; reserve `table.disable` for story-only plumbing. A local
   demo props type may add optional documentation-only fields for return values
   so the complete API table renders.
+- A component-owned context reader takes the calling component's name as its
+  only argument, purely to name itself in the error it throws. Document that
+  parameter in its own `useXContext parameter` category, and say plainly that it
+  does not change what the hook returns.
+- Demonstrate a context reader with a custom part the component does not already
+  ship — a counter, a summary, a badge — driven by controls that change the
+  root's props. Repeating a part that already exists proves nothing the
+  component's own story doesn't. Where the value is that one provider reaches
+  everywhere, render the same custom part twice, including inside portaled
+  content.
 - Isolate demos that mutate browser-global state. Use a story-specific
   `localStorage` key and restore any toolbar-owned `<html>` class on unmount so
   the demo cannot affect another story.
