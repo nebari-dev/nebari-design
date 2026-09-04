@@ -329,8 +329,9 @@ function ComboboxList({ className, ...props }: ComboboxPrimitive.List.Props) {
 
 /**
  * Selectable option row (28px). Highlight uses `bg-muted`; a trailing check
- * marks the selected value. Disabled items are announced and cannot be
- * selected.
+ * marks the selected value. Disabled items are announced, stay reachable by
+ * keyboard, and cannot be selected — they never get the highlight treatment
+ * from either pointer or keyboard.
  */
 function ComboboxItem({
   className,
@@ -341,7 +342,7 @@ function ComboboxItem({
     <ComboboxPrimitive.Item
       data-slot="combobox-item"
       className={cn(
-        "relative flex w-full cursor-default items-center gap-2 rounded-md px-1.5 py-1 text-sm outline-hidden select-none data-[highlighted]:bg-muted data-[highlighted]:text-foreground data-[disabled]:cursor-not-allowed data-[disabled]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative flex w-full cursor-default items-center gap-2 rounded-md px-1.5 py-1 text-sm outline-hidden select-none not-data-[disabled]:data-[highlighted]:bg-muted not-data-[disabled]:data-[highlighted]:text-foreground data-[disabled]:cursor-not-allowed data-[disabled]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
@@ -392,7 +393,7 @@ function ComboboxGroupLabel({
     <ComboboxPrimitive.GroupLabel
       data-slot="combobox-group-label"
       className={cn(
-        'px-1.5 py-1.5 font-medium text-[11px] text-muted-foreground uppercase leading-4 tracking-[0.8px]',
+        'px-1.5 py-1.5 font-medium text-muted-foreground text-xs uppercase tracking-[0.8px]',
         className,
       )}
       {...props}

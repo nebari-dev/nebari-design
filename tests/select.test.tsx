@@ -79,6 +79,8 @@ describe('Select', () => {
     const trigger = screen.getByRole('combobox', { name: 'Framework' });
     expect(trigger).toHaveClass(
       'w-full',
+      'min-h-8',
+      'py-1.5',
       'border',
       'focus-visible:ring-2',
       'data-[pressed]:ring-2',
@@ -86,6 +88,7 @@ describe('Select', () => {
       'aria-invalid:ring-2',
     );
     expect(trigger.className).not.toContain('border-2');
+    expect(trigger.className).not.toContain('h-9');
     expect(trigger.className).not.toContain('motion-safe:');
     expect(trigger.className).not.toContain('active:scale');
   });
@@ -102,11 +105,22 @@ describe('Select', () => {
     const popup = listbox.closest('[data-slot="select-content"]');
     expect(popup).toHaveAttribute('data-align-trigger', 'false');
     expect(listbox).toHaveClass('p-1');
+    expect(popup).toHaveClass('rounded-lg');
+    expect(screen.getByRole('option', { name: 'Remix' })).toHaveClass(
+      'rounded-md',
+      'px-1.5',
+      'py-1',
+      'not-data-[disabled]:data-[highlighted]:bg-muted',
+    );
     expect(screen.getByText('Frameworks')).toHaveAttribute(
       'data-slot',
       'select-label',
     );
-    expect(screen.getByText('Frameworks')).toHaveClass('uppercase');
+    expect(screen.getByText('Frameworks')).toHaveClass(
+      'uppercase',
+      'text-xs',
+      'tracking-[0.8px]',
+    );
 
     await user.click(screen.getByRole('option', { name: 'Remix' }));
     expect(onValueChange).toHaveBeenCalledWith('remix', expect.anything());
@@ -124,7 +138,11 @@ describe('Select', () => {
       name: 'Gatsby',
     });
     expect(disabledOption).toHaveAttribute('aria-disabled', 'true');
-    expect(disabledOption).toHaveClass('data-[disabled]:cursor-not-allowed');
+    expect(disabledOption).toHaveClass(
+      'data-[disabled]:cursor-not-allowed',
+      'data-[disabled]:text-muted-foreground',
+    );
+    expect(disabledOption.className).not.toContain('opacity-50');
     expect(disabledOption.className).not.toContain(
       'data-[disabled]:pointer-events-none',
     );

@@ -231,7 +231,10 @@ describe('Combobox', () => {
 
     const option = screen.getByRole('option', { name: 'Remix' });
     expect(option).toHaveAttribute('data-slot', 'combobox-item');
-    expect(option).toHaveClass('py-1', 'data-[highlighted]:bg-muted');
+    expect(option).toHaveClass(
+      'py-1',
+      'not-data-[disabled]:data-[highlighted]:bg-muted',
+    );
 
     await user.click(option);
     expect(onValueChange).toHaveBeenCalledWith(remix, expect.anything());
@@ -267,6 +270,14 @@ describe('Combobox', () => {
       name: 'Ember.js',
     });
     expect(disabledOption).toHaveAttribute('aria-disabled', 'true');
+    // Highlight is gated behind `not-data-[disabled]` so a disabled row never
+    // gets hover treatment from the pointer or from keyboard navigation.
+    expect(disabledOption).toHaveClass(
+      'not-data-[disabled]:data-[highlighted]:bg-muted',
+    );
+    expect(disabledOption.className).not.toContain(
+      ' data-[highlighted]:bg-muted',
+    );
 
     await user.click(disabledOption);
     expect(onValueChange).not.toHaveBeenCalled();
@@ -387,7 +398,7 @@ describe('Combobox', () => {
 
     const label = screen.getByText('Frameworks');
     expect(label).toHaveAttribute('data-slot', 'combobox-group-label');
-    expect(label).toHaveClass('uppercase', 'text-[11px]', 'tracking-[0.8px]');
+    expect(label).toHaveClass('uppercase', 'text-xs', 'tracking-[0.8px]');
     expect(screen.getByRole('group', { name: 'Static' })).toHaveAttribute(
       'data-slot',
       'combobox-group',
