@@ -1,4 +1,3 @@
-// biome-ignore-all lint/a11y/noNoninteractiveTabindex: table scroll containers need keyboard access when content overflows.
 import type * as React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';

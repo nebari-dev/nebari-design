@@ -1,4 +1,3 @@
-// biome-ignore-all lint/a11y/noNoninteractiveElementToInteractiveRole: Calendar uses the WAI-ARIA date-picker grid pattern.
 import { useRender } from '@base-ui/react/use-render';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -572,6 +571,7 @@ function Calendar({
             className="w-[15.75rem] table-fixed border-collapse"
             data-slot="calendar-grid"
             ref={gridRef}
+            // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: Calendar uses the WAI-ARIA date-picker grid pattern.
             role="grid"
           >
             <thead>
@@ -611,6 +611,7 @@ function Calendar({
                         data-outside={cell.outside || undefined}
                         data-variant={state}
                         key={formatDateKey(cell.date)}
+                        // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: Calendar uses the WAI-ARIA date-picker grid pattern.
                         role="gridcell"
                         tabIndex={-1}
                       >
