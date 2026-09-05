@@ -589,30 +589,161 @@
       "title": "Nebari theme",
       "description": "Nebari brand color tokens and radius for light and dark modes.",
       "css": {
+        ":root": {
+          "--primary-magenta-50": "oklch(97.93% 0.0118 313.22)",
+          "--primary-magenta-100": "oklch(95.07% 0.0323 311.75)",
+          "--primary-magenta-200": "oklch(86.93% 0.0881 311.32)",
+          "--primary-magenta-300": "oklch(77.96% 0.1496 311.14)",
+          "--primary-magenta-400": "oklch(69.98% 0.1926 311.48)",
+          "--primary-magenta-500": "oklch(61.98% 0.2159 311.67)",
+          "--primary-magenta-600": "oklch(55.06% 0.1886 311.45)",
+          "--primary-magenta-700": "oklch(47.01% 0.1577 311.26)",
+          "--primary-magenta-800": "oklch(39.93% 0.1238 311.55)",
+          "--primary-magenta-900": "oklch(32.97% 0.0867 312.00)",
+          "--primary-magenta-950": "oklch(27.03% 0.0852 311.77)",
+          "--accent-teal-50": "oklch(97.94% 0.0160 187.35)",
+          "--accent-teal-100": "oklch(95.02% 0.0407 187.03)",
+          "--accent-teal-200": "oklch(86.97% 0.0671 187.76)",
+          "--accent-teal-300": "oklch(77.96% 0.0893 187.30)",
+          "--accent-teal-400": "oklch(69.9% 0.0995 187.56)",
+          "--accent-teal-500": "oklch(61.96% 0.0932 187.62)",
+          "--accent-teal-600": "oklch(55.09% 0.0808 187.38)",
+          "--accent-teal-700": "oklch(47% 0.0677 188.28)",
+          "--accent-teal-800": "oklch(39.98% 0.0539 188.08)",
+          "--accent-teal-900": "oklch(33.02% 0.0392 187.72)",
+          "--accent-teal-950": "oklch(27.14% 0.0398 187.08)",
+          "--highlight-yellow-50": "oklch(98.03% 0.0183 86.15)",
+          "--highlight-yellow-100": "oklch(94.96% 0.0461 86.46)",
+          "--highlight-yellow-200": "oklch(87.03% 0.0889 86.52)",
+          "--highlight-yellow-300": "oklch(77.95% 0.1259 85.96)",
+          "--highlight-yellow-400": "oklch(70.05% 0.1417 86.43)",
+          "--highlight-yellow-500": "oklch(62.04% 0.1267 87.01)",
+          "--highlight-yellow-600": "oklch(55.01% 0.1117 86.53)",
+          "--highlight-yellow-700": "oklch(46.93% 0.0960 86.63)",
+          "--highlight-yellow-800": "oklch(40.14% 0.0731 87.00)",
+          "--highlight-yellow-900": "oklch(32.9% 0.0514 85.56)",
+          "--highlight-yellow-950": "oklch(26.86% 0.0514 86.55)",
+          "--neutral-50": "oklch(97.94% 0.0013 286.38)",
+          "--neutral-100": "oklch(95.04% 0.0042 236.50)",
+          "--neutral-200": "oklch(87.02% 0.0106 247.95)",
+          "--neutral-300": "oklch(77.94% 0.0168 253.93)",
+          "--neutral-400": "oklch(70% 0.0253 250.17)",
+          "--neutral-500": "oklch(62.01% 0.0331 251.43)",
+          "--neutral-600": "oklch(54.87% 0.0393 252.47)",
+          "--neutral-700": "oklch(46.94% 0.0327 253.44)",
+          "--neutral-800": "oklch(40% 0.0269 250.57)",
+          "--neutral-900": "oklch(32.95% 0.0209 254.12)",
+          "--neutral-950": "oklch(26.95% 0.0219 254.20)",
+          "--zinc-50": "oklch(97.91% 0 0)",
+          "--zinc-100": "oklch(94.94% 0.0013 286.37)",
+          "--zinc-200": "oklch(87.08% 0.0041 286.31)",
+          "--zinc-300": "oklch(78.06% 0.0056 286.27)",
+          "--zinc-400": "oklch(69.88% 0.0130 286.06)",
+          "--zinc-500": "oklch(61.96% 0.0134 286.00)",
+          "--zinc-600": "oklch(54.86% 0.0154 285.88)",
+          "--zinc-700": "oklch(47.01% 0.0112 285.96)",
+          "--zinc-800": "oklch(39.94% 0.0066 286.10)",
+          "--zinc-900": "oklch(33.01% 0.0052 286.11)",
+          "--zinc-950": "oklch(26.94% 0.0037 286.15)",
+          "--zinc-975": "oklch(21.86% 0.0039 286.08)",
+          "--blue-50": "oklch(97.93% 0.0083 271.33)",
+          "--blue-100": "oklch(95.08% 0.0232 264.46)",
+          "--blue-200": "oklch(87.12% 0.0567 264.22)",
+          "--blue-300": "oklch(78.02% 0.0950 264.35)",
+          "--blue-400": "oklch(69.95% 0.1433 264.44)",
+          "--blue-500": "oklch(62.1% 0.1880 264.30)",
+          "--blue-600": "oklch(55.04% 0.2158 264.34)",
+          "--blue-700": "oklch(47.06% 0.2174 264.33)",
+          "--blue-800": "oklch(40.02% 0.1811 264.47)",
+          "--blue-900": "oklch(33.01% 0.1387 264.40)",
+          "--blue-950": "oklch(27.02% 0.0864 264.19)",
+          "--green-50": "oklch(97.94% 0.0182 150.56)",
+          "--green-100": "oklch(94.94% 0.0433 149.41)",
+          "--green-200": "oklch(87.04% 0.0814 149.55)",
+          "--green-300": "oklch(78.09% 0.1374 149.53)",
+          "--green-400": "oklch(69.96% 0.1814 149.67)",
+          "--green-500": "oklch(61.95% 0.1718 149.70)",
+          "--green-600": "oklch(55.08% 0.1525 149.53)",
+          "--green-700": "oklch(47.01% 0.1313 149.41)",
+          "--green-800": "oklch(40.02% 0.1082 149.72)",
+          "--green-900": "oklch(32.88% 0.0887 149.73)",
+          "--green-950": "oklch(27.13% 0.0631 149.76)",
+          "--red-50": "oklch(97.91% 0.0087 26.02)",
+          "--red-100": "oklch(95.06% 0.0247 29.93)",
+          "--red-200": "oklch(86.96% 0.0594 27.38)",
+          "--red-300": "oklch(78.02% 0.1024 27.78)",
+          "--red-400": "oklch(69.96% 0.1660 27.34)",
+          "--red-500": "oklch(62.07% 0.2077 27.48)",
+          "--red-600": "oklch(54.97% 0.2151 27.33)",
+          "--red-700": "oklch(46.91% 0.1900 27.40)",
+          "--red-800": "oklch(39.97% 0.1611 27.26)",
+          "--red-900": "oklch(33.1% 0.1332 27.42)",
+          "--red-950": "oklch(27.06% 0.0890 26.98)",
+          "--yellow-50": "oklch(97.95% 0.0179 89.36)",
+          "--yellow-100": "oklch(95.02% 0.0692 92.11)",
+          "--yellow-200": "oklch(87.09% 0.1248 91.93)",
+          "--yellow-300": "oklch(78.1% 0.1564 91.73)",
+          "--yellow-400": "oklch(69.92% 0.1414 91.77)",
+          "--yellow-500": "oklch(62.13% 0.1269 92.02)",
+          "--yellow-600": "oklch(54.88% 0.1114 91.56)",
+          "--yellow-700": "oklch(46.91% 0.0960 91.90)",
+          "--yellow-800": "oklch(40.15% 0.0821 92.02)",
+          "--yellow-900": "oklch(33.09% 0.0677 92.20)",
+          "--yellow-950": "oklch(26.96% 0.0539 91.43)",
+          "--black": "oklch(0% 0 0)",
+          "--white": "oklch(100% 0 0)",
+          "--foundation-black": "oklch(20.76% 0.0135 258.37)",
+          "--foundation-white": "oklch(100% 0 0)"
+        },
         "@keyframes nebari-fade-in": {
-          "from": { "opacity": "0" },
-          "to": { "opacity": "1" }
+          "from": {
+            "opacity": "0"
+          },
+          "to": {
+            "opacity": "1"
+          }
         },
         "@keyframes nebari-fade-out": {
-          "from": { "opacity": "1" },
-          "to": { "opacity": "0" }
+          "from": {
+            "opacity": "1"
+          },
+          "to": {
+            "opacity": "0"
+          }
         },
         "@keyframes nebari-slide-up-fade": {
-          "from": { "opacity": "0", "transform": "translateY(6px)" },
-          "to": { "opacity": "1", "transform": "translateY(0)" }
+          "from": {
+            "opacity": "0",
+            "transform": "translateY(6px)"
+          },
+          "to": {
+            "opacity": "1",
+            "transform": "translateY(0)"
+          }
         },
         "@keyframes nebari-slide-down-fade": {
-          "from": { "opacity": "1", "transform": "translateY(0)" },
-          "to": { "opacity": "0", "transform": "translateY(6px)" }
+          "from": {
+            "opacity": "1",
+            "transform": "translateY(0)"
+          },
+          "to": {
+            "opacity": "0",
+            "transform": "translateY(6px)"
+          }
         },
         "@keyframes nebari-skeleton-pulse": {
-          "0%, 100%": { "opacity": "1" },
-          "50%": { "opacity": "0.5" }
+          "0%, 100%": {
+            "opacity": "1"
+          },
+          "50%": {
+            "opacity": "0.5"
+          }
         }
       },
       "cssVars": {
         "theme": {
-          "radius": "0.625rem",
+          "font-sans": "'Geist Variable', ui-sans-serif, system-ui, sans-serif",
+          "font-mono": "'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace",
           "duration-fast": "100ms",
           "duration-base": "200ms",
           "duration-slow": "350ms",
@@ -626,6 +757,7 @@
           "animate-skeleton-pulse": "nebari-skeleton-pulse var(--duration-loading) var(--ease-standard) infinite"
         },
         "light": {
+          "radius": "0.625rem",
           "background": "oklch(97.91% 0 0)",
           "foreground": "oklch(26.94% 0.0037 286.15)",
           "scrim": "rgba(0, 0, 0, 0.5)",

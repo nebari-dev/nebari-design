@@ -170,12 +170,40 @@ link.
 
 ## Theming
 
-Install the theme once; it writes the Nebari brand color tokens and radius into
-the app's global stylesheet as CSS variables for both light and dark modes:
+Install the theme once; it writes the Nebari brand color tokens, radius, fonts,
+and motion tokens into the app's global stylesheet as CSS variables for both
+light and dark modes:
 
 ```sh
 npx shadcn add @nebari/theme
 ```
+
+- **What it writes, and where.** One `:root` block (the semantic light tokens
+  plus the Figma primitive ramps), one `.dark` block, and one `@theme inline`
+  block holding the Tailwind mappings, radius steps, motion tokens, and the
+  `@keyframes`. That is exactly the shape of
+  [`registry/nebari/globals.css`](https://github.com/nebari-dev/nebari-design/blob/main/registry/nebari/globals.css)
+  in the registry repo — the canonical reference when diffing an app stylesheet.
+- **Re-applying is safe, but resets Nebari-owned values.** On a stylesheet
+  already in that shape, running `npx shadcn add @nebari/theme` again changes
+  only whitespace. Because it is a `registry:theme` item, the CLI *overwrites*
+  every existing `:root` / `.dark` / `@theme inline` value the theme owns
+  (`--primary`, `--radius`, `--font-sans`, …) — that is how token updates
+  reach apps. Installing a component (`npx shadcn add @nebari/button`) pulls the
+  theme in transitively but only *appends* tokens that are missing; it never
+  overwrites.
+- **Keep app-owned overrides in their own block.** Never edit a Nebari value in
+  place — the next theme apply clobbers it. Put overrides and derived tokens in
+  a separate `:root` / `.dark` block *after* the Nebari one (or in a separately
+  imported file). The CLI merges only into the first matching block, and the
+  later declaration wins in the cascade:
+
+  ```css
+  /* App overrides — keep below the Nebari theme blocks. */
+  :root {
+    --primary-hover: color-mix(in oklch, var(--primary), black 12%);
+  }
+  ```
 
 - Tokens are **semantic** (`--primary`, `--muted-foreground`, `--destructive`,
   `--info`, `--success`, `--warning`, `--border`, `--ring`, chart + sidebar
@@ -510,7 +538,7 @@ tokens. Use them to add consistent, accessible, on-brand animation at the
 | `--ease-emphasized` | `cubic-bezier(0.2, 0, 0, 1)` | Overlays sliding into view |
 
 And five ready-made Tailwind `animate-*` utilities (backed by `@keyframes`
-that the theme installs):
+that the theme installs inside `@theme inline`):
 
 | Utility | Effect |
 |---|---|

@@ -9,12 +9,21 @@
  *      named to match Figma, with the source hex recorded for auditability.
  *      These are theme-independent and are NOT exposed as Tailwind utilities.
  *   2. Semantic     — role-based tokens (`--background`, `--primary`, …) that
- *      reference the primitives and switch with light/dark, following Figma's
- *      Light/Dark collections. These are what components consume.
+ *      switch with light/dark, following Figma's Light/Dark collections. These
+ *      are what components consume. Each value is the resolved oklch of a
+ *      primitive, named in the trailing comment.
  *
- * Keep this file and the `theme` item in `registry.json` in sync: the installable
- * theme ships the same semantic values (flattened to their resolved oklch).
+ * This file is the canonical output of `npx shadcn add @nebari/theme`: it has
+ * exactly the shape the shadcn CLI writes (one `:root`, one `.dark`, one
+ * `@theme inline` that also holds the motion tokens and `@keyframes`), so
+ * re-applying the theme to a stylesheet in this shape is a no-op apart from
+ * whitespace. That is also why the semantic values are literals rather than
+ * `var(--primitive)` references — the CLI can only ship literal values, and
+ * would rewrite references on every apply. `tests/theme.test.ts` derives the
+ * `theme` item in `registry.json` from this file and fails if the two drift;
+ * run `bun run sync:theme` after editing this file to regenerate the item.
  */
+
 :root {
   /* ── Primitives: Primary Magenta ─────────────────────────────────────── */
   --primary-magenta-50: oklch(97.93% 0.0118 313.22); /* #fbf6fe */
@@ -139,14 +148,12 @@
   --white: oklch(100% 0 0); /* #ffffff */
   --foundation-black: oklch(20.76% 0.0135 258.37); /* #14181e */
   --foundation-white: oklch(100% 0 0); /* #ffffff */
-}
 
-/*
- * Semantic tokens — Light (Figma "Light" collection). secondary/accent have no
- * Figma equivalent (Nebari uses a single magenta brand color), so they map to
- * the neutral ramp.
- */
-:root {
+  /*
+   * Semantic tokens — Light (Figma "Light" collection). secondary/accent have
+   * no Figma equivalent (Nebari uses a single magenta brand color), so they
+   * map to the neutral ramp.
+   */
   --radius: 0.625rem;
 
   /*
@@ -157,208 +164,150 @@
    * on pages painted with it. It is kept so existing consumers do not shift —
    * migrate uses to canvas, header, card, or muted.
    */
-  --background: var(--zinc-50);
-  --foreground: var(--zinc-950);
+  --background: oklch(97.91% 0 0); /* zinc-50 */
+  --foreground: oklch(26.94% 0.0037 286.15); /* zinc-950 */
   --scrim: rgba(0, 0, 0, 0.5);
 
   /* Layer 0 — PAGE. The app body. Use on every page root. Nothing sits below. */
-  --canvas: var(--white);
-  --canvas-foreground: var(--zinc-950);
+  --canvas: oklch(100% 0 0); /* white */
+  --canvas-foreground: oklch(26.94% 0.0037 286.15); /* zinc-950 */
 
   /* Layer 1 — CHROME. App furniture framing the page: top bar / MenuBar,
    * sidebar, toolbars, table head, sticky footer. Sits directly on canvas. */
-  --header: var(--zinc-50);
-  --header-foreground: var(--zinc-950);
+  --header: oklch(97.91% 0 0); /* zinc-50 */
+  --header-foreground: oklch(26.94% 0.0037 286.15); /* zinc-950 */
 
   /* Layer 2 — RAISED. Cards, panels, dialogs, sheets. In light mode this is
    * separated from canvas by border/default, NOT by fill. */
-  --card: var(--white);
-  --card-foreground: var(--zinc-950);
+  --card: oklch(100% 0 0); /* white */
+  --card-foreground: oklch(26.94% 0.0037 286.15); /* zinc-950 */
 
   /* Layer 2 — RAISED, FLOATING. Popovers, dropdowns, tooltips, comboboxes.
    * Same fill as card; differentiated by elevation shadow, not colour. */
-  --popover: var(--white);
-  --popover-foreground: var(--zinc-950);
+  --popover: oklch(100% 0 0); /* white */
+  --popover-foreground: oklch(26.94% 0.0037 286.15); /* zinc-950 */
 
-  --primary: var(--primary-magenta-600);
-  --primary-foreground: var(--white);
+  --primary: oklch(55.06% 0.1886 311.45); /* primary-magenta-600 */
+  --primary-foreground: oklch(100% 0 0); /* white */
   /* Figma color/background/primary-hover — hover/pressed fill. */
-  --primary-hover: var(--primary-magenta-700);
+  --primary-hover: oklch(47.01% 0.1577 311.26); /* primary-magenta-700 */
 
-  --secondary: var(--neutral-100);
-  --secondary-foreground: var(--neutral-900);
+  --secondary: oklch(95.04% 0.0042 236.50); /* neutral-100 */
+  --secondary-foreground: oklch(32.95% 0.0209 254.12); /* neutral-900 */
 
   /* Layer 3 — RECESSED. Only INSIDE a card or chrome: input fills, table zebra
    * rows, progress/slider tracks, disabled states. In dark mode recesses lift,
    * they do not dig. Muted text on this surface must use
    * `--muted-foreground-strong`, not `--muted-foreground`. */
-  --muted: var(--zinc-100);
-  --muted-foreground: var(--zinc-600);
+  --muted: oklch(94.94% 0.0013 286.37); /* zinc-100 */
+  --muted-foreground: oklch(54.86% 0.0154 285.88); /* zinc-600 */
   /* Figma color/foreground/muted-strong — pressed interactive text, and any
    * muted text sitting on `--muted`. */
-  --muted-foreground-strong: var(--zinc-700);
+  --muted-foreground-strong: oklch(47.01% 0.0112 285.96); /* zinc-700 */
 
-  --accent: var(--neutral-100);
-  --accent-foreground: var(--neutral-900);
+  --accent: oklch(95.04% 0.0042 236.50); /* neutral-100 */
+  --accent-foreground: oklch(32.95% 0.0209 254.12); /* neutral-900 */
 
   /* Feedback pairs: a soft background fill + a strong foreground for text and
    * borders. Mirrors Figma's color/background/* and color/foreground/* roles. */
-  --info: var(--blue-100);
-  --info-foreground: var(--blue-600);
+  --info: oklch(95.08% 0.0232 264.46); /* blue-100 */
+  --info-foreground: oklch(55.04% 0.2158 264.34); /* blue-600 */
 
-  --destructive: var(--red-100);
-  --destructive-foreground: var(--red-600);
+  --destructive: oklch(95.06% 0.0247 29.93); /* red-100 */
+  --destructive-foreground: oklch(54.97% 0.2151 27.33); /* red-600 */
 
-  --warning: var(--yellow-100);
-  --warning-foreground: var(--yellow-700);
+  --warning: oklch(95.02% 0.0692 92.11); /* yellow-100 */
+  --warning-foreground: oklch(46.91% 0.0960 91.90); /* yellow-700 */
 
-  --success: var(--green-100);
-  --success-foreground: var(--green-700);
+  --success: oklch(94.94% 0.0433 149.41); /* green-100 */
+  --success-foreground: oklch(47.01% 0.1313 149.41); /* green-700 */
 
-  --border: var(--zinc-300);
-  --input: var(--zinc-400);
+  --border: oklch(78.06% 0.0056 286.27); /* zinc-300 */
+  --input: oklch(69.88% 0.0130 286.06); /* zinc-400 */
   /* Figma color/border/strong — a stronger, more visible border than the
    * default (used by the Badge outline variant). */
-  --border-strong: var(--zinc-500);
-  --ring: var(--primary-magenta-500);
+  --border-strong: oklch(61.96% 0.0134 286.00); /* zinc-500 */
+  --ring: oklch(61.98% 0.2159 311.67); /* primary-magenta-500 */
 
-  --chart-1: var(--primary-magenta-500);
-  --chart-2: var(--accent-teal-500);
-  --chart-3: var(--highlight-yellow-400);
-  --chart-4: var(--blue-500);
-  --chart-5: var(--green-500);
+  --chart-1: oklch(61.98% 0.2159 311.67); /* primary-magenta-500 */
+  --chart-2: oklch(61.96% 0.0932 187.62); /* accent-teal-500 */
+  --chart-3: oklch(70.05% 0.1417 86.43); /* highlight-yellow-400 */
+  --chart-4: oklch(62.1% 0.1880 264.30); /* blue-500 */
+  --chart-5: oklch(61.95% 0.1718 149.70); /* green-500 */
 
-  --sidebar: var(--zinc-50);
-  --sidebar-foreground: var(--zinc-950);
-  --sidebar-primary: var(--primary-magenta-600);
-  --sidebar-primary-foreground: var(--white);
-  --sidebar-accent: var(--neutral-100);
-  --sidebar-accent-foreground: var(--neutral-900);
-  --sidebar-border: var(--zinc-300);
-  --sidebar-ring: var(--primary-magenta-500);
-
-  /* Motion tokens */
-  --duration-fast: 100ms;
-  --duration-base: 200ms;
-  --duration-slow: 350ms;
-  --duration-loading: 1600ms;
-  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --sidebar: oklch(97.91% 0 0); /* zinc-50 */
+  --sidebar-foreground: oklch(26.94% 0.0037 286.15); /* zinc-950 */
+  --sidebar-primary: oklch(55.06% 0.1886 311.45); /* primary-magenta-600 */
+  --sidebar-primary-foreground: oklch(100% 0 0); /* white */
+  --sidebar-accent: oklch(95.04% 0.0042 236.50); /* neutral-100 */
+  --sidebar-accent-foreground: oklch(32.95% 0.0209 254.12); /* neutral-900 */
+  --sidebar-border: oklch(78.06% 0.0056 286.27); /* zinc-300 */
+  --sidebar-ring: oklch(61.98% 0.2159 311.67); /* primary-magenta-500 */
 }
 
 /* Semantic tokens — Dark (Figma "Dark" collection). */
 .dark {
-  --background: var(--zinc-950);
-  --foreground: var(--zinc-50);
+  --background: oklch(26.94% 0.0037 286.15); /* zinc-950 */
+  --foreground: oklch(97.91% 0 0); /* zinc-50 */
   --scrim: rgba(0, 0, 0, 0.6);
 
-  --canvas: var(--zinc-975);
-  --canvas-foreground: var(--zinc-50);
+  --canvas: oklch(21.86% 0.0039 286.08); /* zinc-975 */
+  --canvas-foreground: oklch(97.91% 0 0); /* zinc-50 */
 
-  --header: var(--zinc-950);
-  --header-foreground: var(--zinc-50);
+  --header: oklch(26.94% 0.0037 286.15); /* zinc-950 */
+  --header-foreground: oklch(97.91% 0 0); /* zinc-50 */
 
-  --card: var(--zinc-900);
-  --card-foreground: var(--zinc-50);
+  --card: oklch(33.01% 0.0052 286.11); /* zinc-900 */
+  --card-foreground: oklch(97.91% 0 0); /* zinc-50 */
 
-  --popover: var(--zinc-900);
-  --popover-foreground: var(--zinc-50);
+  --popover: oklch(33.01% 0.0052 286.11); /* zinc-900 */
+  --popover-foreground: oklch(97.91% 0 0); /* zinc-50 */
 
-  --primary: var(--primary-magenta-500);
-  --primary-foreground: var(--black);
-  --primary-hover: var(--primary-magenta-400);
+  --primary: oklch(61.98% 0.2159 311.67); /* primary-magenta-500 */
+  --primary-foreground: oklch(0% 0 0); /* black */
+  --primary-hover: oklch(69.98% 0.1926 311.48); /* primary-magenta-400 */
 
-  --secondary: var(--neutral-800);
-  --secondary-foreground: var(--neutral-100);
+  --secondary: oklch(40% 0.0269 250.57); /* neutral-800 */
+  --secondary-foreground: oklch(95.04% 0.0042 236.50); /* neutral-100 */
 
-  --muted: var(--zinc-800);
-  --muted-foreground: var(--zinc-400);
-  --muted-foreground-strong: var(--zinc-300);
+  --muted: oklch(39.94% 0.0066 286.10); /* zinc-800 */
+  --muted-foreground: oklch(69.88% 0.0130 286.06); /* zinc-400 */
+  --muted-foreground-strong: oklch(78.06% 0.0056 286.27); /* zinc-300 */
 
-  --accent: var(--neutral-800);
-  --accent-foreground: var(--neutral-100);
+  --accent: oklch(40% 0.0269 250.57); /* neutral-800 */
+  --accent-foreground: oklch(95.04% 0.0042 236.50); /* neutral-100 */
 
-  --info: var(--blue-900);
-  --info-foreground: var(--blue-400);
+  --info: oklch(33.01% 0.1387 264.40); /* blue-900 */
+  --info-foreground: oklch(69.95% 0.1433 264.44); /* blue-400 */
 
-  --destructive: var(--red-900);
-  --destructive-foreground: var(--red-300);
+  --destructive: oklch(33.1% 0.1332 27.42); /* red-900 */
+  --destructive-foreground: oklch(78.02% 0.1024 27.78); /* red-300 */
 
-  --warning: var(--yellow-900);
-  --warning-foreground: var(--yellow-200);
+  --warning: oklch(33.09% 0.0677 92.20); /* yellow-900 */
+  --warning-foreground: oklch(87.09% 0.1248 91.93); /* yellow-200 */
 
-  --success: var(--green-900);
-  --success-foreground: var(--green-200);
+  --success: oklch(32.88% 0.0887 149.73); /* green-900 */
+  --success-foreground: oklch(87.04% 0.0814 149.55); /* green-200 */
 
-  --border: var(--zinc-700);
-  --input: var(--zinc-600);
-  --border-strong: var(--zinc-500);
-  --ring: var(--primary-magenta-400);
+  --border: oklch(47.01% 0.0112 285.96); /* zinc-700 */
+  --input: oklch(54.86% 0.0154 285.88); /* zinc-600 */
+  --border-strong: oklch(61.96% 0.0134 286.00); /* zinc-500 */
+  --ring: oklch(69.98% 0.1926 311.48); /* primary-magenta-400 */
 
-  --chart-1: var(--primary-magenta-400);
-  --chart-2: var(--accent-teal-400);
-  --chart-3: var(--highlight-yellow-300);
-  --chart-4: var(--blue-400);
-  --chart-5: var(--green-400);
+  --chart-1: oklch(69.98% 0.1926 311.48); /* primary-magenta-400 */
+  --chart-2: oklch(69.9% 0.0995 187.56); /* accent-teal-400 */
+  --chart-3: oklch(77.95% 0.1259 85.96); /* highlight-yellow-300 */
+  --chart-4: oklch(69.95% 0.1433 264.44); /* blue-400 */
+  --chart-5: oklch(69.96% 0.1814 149.67); /* green-400 */
 
-  --sidebar: var(--zinc-950);
-  --sidebar-foreground: var(--zinc-50);
-  --sidebar-primary: var(--primary-magenta-500);
-  --sidebar-primary-foreground: var(--black);
-  --sidebar-accent: var(--neutral-800);
-  --sidebar-accent-foreground: var(--neutral-100);
-  --sidebar-border: var(--zinc-700);
-  --sidebar-ring: var(--primary-magenta-400);
-}
-
-@keyframes nebari-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes nebari-fade-out {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes nebari-slide-up-fade {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes nebari-slide-down-fade {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-}
-
-@keyframes nebari-skeleton-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+  --sidebar: oklch(26.94% 0.0037 286.15); /* zinc-950 */
+  --sidebar-foreground: oklch(97.91% 0 0); /* zinc-50 */
+  --sidebar-primary: oklch(61.98% 0.2159 311.67); /* primary-magenta-500 */
+  --sidebar-primary-foreground: oklch(0% 0 0); /* black */
+  --sidebar-accent: oklch(40% 0.0269 250.57); /* neutral-800 */
+  --sidebar-accent-foreground: oklch(95.04% 0.0042 236.50); /* neutral-100 */
+  --sidebar-border: oklch(47.01% 0.0112 285.96); /* zinc-700 */
+  --sidebar-ring: oklch(69.98% 0.1926 311.48); /* primary-magenta-400 */
 }
 
 @theme inline {
@@ -427,16 +376,77 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Motion tokens. Tailwind emits these into `:root` when referenced, so the
+   * `--animate-*` values below and `var(--duration-*)` in app CSS both resolve. */
+  --duration-fast: 100ms;
+  --duration-base: 200ms;
+  --duration-slow: 350ms;
+  --duration-loading: 1600ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
 
   --animate-fade-in: nebari-fade-in var(--duration-base) var(--ease-standard) both;
   --animate-fade-out: nebari-fade-out var(--duration-base) var(--ease-standard) both;
   --animate-slide-up-fade: nebari-slide-up-fade var(--duration-base) var(--ease-emphasized) both;
   --animate-slide-down-fade: nebari-slide-down-fade var(--duration-base) var(--ease-emphasized) both;
   --animate-skeleton-pulse: nebari-skeleton-pulse var(--duration-loading) var(--ease-standard) infinite;
+
+  @keyframes nebari-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes nebari-fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes nebari-slide-up-fade {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes nebari-slide-down-fade {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+
+  @keyframes nebari-skeleton-pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
 }
 
 @layer base {
