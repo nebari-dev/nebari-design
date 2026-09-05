@@ -6,7 +6,7 @@ import {
   CheckboxGroup,
   checkboxGroupVariants,
   checkboxVariants,
-} from '@/ui/checkbox';
+} from '@/components/ui/checkbox';
 
 describe('Checkbox', () => {
   it('renders a vertical checkbox group by default', () => {

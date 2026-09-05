@@ -1,7 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ComponentProps, ReactNode } from 'react';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
-import { Field, FieldDescription, FieldError, FieldLabel } from '@/ui/field';
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '@/components/ui/field';
 import {
   Select,
   SelectContent,
@@ -11,7 +16,7 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from '@/ui/select';
+} from '@/components/ui/select';
 
 interface SelectOption {
   label: string;

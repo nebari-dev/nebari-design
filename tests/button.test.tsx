@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { Button, buttonVariants } from '@/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 
 describe('Button', () => {
   it('renders a button with default variant/size data attributes', () => {

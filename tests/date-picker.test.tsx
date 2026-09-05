@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { DatePicker, datePickerVariants } from '@/ui/date-picker';
+import { DatePicker, datePickerVariants } from '@/components/ui/date-picker';
 
 const july2026 = new Date(2026, 6, 1);
 const july6 = new Date(2026, 6, 6);

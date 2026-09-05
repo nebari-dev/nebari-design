@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CircleHelpIcon, CopyIcon } from 'lucide-react';
-import { Button } from '@/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/ui/tooltip';
+} from '@/components/ui/tooltip';
 
 const meta = {
   title: 'Components/Tooltip',

@@ -16,6 +16,10 @@ const config: StorybookConfig = {
       ...viteConfig.resolve,
       alias: {
         ...viteConfig.resolve?.alias,
+        '@/components/ui': resolve(
+          import.meta.dirname,
+          '../registry/nebari/ui',
+        ),
         '@': resolve(import.meta.dirname, '../registry/nebari'),
       },
     };

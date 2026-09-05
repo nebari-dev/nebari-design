@@ -1,8 +1,8 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { Button } from '@/ui/button';
-import { DataTable, type DataTableColumnDef } from '@/ui/data-table';
+import { Button } from '@/components/ui/button';
+import { DataTable, type DataTableColumnDef } from '@/components/ui/data-table';
 
 type Project = {
   id: string;

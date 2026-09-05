@@ -63,10 +63,10 @@ npx shadcn add @nebari/theme
 npx shadcn add @nebari/button
 ```
 
-Installed files land under the app's configured aliases (`@/ui`, `@/hooks`,
-`@/lib`), so
-imports look like `import { Button } from '@/components/ui/button'` — match the
-host app's existing alias resolution.
+Installed files land under the app's configured aliases (`@/components/ui`,
+`@/hooks`, `@/lib` by default), so imports look like
+`import { Button } from '@/components/ui/button'` — match the host app's existing
+alias resolution.
 
 ## Treat installed components as managed
 

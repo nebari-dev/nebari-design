@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
-import { Field, FieldLabel } from '@/ui/field';
-import { Slider } from '@/ui/slider';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Slider } from '@/components/ui/slider';
 
 function ControlledSlider({
   disabled,

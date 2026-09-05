@@ -1,7 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { BarChart3, Code2, Eye, Settings } from 'lucide-react';
 import type { ComponentProps } from 'react';
-import { Tabs, TabsIndicator, TabsList, TabsPanel, TabsTab } from '@/ui/tabs';
+import {
+  Tabs,
+  TabsIndicator,
+  TabsList,
+  TabsPanel,
+  TabsTab,
+} from '@/components/ui/tabs';
 
 type TabsVariant = NonNullable<ComponentProps<typeof TabsList>['variant']>;
 

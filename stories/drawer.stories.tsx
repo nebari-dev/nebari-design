@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
-import { Button } from '@/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Drawer,
   DrawerBody,
@@ -12,7 +12,7 @@ import {
   type DrawerSide,
   DrawerTitle,
   DrawerTrigger,
-} from '@/ui/drawer';
+} from '@/components/ui/drawer';
 
 // `auto` keeps the per-side default (shown for bottom) reachable from the knob.
 const SWIPE_HANDLE_BY_KEY = {

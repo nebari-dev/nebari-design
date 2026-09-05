@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
+import { DatePicker } from '@/components/ui/date-picker';
 import {
   addDays,
   formatDate,
   formatSegmentDate,
   startOfMonth,
 } from '@/lib/date';
-import { DatePicker } from '@/ui/date-picker';
 
 const storyToday = new Date();
 const storyMonth = startOfMonth(storyToday);

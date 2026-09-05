@@ -7,7 +7,7 @@ import {
   AlertDescription,
   AlertTitle,
   alertVariants,
-} from '@/ui/alert';
+} from '@/components/ui/alert';
 
 describe('Alert', () => {
   it('renders a polite status region with default slot/variant attributes', () => {

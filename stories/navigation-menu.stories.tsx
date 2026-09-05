@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Bell, Home, Settings, User } from 'lucide-react';
 import { expect, userEvent, within } from 'storybook/test';
-import { DropdownMenuItem } from '@/ui/dropdown-menu';
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import {
   MenuBar,
   MenuBarActions,
   MenuBarNav,
   NavDropdownMenu,
   NavLink,
-} from '@/ui/navigation-menu';
+} from '@/components/ui/navigation-menu';
 
 const meta = {
   title: 'Components/Navigation Menu',

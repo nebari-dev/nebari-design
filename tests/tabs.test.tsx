@@ -10,7 +10,7 @@ import {
   tabsIndicatorVariants,
   tabsListVariants,
   tabsTabVariants,
-} from '@/ui/tabs';
+} from '@/components/ui/tabs';
 
 function renderTabs(variant: 'pill' | 'underline' = 'pill') {
   return render(

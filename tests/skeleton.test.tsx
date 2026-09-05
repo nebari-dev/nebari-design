@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { Skeleton, skeletonVariants } from '@/ui/skeleton';
+import { Skeleton, skeletonVariants } from '@/components/ui/skeleton';
 
 describe('Skeleton', () => {
   it('renders a decorative line by default', () => {

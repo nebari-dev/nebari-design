@@ -1,8 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
-import { Checkbox, CheckboxGroup } from '@/ui/checkbox';
-import { Field, FieldDescription, FieldError, FieldLabel } from '@/ui/field';
+import { Checkbox, CheckboxGroup } from '@/components/ui/checkbox';
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '@/components/ui/field';
 
 type CheckboxVariant = NonNullable<ComponentProps<typeof Checkbox>['variant']>;
 

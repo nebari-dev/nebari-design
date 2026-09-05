@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Fragment, useState } from 'react';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
-import { Alert, AlertDescription, AlertTitle } from '@/ui/alert';
-import { Button } from '@/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import {
   Drawer,
   DrawerBody,
@@ -16,7 +16,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
   useDrawerContext,
-} from '@/ui/drawer';
+} from '@/components/ui/drawer';
 
 const SIDES: DrawerSide[] = ['right', 'bottom', 'left', 'top'];
 

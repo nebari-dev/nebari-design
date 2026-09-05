@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { Spinner, spinnerVariants } from '@/ui/spinner';
+import { Spinner, spinnerVariants } from '@/components/ui/spinner';
 
 describe('Spinner', () => {
   it('renders with the status role and default slot/size attributes', () => {

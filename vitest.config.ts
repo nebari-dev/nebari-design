@@ -5,7 +5,13 @@ import react from '@vitejs/plugin-react';
 import { playwright } from '@vitest/browser-playwright';
 import { defineConfig } from 'vitest/config';
 
-const alias = { '@': resolve(__dirname, './registry/nebari') };
+// Registry sources import siblings as `@/components/ui/<name>` — the path the
+// shadcn CLI emits for a consumer's default aliases — so map that prefix onto
+// `registry/nebari/ui` ahead of the `@/*` catch-all.
+const alias = {
+  '@/components/ui': resolve(__dirname, './registry/nebari/ui'),
+  '@': resolve(__dirname, './registry/nebari'),
+};
 
 export default defineConfig({
   resolve: { alias },

@@ -23,8 +23,12 @@ entry, a Storybook story, and a Vitest test — then a verification gate.
 Conventions that are easy to get wrong, encoded once here:
 
 - Components live in `registry/nebari/ui/<name>.tsx` (kebab-case file name).
-- The `@/*` path alias resolves to `registry/nebari/*`; `@/ui` → `registry/nebari/ui`,
-  `@/lib` → `registry/nebari/lib`.
+- The `@/*` path alias resolves to `registry/nebari/*`; the more specific
+  `@/components/ui` → `registry/nebari/ui`, `@/lib` → `registry/nebari/lib`,
+  `@/hooks` → `registry/nebari/hooks`.
+- Import registry siblings as `@/components/ui/<name>`, never `@/ui/<name>` (Biome
+  rejects it). It is the path the shadcn CLI emits for a consumer's default
+  aliases, so installed files stay byte-identical to the registry source.
 - Composition uses **Base UI's `render` prop** (`@base-ui/react`), not
   Radix `asChild`.
 - Stories live in top-level `stories/<name>.stories.tsx`, tests in top-level
@@ -407,7 +411,7 @@ applied by every story under `Components/*`
 
 ```tsx
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Button } from '@/ui/button';
+import { Button } from '@/components/ui/button';
 
 const meta = {
   title: 'Components/Button',
@@ -569,7 +573,7 @@ and `render`-prop composition:
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { Button } from '@/ui/button';
+import { Button } from '@/components/ui/button';
 
 describe('Button', () => {
   it('renders its children', () => {

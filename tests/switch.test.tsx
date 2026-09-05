@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { Switch } from '@/ui/switch';
+import { Switch } from '@/components/ui/switch';
 
 describe('Switch', () => {
   it('renders a switch role', () => {

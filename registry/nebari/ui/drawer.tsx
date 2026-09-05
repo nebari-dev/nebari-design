@@ -2,8 +2,8 @@ import { Drawer as DrawerPrimitive } from '@base-ui/react/drawer';
 import { XIcon } from 'lucide-react';
 import type * as React from 'react';
 import { createContext, useContext, useMemo, useRef } from 'react';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Button } from '@/ui/button';
 
 type DrawerSwipeDirection = NonNullable<
   DrawerPrimitive.Root.Props['swipeDirection']

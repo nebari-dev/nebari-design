@@ -10,7 +10,7 @@ import {
   DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu';
 
 interface TestDropdownMenuProps {
   onFirstSelect?: () => void;

@@ -16,6 +16,17 @@ import {
   useState,
 } from 'react';
 import {
+  Calendar,
+  type CalendarDateRange,
+  type CalendarRangeSelectDetails,
+} from '@/components/ui/calendar';
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '@/components/ui/field';
+import {
   addDays,
   addMonths,
   formatDate,
@@ -24,12 +35,6 @@ import {
   startOfDay,
 } from '@/lib/date';
 import { cn } from '@/lib/utils';
-import {
-  Calendar,
-  type CalendarDateRange,
-  type CalendarRangeSelectDetails,
-} from '@/ui/calendar';
-import { Field, FieldDescription, FieldError, FieldLabel } from '@/ui/field';
 
 const datePickerVariants = cva('flex w-72 flex-col gap-1.5', {
   variants: {

@@ -33,9 +33,8 @@ import {
   XIcon,
 } from 'lucide-react';
 import { type ReactNode, useEffect, useMemo, useRef } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/ui/button';
-import { Checkbox } from '@/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -44,15 +43,15 @@ import {
   DropdownMenuGroupLabel,
   DropdownMenuPortal,
   DropdownMenuTrigger,
-} from '@/ui/dropdown-menu';
-import { Input } from '@/ui/input';
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/ui/select';
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -60,7 +59,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/ui/table';
+} from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 
 /**
  * The TanStack feature set every {@link DataTable} is built from. Exported so

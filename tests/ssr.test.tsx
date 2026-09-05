@@ -54,7 +54,7 @@ describe('SSR safety — every registry:ui component', () => {
     const componentName = toPascalCase(item.name);
 
     it(`${item.name} (${componentName}) renders to non-empty HTML without useLayoutEffect warnings`, async () => {
-      const mod = await import(`@/ui/${item.name}.tsx`);
+      const mod = await import(`@/components/ui/${item.name}.tsx`);
       const Component = mod[componentName] as React.ComponentType | undefined;
 
       expect(

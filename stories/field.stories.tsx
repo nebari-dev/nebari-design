@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Field, FieldDescription, FieldLabel } from '@/ui/field';
-import { Switch } from '@/ui/switch';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Switch } from '@/components/ui/switch';
 
 const meta = {
   title: 'Components/Field',

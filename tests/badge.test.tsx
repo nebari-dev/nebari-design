@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { Badge, badgeVariants } from '@/ui/badge';
+import { Badge, badgeVariants } from '@/components/ui/badge';
 
 describe('Badge', () => {
   it('renders its children with default variant data attributes', () => {

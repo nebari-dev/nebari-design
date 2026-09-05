@@ -1,7 +1,6 @@
 import { useRender } from '@base-ui/react/use-render';
 import { cva } from 'class-variance-authority';
 import type { ComponentProps, MouseEvent, ReactNode } from 'react';
-import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +9,8 @@ import {
   type DropdownMenuProps,
   DropdownMenuTrigger,
   type DropdownMenuTriggerProps,
-} from '@/ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
 type NavLinkProps = useRender.ComponentProps<'a'> & {
   /** Marks the link as the current page or section. */

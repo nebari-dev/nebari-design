@@ -1,8 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import { Field, FieldDescription, FieldError, FieldLabel } from '@/ui/field';
-import { Switch } from '@/ui/switch';
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '@/components/ui/field';
+import { Switch } from '@/components/ui/switch';
 
 describe('Field', () => {
   it('names the control via its label', () => {

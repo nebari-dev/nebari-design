@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
+import { Calendar, Day } from '@/components/ui/calendar';
 import { addDays, formatDate, startOfMonth } from '@/lib/date';
-import { Calendar, Day } from '@/ui/calendar';
 
 const storyToday = new Date();
 const storyMonth = startOfMonth(storyToday);

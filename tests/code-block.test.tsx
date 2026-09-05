@@ -8,7 +8,7 @@ import {
   CodeBlockHeader,
   codeBlockCopyButtonVariants,
   useCodeBlockContext,
-} from '@/ui/code-block';
+} from '@/components/ui/code-block';
 
 const snippet = 'const answer = 42;\n\nconsole.log(answer);';
 

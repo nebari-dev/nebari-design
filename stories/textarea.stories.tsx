@@ -1,7 +1,12 @@
 import { Field as FieldPrimitive } from '@base-ui/react/field';
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Field, FieldDescription, FieldError, FieldLabel } from '@/ui/field';
-import { Textarea } from '@/ui/textarea';
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '@/components/ui/field';
+import { Textarea } from '@/components/ui/textarea';
 
 const meta = {
   title: 'Components/Textarea',
