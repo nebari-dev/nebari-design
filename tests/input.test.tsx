@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import { Field, FieldLabel } from '@/ui/field';
-import { Input } from '@/ui/input';
-import { Label } from '@/ui/label';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 // CSS transitions are not testable in jsdom; animated/hover/focus visuals are
 // verified in Storybook.

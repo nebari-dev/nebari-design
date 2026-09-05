@@ -1,13 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { Field, FieldError, FieldLabel } from '@/ui/field';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import {
   RadioGroup,
   RadioGroupItem,
   radioGroupItemVariants,
   radioGroupVariants,
-} from '@/ui/radio-group';
+} from '@/components/ui/radio-group';
 
 describe('RadioGroup', () => {
   it('renders an unselected item with stable data hooks', () => {

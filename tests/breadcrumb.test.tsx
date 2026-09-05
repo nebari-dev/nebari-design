@@ -13,7 +13,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/ui/breadcrumb';
+} from '@/components/ui/breadcrumb';
 
 describe('Breadcrumb', () => {
   it('renders a labelled breadcrumb navigation landmark', () => {

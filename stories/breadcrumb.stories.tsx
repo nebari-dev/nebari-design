@@ -20,7 +20,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/ui/breadcrumb';
+} from '@/components/ui/breadcrumb';
 
 type BreadcrumbCollapsedVariant = 'ellipsis' | 'dropdown';
 type BreadcrumbPreviewVariant = 'default' | BreadcrumbCollapsedVariant;

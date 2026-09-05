@@ -15,8 +15,8 @@ import {
   X,
 } from 'lucide-react';
 import { type ReactNode, useMemo } from 'react';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Button } from '@/ui/button';
 
 /** Semantic color treatment for each toast status icon. */
 const toastIconVariants = cva(

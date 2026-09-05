@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CopyIcon, Trash2Icon } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { Button } from '@/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -11,7 +11,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/ui/table';
+} from '@/components/ui/table';
 
 const environments = [
   {

@@ -1,8 +1,8 @@
 import { Combobox as ComboboxPrimitive } from '@base-ui/react/combobox';
 import { CheckIcon, ChevronsUpDownIcon, XIcon } from 'lucide-react';
 import { type ComponentProps, createContext, useContext } from 'react';
+import { badgeVariants } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { badgeVariants } from '@/ui/badge';
 
 type ComboboxContentProps = ComboboxPrimitive.Popup.Props &
   Pick<

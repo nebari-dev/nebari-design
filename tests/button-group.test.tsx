@@ -1,13 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { Button } from '@/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   ButtonGroup,
   ButtonGroupSeparator,
   ButtonGroupText,
   buttonGroupVariants,
-} from '@/ui/button-group';
+} from '@/components/ui/button-group';
 
 describe('ButtonGroup', () => {
   it('renders a labeled horizontal group by default', () => {

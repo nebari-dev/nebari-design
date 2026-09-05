@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
   cardVariants,
-} from '@/ui/card';
+} from '@/components/ui/card';
 
 describe('Card', () => {
   it('renders the composed card structure with stable data hooks', () => {

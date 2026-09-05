@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ComponentProps } from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { Field, FieldLabel } from '@/ui/field';
+import { Field, FieldLabel } from '@/components/ui/field';
 import {
   Select,
   SelectContent,
@@ -12,7 +12,7 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from '@/ui/select';
+} from '@/components/ui/select';
 
 const frameworks = [
   { label: 'Next.js', value: 'next' },

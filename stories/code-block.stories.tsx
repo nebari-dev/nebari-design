@@ -4,11 +4,11 @@ import {
   CodeBlockBody,
   CodeBlockCopyButton,
   CodeBlockHeader,
-} from '@/ui/code-block';
+} from '@/components/ui/code-block';
 
 const basicSnippet = `pnpm dlx shadcn@latest add @nebari/code-block`;
 
-const multiLineSnippet = `import { CodeBlock, CodeBlockBody } from '@/ui/code-block';
+const multiLineSnippet = `import { CodeBlock, CodeBlockBody } from '@/components/ui/code-block';
 
 export function Example() {
   return (

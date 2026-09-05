@@ -1,7 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ComponentProps } from 'react';
-import { Field, FieldDescription, FieldError, FieldLabel } from '@/ui/field';
-import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '@/components/ui/field';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 type RadioGroupStoryArgs = ComponentProps<typeof RadioGroupItem> &
   Pick<ComponentProps<typeof RadioGroup>, 'orientation'>;

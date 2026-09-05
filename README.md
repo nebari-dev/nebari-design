@@ -149,7 +149,8 @@ the house recipe.
 
 This project uses [Bun](https://bun.sh/), [TypeScript](https://www.typescriptlang.org/),
 and [Tailwind CSS v4](https://tailwindcss.com/). The `@/*` path alias resolves to
-`registry/nebari`.
+`registry/nebari`, and `@/components/ui/*` resolves to `registry/nebari/ui/*` so
+registry sources import siblings exactly as the shadcn CLI emits them.
 
 ```sh
 bun install              # install dependencies
@@ -168,8 +169,9 @@ bun run storybook
 
 The dev server runs at <http://localhost:6006>. Stories live in the top-level
 `stories/` directory, including MDX docs pages and component stories named
-`*.stories.tsx`. Storybook uses the same Tailwind v4 setup and `@/*` alias as the
-registry source, so imports resolve the same way they do in tests and builds.
+`*.stories.tsx`. Storybook uses the same Tailwind v4 setup and `@/*` /
+`@/components/ui/*` aliases as the registry source, so imports resolve the same
+way they do in tests and builds.
 
 Component stories follow a shared controls pattern. `Default` is the interactive
 playground and exposes the documented knobs; every other story narrows controls
@@ -210,8 +212,8 @@ served from the same Pages build under `/r/`.
 Components are tested with [Vitest](https://vitest.dev/),
 [Testing Library](https://testing-library.com/docs/react-testing-library/intro/),
 and `jsdom`. Vitest reuses the same `@vitejs/plugin-react`, Tailwind, and `@` →
-`registry/nebari` alias setup as the registry and Storybook, so tests resolve
-imports exactly like the app does.
+`registry/nebari` / `@/components/ui` → `registry/nebari/ui` alias setup as the
+registry and Storybook, so tests resolve imports exactly like the app does.
 
 ```sh
 bun run test            # run the suite once

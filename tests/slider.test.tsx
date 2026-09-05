@@ -1,7 +1,7 @@
 import { act, render } from '@testing-library/react';
 import type { ReactElement } from 'react';
 import { describe, expect, it } from 'vitest';
-import { Slider } from '@/ui/slider';
+import { Slider } from '@/components/ui/slider';
 
 async function renderSlider(ui: ReactElement) {
   const result = render(ui);

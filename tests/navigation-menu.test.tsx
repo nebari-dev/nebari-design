@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { DropdownMenuItem } from '@/ui/dropdown-menu';
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import {
   MenuBar,
   MenuBarActions,
@@ -10,7 +10,7 @@ import {
   NavDropdownMenu,
   NavLink,
   navLinkVariants,
-} from '@/ui/navigation-menu';
+} from '@/components/ui/navigation-menu';
 
 describe('NavigationMenu', () => {
   it('renders a full menu bar with anchor-first navigation links', () => {

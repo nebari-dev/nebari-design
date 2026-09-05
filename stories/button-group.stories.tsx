@@ -12,19 +12,19 @@ import {
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
-import { Button } from '@/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   ButtonGroup,
   ButtonGroupSeparator,
   ButtonGroupText,
-} from '@/ui/button-group';
+} from '@/components/ui/button-group';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuPortal,
   DropdownMenuTrigger,
-} from '@/ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu';
 
 type SplitButtonProps = {
   groupLabel: string;

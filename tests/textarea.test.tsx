@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import { Textarea } from '@/ui/textarea';
+import { Textarea } from '@/components/ui/textarea';
 
 // CSS transitions are not testable in jsdom; animated/hover/focus visuals are
 // verified in Storybook.

@@ -68,9 +68,18 @@ logo-mark/ symbol/      # brand assets — do not modify
 
 ### Path alias
 
-`@/*` resolves to `registry/nebari/*` (see `tsconfig.json` and `vitest.config.ts`).
-So `@/ui/button` → `registry/nebari/ui/button.tsx`, `@/lib/utils` →
-`registry/nebari/lib/utils.ts`. There is no `src/`.
+`@/*` resolves to `registry/nebari/*`, and the more specific `@/components/ui/*`
+resolves to `registry/nebari/ui/*` (see `tsconfig.json`, `vite.config.ts`,
+`vitest.config.ts`, and `.storybook/main.ts`). So `@/components/ui/button` →
+`registry/nebari/ui/button.tsx`, `@/lib/utils` → `registry/nebari/lib/utils.ts`,
+`@/hooks/use-theme-preference` → `registry/nebari/hooks/use-theme-preference.ts`.
+There is no `src/`.
+
+Always import registry siblings as `@/components/ui/<name>` — never `@/ui/<name>`
+(Biome's `noRestrictedImports` rejects it). That is the path the shadcn CLI emits
+for a consumer with the default `components.json` aliases, so an installed file is
+byte-identical to its `registry/nebari/ui/<name>.tsx` source and drift checks can
+use a plain `diff`.
 
 ## Authoring a component
 

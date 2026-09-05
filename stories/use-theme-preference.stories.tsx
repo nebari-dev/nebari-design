@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useEffect } from 'react';
 import { expect, userEvent, within } from 'storybook/test';
+import { Button } from '@/components/ui/button';
 import {
   THEME_MODES,
   type ThemeMode,
   useThemePreference,
 } from '@/hooks/use-theme-preference';
-import { Button } from '@/ui/button';
 import {
   THEME_MODE_LABELS,
   useReturnThemeToToolbar,

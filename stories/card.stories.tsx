@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ArrowRight, CalendarDays } from 'lucide-react';
 import type * as React from 'react';
-import { Badge } from '@/ui/badge';
-import { Button } from '@/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardAction,
@@ -11,9 +11,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/ui/card';
-import { Field, FieldLabel } from '@/ui/field';
-import { Input } from '@/ui/input';
+} from '@/components/ui/card';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 
 type CardStoryArgs = React.ComponentProps<typeof Card> & {
   showFooter?: boolean;

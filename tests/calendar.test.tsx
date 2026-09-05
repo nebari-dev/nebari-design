@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { Calendar, Day, dayVariants } from '@/ui/calendar';
+import { Calendar, Day, dayVariants } from '@/components/ui/calendar';
 
 const july2026 = new Date(2026, 6, 1);
 const july3 = new Date(2026, 6, 3);

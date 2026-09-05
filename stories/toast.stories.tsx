@@ -1,8 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useEffect, useState } from 'react';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
-import { Button } from '@/ui/button';
-import { Toaster, type ToasterProps, type ToastType, toast } from '@/ui/toast';
+import { Button } from '@/components/ui/button';
+import {
+  Toaster,
+  type ToasterProps,
+  type ToastType,
+  toast,
+} from '@/components/ui/toast';
 
 /**
  * `auto` leaves `priority` unset on the manager item so `Toaster` derives it

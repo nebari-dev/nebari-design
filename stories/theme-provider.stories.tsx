@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { type ReactNode, useEffect, useState } from 'react';
 import { expect, userEvent, within } from 'storybook/test';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { ThemeProvider, useTheme } from '@/hooks/theme-provider';
 import { THEME_MODES, type ThemeMode } from '@/hooks/use-theme-preference';
-import { Alert, AlertDescription, AlertTitle } from '@/ui/alert';
-import { Button } from '@/ui/button';
 import {
   THEME_MODE_LABELS,
   useReturnThemeToToolbar,

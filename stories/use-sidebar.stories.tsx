@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Home, Settings } from 'lucide-react';
 import { expect, userEvent, within } from 'storybook/test';
-import { Button } from '@/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Sidebar,
   SidebarContent,
@@ -14,7 +14,7 @@ import {
   SidebarProvider,
   type SidebarState,
   useSidebar,
-} from '@/ui/sidebar';
+} from '@/components/ui/sidebar';
 
 interface UseSidebarDemoProps {
   /** Documentation-only row for the `useSidebar` return value. */

@@ -1,19 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { expect, userEvent, within } from 'storybook/test';
-import { Alert, AlertDescription, AlertTitle } from '@/ui/alert';
-import { Button } from '@/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import {
   CodeBlock,
   CodeBlockBody,
   CodeBlockCopyButton,
   CodeBlockHeader,
   useCodeBlockContext,
-} from '@/ui/code-block';
+} from '@/components/ui/code-block';
 
 const SNIPPETS = {
   install: 'pnpm dlx shadcn@latest add @nebari/code-block',
-  usage: `import { CodeBlock, CodeBlockBody } from '@/ui/code-block';
+  usage: `import { CodeBlock, CodeBlockBody } from '@/components/ui/code-block';
 
 export function Example() {
   return (

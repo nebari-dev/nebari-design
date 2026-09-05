@@ -8,7 +8,7 @@ import {
   type AccordionHeadingLevel,
   AccordionItem,
   AccordionTrigger,
-} from '@/ui/accordion';
+} from '@/components/ui/accordion';
 
 /** Maps readable control labels to the item values expanded on first render. */
 const OPEN_ITEMS_BY_KEY = {

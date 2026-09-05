@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuSubmenu,
   DropdownMenuTrigger,
-} from '@/ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu';
 
 const meta = {
   title: 'Components/Dropdown Menu',

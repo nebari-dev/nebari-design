@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   addDays,
   addMonths,
@@ -22,7 +23,6 @@ import {
   startOfMonth,
 } from '@/lib/date';
 import { cn } from '@/lib/utils';
-import { Button } from '@/ui/button';
 
 const weekdays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as const;
 

@@ -16,8 +16,8 @@ import {
   ComboboxList,
   ComboboxSeparator,
   ComboboxValue,
-} from '@/ui/combobox';
-import { Field, FieldLabel } from '@/ui/field';
+} from '@/components/ui/combobox';
+import { Field, FieldLabel } from '@/components/ui/field';
 
 interface Framework {
   label: string;

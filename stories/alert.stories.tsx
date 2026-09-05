@@ -7,8 +7,8 @@ import {
   AlertDescription,
   type AlertProps,
   AlertTitle,
-} from '@/ui/alert';
-import { Button } from '@/ui/button';
+} from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 
 type AlertStoryArgs = Omit<AlertProps, 'role'> & {
   role: 'auto' | 'status' | 'alert';

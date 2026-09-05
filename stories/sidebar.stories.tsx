@@ -23,7 +23,7 @@ import {
   DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu';
 import {
   Sidebar,
   SidebarContent,
@@ -41,7 +41,7 @@ import {
   SidebarProvider,
   SidebarSeparator,
   SidebarTrigger,
-} from '@/ui/sidebar';
+} from '@/components/ui/sidebar';
 
 type SidebarMenuButtonVariant = NonNullable<
   ComponentProps<typeof SidebarMenuButton>['variant']

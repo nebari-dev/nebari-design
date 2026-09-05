@@ -21,7 +21,7 @@ import {
   ToastProvider,
   ToastTitle,
   useToastManager,
-} from '@/ui/toast';
+} from '@/components/ui/toast';
 
 /**
  * These tests assert the component's public contract only — ARIA roles and
