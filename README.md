@@ -1,20 +1,41 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./logo-mark/horizontal/Nebari-Logo-Horizontal-Lockup-White-text.svg">
-  <img alt="Nebari horizontal logo mark" src="./logo-mark/horizontal/Nebari-Logo-Horizontal-Lockup.svg" height="150">
-</picture>
+<div align="center">
+  <h1>
+    <img alt="" src="./symbol/Nebari-Symbol.svg" height="56" align="absmiddle">&nbsp;Nebari design
+  </h1>
 
-# Nebari design
+  <p>
+    A <a href="https://ui.shadcn.com/docs/registry">shadcn component registry</a> styled with the Nebari brand,<br>
+    and the home of the Nebari project's design assets.
+  </p>
 
-🎨 This repository is a [shadcn](https://ui.shadcn.com/) component registry styled
-with the Nebari brand, and the home of the Nebari project's design assets.
+  <p>
+    <a href="https://github.com/nebari-dev/nebari-design/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/nebari-dev/nebari-design/actions/workflows/ci.yml/badge.svg"></a>
+    <a href="https://github.com/nebari-dev/nebari-design/actions/workflows/pages.yml"><img alt="Deploy to GitHub Pages" src="https://github.com/nebari-dev/nebari-design/actions/workflows/pages.yml/badge.svg"></a>
+    <a href="https://nebari-dev.github.io/nebari-design/"><img alt="Storybook" src="https://img.shields.io/badge/Storybook-docs-ff4785?logo=storybook&logoColor=white"></a>
+    <a href="https://ui.shadcn.com/docs/registry"><img alt="shadcn registry" src="https://img.shields.io/badge/shadcn-registry-000000?logo=shadcnui&logoColor=white"></a>
+    <a href="./LICENSE"><img alt="License: CC BY-NC-ND 4.0" src="https://img.shields.io/badge/license-CC%20BY--NC--ND%204.0-lightgrey"></a>
+  </p>
+
+  <p>
+    <a href="https://nebari-dev.github.io/nebari-design/"><strong>Storybook</strong></a> ·
+    <a href="#install"><strong>Install</strong></a> ·
+    <a href="#whats-in-the-registry"><strong>Catalog</strong></a> ·
+    <a href="#contributing"><strong>Contributing</strong></a> ·
+    <a href="#design-assets"><strong>Design assets</strong></a>
+  </p>
+</div>
+
+---
 
 Browse every component, with docs and live examples, in the deployed Storybook:
-<https://nebari-dev.github.io/nebari-design/>.
+<https://nebari-dev.github.io/nebari-design/>. The installable registry JSON is
+served from the same Pages build under `/r/`.
 
 ## Component registry
 
-Components are styled with the Nebari brand and can be installed into any
-shadcn-based project.
+Components are distributed as **source**, not as a published npm package. The
+`shadcn` CLI copies each item into your app, where you own the code and can
+adjust it freely.
 
 ### Install
 
@@ -53,17 +74,20 @@ installable items; each one is documented in
 [Storybook](https://nebari-dev.github.io/nebari-design/). The catalog currently
 covers:
 
-- **Foundations** — `utils` (the `cn()` helper), `theme` (brand color tokens and
-  radius for light and dark modes), and `claude-skill` (see below).
+- **Foundations** — `utils` (the `cn()` helper), `date-utils` (calendar-date
+  arithmetic, comparison, formatting, and parsing helpers), `theme` (brand color
+  tokens and radius for light and dark modes), and `claude-skill` (see below).
 - **Hooks** — `use-theme-preference` (a hook + `ThemeProvider` that persists a
   light/dark/system preference and follows the OS).
 - **Forms & inputs** — `button`, `button-group`, `input`, `textarea`, `label`,
-  `field`, `checkbox`, `radio-group`, `switch`, `slider`, `select`,
-  `combobox`.
-- **Overlays & menus** — `dialog`, `drawer`, `dropdown-menu`, `tooltip`.
-- **Navigation** — `navigation-menu`, `breadcrumb`, `tabs`.
-- **Feedback & display** — `alert`, `badge`, `card`, `table`, `code-block`,
-  `spinner`.
+  `field`, `checkbox`, `radio-group`, `switch`, `slider`, `select`, `combobox`,
+  `calendar`, `date-picker`.
+- **Overlays & menus** — `dialog`, `drawer`, `dropdown-menu`, `tooltip`,
+  `toast`.
+- **Navigation & layout** — `navigation-menu`, `breadcrumb`, `tabs`, `sidebar`,
+  `accordion`.
+- **Feedback & display** — `alert`, `badge`, `card`, `table`, `data-table`,
+  `code-block`, `spinner`, `skeleton`.
 
 ### Fonts
 
@@ -103,19 +127,48 @@ installed it auto-triggers on requests like "add the nebari button" or "build a
 form with nebari components", and stays current through the same `shadcn add`
 flow as the components themselves.
 
+## Contributing
+
+### Development
+
+This project uses [Bun](https://bun.sh/), [TypeScript](https://www.typescriptlang.org/),
+[Tailwind CSS v4](https://tailwindcss.com/), and [Base UI](https://base-ui.com/)
+primitives. The `@/*` path alias resolves to `registry/nebari`, and
+`@/components/ui/*` resolves to `registry/nebari/ui/*` so registry sources import
+siblings exactly as the shadcn CLI emits them.
+
+```sh
+bun install              # install dependencies
+bun run storybook        # component workbench on http://localhost:6006
+bun run build:registry   # build the registry into public/r
+bun run check            # biome lint + format checks (check:fix to auto-fix)
+```
+
+Every change must pass the verification gate before it's done. CI runs the same
+sequence on every pull request:
+
+```sh
+bun run build:registry   # registry.json is valid and the item builds into public/r
+bun run check            # biome lint + format (use check:fix to auto-fix)
+bunx tsc --noEmit        # types pass
+bun run test             # unit tests pass
+```
+
 ### Registry layout
 
-| Path                          | Purpose                                                            |
-| ----------------------------- | ------------------------------------------------------------------ |
-| `registry.json`               | Registry manifest — the source of truth for installable items.     |
-| `registry/nebari/ui/`         | UI components (`registry:ui`).                                     |
-| `registry/nebari/hooks/`      | Shared non-visual logic, e.g. theme state (`registry:hook`).       |
-| `registry/nebari/lib/`        | Shared library code, including the `cn()` helper (`registry:lib`). |
-| `registry/nebari/globals.css` | Theme source of truth; `bun run sync:theme` derives the item.     |
-| `registry/nebari/skills/`     | Consumer-facing Claude Code skills (`registry:file`).              |
-| `public/r/`                   | Built, installable JSON artifacts produced by `build:registry`.    |
+| Path                          | Purpose                                                              |
+| ----------------------------- | -------------------------------------------------------------------- |
+| `registry.json`               | Registry manifest — the source of truth for installable items.       |
+| `registry/nebari/ui/`         | UI components (`registry:ui`).                                       |
+| `registry/nebari/hooks/`      | Shared non-visual logic, e.g. theme state (`registry:hook`).         |
+| `registry/nebari/lib/`        | Shared library code: the `cn()` helper and date utils (`registry:lib`). |
+| `registry/nebari/globals.css` | Theme source of truth; `bun run sync:theme` derives the `theme` item. |
+| `registry/nebari/skills/`     | Consumer-facing Claude Code skills (`registry:file`).                |
+| `stories/`                    | Storybook stories and MDX docs pages.                                |
+| `tests/`                      | Vitest suites, mirroring `stories/`.                                 |
+| `public/r/`                   | Built, installable JSON artifacts produced by `build:registry`.      |
 
-### Contributing a component
+### Adding a component
 
 This repo ships a [Claude Code skill](https://docs.claude.com/en/docs/claude-code/skills)
 at `.claude/skills/nebari-component/` that encodes the house recipe for adding a
@@ -124,15 +177,6 @@ component to the registry — the component file pattern (`cva` variants,
 `registry.json` entry shape, story and test templates, and the verification
 gate. Any contributor using Claude Code gets it automatically; invoke it with
 `/nebari-component` or just ask to "add a `<X>` component to the registry".
-
-Every component change must pass the verification gate before it's done:
-
-```sh
-bun run build:registry   # registry.json is valid and the item builds into public/r
-bun run check            # biome lint + format (use check:fix to auto-fix)
-bunx tsc --noEmit        # types pass
-bun run test             # unit tests pass
-```
 
 ### Design-to-code with Figma
 
@@ -144,19 +188,6 @@ so generated components stay faithful to the source design and aligned with
 the Nebari brand colors and fonts. Pair it with the `/nebari-component` skill
 above: pull the design context from Figma, then scaffold the component using
 the house recipe.
-
-### Development
-
-This project uses [Bun](https://bun.sh/), [TypeScript](https://www.typescriptlang.org/),
-and [Tailwind CSS v4](https://tailwindcss.com/). The `@/*` path alias resolves to
-`registry/nebari`, and `@/components/ui/*` resolves to `registry/nebari/ui/*` so
-registry sources import siblings exactly as the shadcn CLI emits them.
-
-```sh
-bun install              # install dependencies
-bun run build:registry   # build the registry into public/r
-bun run check            # biome lint + format checks (check:fix to auto-fix)
-```
 
 ### Storybook
 
@@ -203,9 +234,8 @@ bun run build:storybook  # build the static Storybook site into public/
 bun run build:pages      # build Storybook plus registry JSON for GitHub Pages
 ```
 
-The deployed Storybook site is served from
-<https://nebari-dev.github.io/nebari-design/>. The installable registry JSON is
-served from the same Pages build under `/r/`.
+Pushes to `main` deploy the Pages build automatically via
+[`.github/workflows/pages.yml`](./.github/workflows/pages.yml).
 
 ### Testing
 
@@ -223,26 +253,25 @@ bun run test:coverage   # run with a coverage report
 
 Test files live in the top-level `tests/` directory (mirroring `stories/`),
 named `*.test.ts` / `*.test.tsx`. Coverage of `registry/nebari` is enforced at a
-minimum of 80%.
+minimum of 80% for lines, functions, branches, and statements.
 
 ## Design assets
 
-This repository also contains the design assets for the Nebari project.
+This repository also contains the design assets for the Nebari project, created
+in Adobe Illustrator.
 
-The assets are available in two formats (PNG & SVG) and in three layouts --
-[horizontal (also known as landscape format)](./logo-mark/), [stacked (which is closer to square)](./logo-mark/),
-and [symbol (which does not include the name and is square)](./symbol/), and at least 3 versions (color, white text, & colored background).
+The assets are available in two formats (PNG & SVG) and in three layouts —
+horizontal (landscape), stacked (closer to square), and symbol (the mark alone,
+without the name) — each in at least three versions (color, white text, and
+colored background).
 
-You can find the assets in the following locations:
-
-- [Nebari Symbol](./symbol/)
-- [Nebari horizontal logo mark](./logo-mark/horizontal/)
-- [Nebari stacked logo mark](./logo-mark/stacked/)
-- [Nebari logo mark with colored backgrounds](./logo-mark/colored-background/)
-
-## Software used
-
-The application used to create this artwork is Adobe Illustrator.
+| Asset                                                   | Location                                                     |
+| ------------------------------------------------------- | ------------------------------------------------------------ |
+| Nebari symbol                                           | [`symbol/`](./symbol/)                                       |
+| Nebari symbol with colored backgrounds                  | [`symbol/colored-background/`](./symbol/colored-background/) |
+| Nebari horizontal logo mark                             | [`logo-mark/horizontal/`](./logo-mark/horizontal/)           |
+| Nebari stacked logo mark                                | [`logo-mark/stacked/`](./logo-mark/stacked/)                 |
+| Nebari logo mark with colored backgrounds               | [`logo-mark/colored-background/`](./logo-mark/colored-background/) |
 
 ## Acknowledgements
 
