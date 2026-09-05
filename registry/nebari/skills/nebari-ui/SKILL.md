@@ -314,11 +314,15 @@ the canonical recipe. The reference implementation is
 ### Composition and sizing
 
 The header is built from `@nebari/navigation-menu` (its menus also need
-`@nebari/dropdown-menu`, `@nebari/avatar`, and `@nebari/button`):
+`@nebari/dropdown-menu` and `@nebari/button`):
 
 ```sh
-npx shadcn add @nebari/navigation-menu @nebari/dropdown-menu @nebari/avatar @nebari/button
+npx shadcn add @nebari/navigation-menu @nebari/dropdown-menu @nebari/button
 ```
+
+There is **no `avatar` item in the `@nebari` registry** — don't try to install
+one. The profile menu's `Avatar` is an app-owned component; see
+[App-owned Avatar](#app-owned-avatar) below.
 
 - **`NavigationMenu`** (alias of `MenuBar`, a semantic `<header>`) is the bar.
   Its default is `h-12 px-3`; the canonical app header overrides to **`h-14`**
@@ -413,6 +417,59 @@ scrollable while the menu is open — don't omit it:
 
 Only render the bell if the app actually has notifications — don't ship an
 empty menu.
+
+### App-owned Avatar
+
+The registry does not ship an avatar. Every Nebari app owns a small one built
+directly on Base UI's `Avatar` primitive (already a dependency via
+`@base-ui/react`). Put it **outside** `components/ui/` — that folder is for
+registry-owned files that `npx shadcn add` may overwrite — e.g.
+`src/components/avatar.tsx`, and import it from there in the header:
+
+```tsx
+import { Avatar as AvatarPrimitive } from "@base-ui/react/avatar";
+
+import { cn } from "@/lib/utils";
+
+function Avatar({ className, ...props }: AvatarPrimitive.Root.Props) {
+  return (
+    <AvatarPrimitive.Root
+      data-slot="avatar"
+      className={cn("relative flex size-8 shrink-0 overflow-hidden rounded-full select-none", className)}
+      {...props}
+    />
+  );
+}
+
+function AvatarImage({ className, ...props }: AvatarPrimitive.Image.Props) {
+  return (
+    <AvatarPrimitive.Image
+      data-slot="avatar-image"
+      className={cn("aspect-square size-full object-cover", className)}
+      {...props}
+    />
+  );
+}
+
+function AvatarFallback({ className, ...props }: AvatarPrimitive.Fallback.Props) {
+  return (
+    <AvatarPrimitive.Fallback
+      data-slot="avatar-fallback"
+      className={cn(
+        "flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+export { Avatar, AvatarFallback, AvatarImage };
+```
+
+Base UI owns the image loading state, so `AvatarFallback` renders whenever
+`AvatarImage` is missing or fails to load. Style it with semantic tokens only
+(the header recipe overrides the fallback to `bg-primary text-primary-foreground`).
 
 ### Profile / account menu
 
