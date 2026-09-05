@@ -56,7 +56,7 @@ registry/nebari/
   ui/<name>.tsx        # components (kebab-case filenames)
   hooks/<name>.ts      # shared non-visual logic (registry:hook)
   lib/utils.ts         # cn() helper
-  globals.css          # theme: semantic CSS-variable tokens, light + .dark
+  globals.css          # theme source of truth: primitives + semantic tokens (light/.dark) + @theme inline
   skills/nebari-ui/    # CONSUMER skill, shipped via the registry (claude-skill item)
 stories/<name>.stories.tsx   # Storybook stories — top-level, NOT co-located
 tests/<name>.test.tsx        # Vitest tests — top-level, NOT co-located
@@ -161,7 +161,16 @@ rules that are easy to get wrong:
 - **New tokens** go in `globals.css` as semantic CSS variables for *both* light
   and dark — don't invent a token unless a design genuinely needs one. The OKLCH
   brand scale mirrors the Figma variables; keep code and Figma in sync rather
-  than free-handing colors.
+  than free-handing colors. Semantic values are literal oklch with the primitive
+  named in a trailing comment (the shadcn CLI can only ship literals), exposed to
+  Tailwind via `--color-<name>: var(--<name>)` in `@theme inline`.
+- **`globals.css` is the CLI's canonical output.** Keep exactly one `:root`,
+  one `.dark`, and one `@theme inline` (which also holds fonts, radius steps,
+  motion tokens, and `@keyframes`) — that is the shape `shadcn add` writes, so
+  re-applying `@nebari/theme` to it is a no-op (#151). The `theme` item in
+  `registry.json` is *derived* from this file: after editing tokens run
+  `bun run sync:theme`. `tests/theme.test.ts` fails on drift and runs the real
+  CLI against a throwaway consumer to prove the apply is idempotent.
 - **Fonts** (`Geist`, `IBM Plex Mono`) are referenced by tokens but not shipped
   to consumers; the consumer skill documents installing the `@fontsource`
   packages.
@@ -206,10 +215,10 @@ Once you've decided a component should move, follow these rules:
   component's `cva` block. Re-enumerate every transition property explicitly
   (e.g. `transition-[color,background-color,transform]`) so nothing is
   silently dropped.
-- **Adding new motion tokens.** New `@keyframes` or timing variables go in
-  `globals.css` (`:root` for vars, top-level for keyframes) **and** in the
-  `theme` item in `registry.json` (`css` for keyframes, `cssVars.theme` for
-  vars) so `shadcn add @nebari/theme` ships them to consumers.
+- **Adding new motion tokens.** New `@keyframes` and timing variables go in
+  `globals.css` **inside `@theme inline`** — the shadcn CLI writes keyframes
+  there and deduplicates only there — then run `bun run sync:theme` to
+  regenerate the `theme` item so `shadcn add @nebari/theme` ships them.
 - **JS animation.** Use the Motion library via Base UI's `render` prop as the
   escape hatch when CSS transitions are insufficient. Do not add Motion as a
   default `dependency` in any `registry.json` entry.

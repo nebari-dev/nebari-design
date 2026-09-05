@@ -111,7 +111,7 @@ flow as the components themselves.
 | `registry/nebari/ui/`         | UI components (`registry:ui`).                                     |
 | `registry/nebari/hooks/`      | Shared non-visual logic, e.g. theme state (`registry:hook`).       |
 | `registry/nebari/lib/`        | Shared library code, including the `cn()` helper (`registry:lib`). |
-| `registry/nebari/globals.css` | Tailwind v4 `@theme` token mapping.                                |
+| `registry/nebari/globals.css` | Theme source of truth; `bun run sync:theme` derives the item.     |
 | `registry/nebari/skills/`     | Consumer-facing Claude Code skills (`registry:file`).              |
 | `public/r/`                   | Built, installable JSON artifacts produced by `build:registry`.    |
 

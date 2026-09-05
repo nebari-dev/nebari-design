@@ -21,7 +21,8 @@
     "storybook": "storybook dev -p 6006",
     "test:storybook": "vitest run --project=storybook",
     "build:storybook": "storybook build -o public",
-    "build:pages": "bun run build:storybook && bun run build:registry"
+    "build:pages": "bun run build:storybook && bun run build:registry",
+    "sync:theme": "bun run scripts/sync-theme.ts && biome format --write registry.json"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -54,6 +55,7 @@
     "@vitest/coverage-v8": "4.1.11",
     "jsdom": "^30.0.1",
     "playwright": "1.62.1",
+    "postcss": "8.5.15",
     "shadcn": "4.19.0",
     "storybook": "^10.5.0",
     "tailwindcss": "^4.1.13",
