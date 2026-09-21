@@ -44,6 +44,41 @@ and resolves its registry dependencies — `button` pulls in `utils` automatical
 > of source you copy into your codebase, so you can read and adapt every line.
 > See the [shadcn docs](https://ui.shadcn.com/docs) to set up a project.
 
+## AI skills
+
+Nebari ships two [Claude Code skills](https://docs.claude.com/en/docs/claude-code/skills)
+— one for each audience. Pick the one that matches what you are building.
+
+### Building an app with Nebari
+
+Install the **`nebari-ui`** skill so your assistant knows the design system
+before it writes a line of UI:
+
+```sh
+npx shadcn add @nebari/claude-skill
+```
+
+It lands at `~/.claude/skills/nebari-ui/SKILL.md` and covers registry setup, the
+component catalog, the Base UI `render`-prop composition convention, theming
+with the `@nebari/theme` tokens, the canonical app-header recipe, and the motion
+tokens and accessibility guardrails. Once installed it triggers on requests like
+"add the nebari button" or "build a form with nebari components", and it stays
+current through the same `shadcn add` flow as the components themselves. See the
+[README](https://github.com/nebari-dev/nebari-design#claude-code-skill-for-consumers)
+for details.
+
+### Contributing to this registry
+
+The **`nebari-component`** skill lives in _this_ repo at
+`.claude/skills/nebari-component/` and encodes the house recipe for authoring a
+registry component — the component file pattern, the `registry.json` entry
+shape, story and test templates, and the verification gate. It is for work
+inside this repository, not inside a consumer app; any contributor using Claude
+Code gets it automatically. Invoke it with `/nebari-component` or just ask to
+"add a `<X>` component to the registry". See the
+[README](https://github.com/nebari-dev/nebari-design#adding-a-component) for the
+full contributor guide.
+
 ## Style Guide
 
 The brand tokens every component is built on — colors, type, and iconography.
@@ -77,9 +112,8 @@ for what is available in the registry today.
 ## Contributing
 
 The registry manifest lives in `registry.json`, and component source lives under
-`registry/nebari/`. This repo ships a Claude Code skill at
-`.claude/skills/nebari-component/` that encodes the house recipe for adding a
-component — invoke it with `/nebari-component` or just ask to "add a `<X>`
-component to the registry". See the
+`registry/nebari/`. The `/nebari-component` skill described in
+[AI skills](#contributing-to-this-registry) encodes the house recipe for adding
+a component. See the
 [README](https://github.com/nebari-dev/nebari-design#readme) for the full
 contributor guide.
