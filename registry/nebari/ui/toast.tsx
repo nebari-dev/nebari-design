@@ -1,6 +1,8 @@
 import {
   type ToastManager,
   type ToastManagerPromiseOptions,
+  type ToastManagerUpdateOptions,
+  type ToastObject,
   Toast as ToastPrimitive,
   type UseToastManagerReturnValue,
 } from '@base-ui/react/toast';
@@ -120,6 +122,26 @@ function withToastA11yDefaults<T extends ToastA11yOptions>(options: T): T {
   return Object.keys(patch).length > 0 ? { ...options, ...patch } : options;
 }
 
+/** The argument `update` accepts: a patch, or an updater that returns one. */
+type ToastUpdate<Data extends object> =
+  | ToastManagerUpdateOptions<Data>
+  | ((prevToast: ToastObject<Data>) => ToastManagerUpdateOptions<Data>);
+
+/**
+ * Applies {@link withToastA11yDefaults} to an `update` argument. Base UI also
+ * accepts an updater that derives the patch from the current toast; its return
+ * value is merged like an object patch, so it gets the same treatment.
+ */
+function withUpdateA11yDefaults<Data extends object>(
+  updates: ToastUpdate<Data>,
+): ToastUpdate<Data> {
+  if (typeof updates === 'function') {
+    return (prevToast) => withToastA11yDefaults(updates(prevToast));
+  }
+
+  return withToastA11yDefaults(updates);
+}
+
 /** Applies {@link withToastA11yDefaults} to one state of a promise toast. */
 function withPromiseStateA11yDefaults<State>(state: State): State {
   // Base UI resolves the string form to a description-only toast, which carries
@@ -162,7 +184,8 @@ function createToastManager<
   return {
     ...manager,
     add: (options) => manager.add(withToastA11yDefaults(options)),
-    update: (id, updates) => manager.update(id, withToastA11yDefaults(updates)),
+    update: (id, updates) =>
+      manager.update(id, withUpdateA11yDefaults(updates)),
     promise: (promiseValue, options) =>
       manager.promise(promiseValue, withPromiseA11yDefaults(options)),
   };
@@ -183,7 +206,7 @@ function useToastManager<
       ...manager,
       add: (options) => manager.add(withToastA11yDefaults(options)),
       update: (id, updates) =>
-        manager.update(id, withToastA11yDefaults(updates)),
+        manager.update(id, withUpdateA11yDefaults(updates)),
       promise: (promiseValue, options) =>
         manager.promise(promiseValue, withPromiseA11yDefaults(options)),
     }),

@@ -25,7 +25,7 @@
     "sync:theme": "bun run scripts/sync-theme.ts && biome format --write registry.json"
   },
   "dependencies": {
-    "@base-ui/react": "^1.6.0",
+    "@base-ui/react": "^1.8.0",
     "@fontsource-variable/geist": "^5.2.9",
     "@fontsource/ibm-plex-mono": "^5.2.7",
     "@tanstack/react-table": "9.2.4",
