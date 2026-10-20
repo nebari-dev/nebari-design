@@ -9,7 +9,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Minimal loading spinner — an `animate-spin` wrapper around lucide’s `LoaderCircle`. Exposes `role="status"` so assistive tech announces it, and is used by `Button`’s `loading` state.',
+          'Minimal loading spinner — a `motion-safe:animate-spin` wrapper around lucide’s `LoaderCircle`. Exposes `role="status"` so assistive tech announces it, and is used by `Button`’s `loading` state.',
       },
     },
   },

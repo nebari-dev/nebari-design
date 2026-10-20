@@ -2,7 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { LoaderCircle, type LucideProps } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const spinnerVariants = cva('animate-spin', {
+const spinnerVariants = cva('motion-safe:animate-spin', {
   variants: {
     // `default` intentionally adds no `size-*` class: standalone it falls back
     // to lucide's own size, and inside `Button` it lets the button's
@@ -30,9 +30,10 @@ type SpinnerProps = Omit<LucideProps, 'size'> &
   };
 
 /**
- * Minimal loading spinner — an `animate-spin` wrapper around lucide's
- * `LoaderCircle`. Exposes `role="status"` so assistive tech announces it and
- * tests can query it. Used by `Button`'s `loading` state.
+ * Minimal loading spinner — a `motion-safe:animate-spin` wrapper around
+ * lucide's `LoaderCircle`. Exposes `role="status"` so assistive tech announces
+ * it and tests can query it, which also carries the loading state when reduced
+ * motion holds the icon still. Used by `Button`'s `loading` state.
  */
 function Spinner({
   className,
