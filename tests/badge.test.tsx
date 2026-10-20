@@ -12,6 +12,18 @@ describe('Badge', () => {
     expect(badge).toHaveClass('bg-primary', 'text-primary-foreground');
   });
 
+  it('gates its color transition on motion-safe and the motion tokens', () => {
+    render(<Badge>New</Badge>);
+
+    const badge = screen.getByText('New');
+    expect(badge).toHaveClass(
+      'motion-safe:transition-colors',
+      'motion-safe:duration-(--duration-fast)',
+      'motion-safe:ease-(--ease-standard)',
+    );
+    expect(badge).not.toHaveClass('transition-colors');
+  });
+
   it('applies the secondary variant classes', () => {
     render(<Badge variant="secondary">Beta</Badge>);
 

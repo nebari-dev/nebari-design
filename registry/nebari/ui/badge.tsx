@@ -7,7 +7,7 @@ const badgeVariants = cva(
   // badge is actually rendered as a link or button (`[a&]` / `[button&]`); a
   // plain status/label chip stays static. `underline-offset-2` + the wider `px-2`
   // padding keep the hover underline inside the chip's bounds.
-  "inline-flex w-fit shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full border border-transparent px-2 py-0.5 font-medium text-xs leading-4 underline-offset-2 outline-none transition-colors [a&]:hover:underline [button&]:hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3",
+  "inline-flex w-fit shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full border border-transparent px-2 py-0.5 font-medium text-xs leading-4 underline-offset-2 outline-none motion-safe:transition-colors motion-safe:duration-(--duration-fast) motion-safe:ease-(--ease-standard) [a&]:hover:underline [button&]:hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3",
   {
     variants: {
       variant: {
