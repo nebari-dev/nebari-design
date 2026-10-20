@@ -412,6 +412,26 @@ describe('Toast', () => {
     );
   });
 
+  it('raises a toast to assertive when an updater names a louder type', () => {
+    const manager = renderToaster();
+    let id = '';
+
+    act(() => {
+      id = manager.add({ title: 'Building', type: 'loading' });
+    });
+
+    act(() => {
+      manager.update(id, (prev) => ({
+        title: `${prev.title} failed`,
+        type: 'error',
+      }));
+    });
+    expect(getToastByTitle('Building failed')).toHaveAttribute(
+      'role',
+      'alertdialog',
+    );
+  });
+
   it('marks a loading toast as busy', () => {
     const manager = renderToaster();
 
@@ -659,6 +679,34 @@ describe('Toast', () => {
     }
   });
 
+  it('overrides an explicit timeout when an updater adds an action', () => {
+    vi.useFakeTimers();
+
+    try {
+      const manager = renderToaster(0);
+      let id = '';
+
+      act(() => {
+        id = manager.add({ title: 'Message archived', timeout: 1000 });
+      });
+
+      act(() => {
+        manager.update(id, () => ({
+          timeout: 1000,
+          actionProps: { children: 'Undo' },
+        }));
+      });
+
+      act(() => {
+        vi.advanceTimersByTime(60_000);
+      });
+
+      expect(getToastByTitle('Message archived')).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('still auto-dismisses a notification toast that carries no action', () => {
     vi.useFakeTimers();
 
@@ -710,6 +758,14 @@ describe('Toast', () => {
     const user = userEvent.setup();
     const manager = renderToaster(1000);
 
+    // Base UI sends Shift+Tab back to whatever held focus before `F6`, and the
+    // viewport only resumes the timers once that focus actually leaves it. jsdom
+    // cannot focus `<body>`, so the page needs a real control to return to.
+    const trigger = document.createElement('button');
+    trigger.textContent = 'Copy';
+    document.body.append(trigger);
+    trigger.focus();
+
     act(() => {
       manager.add({ title: 'Copied to clipboard' });
     });
@@ -732,6 +788,8 @@ describe('Toast', () => {
         screen.queryByRole('heading', { name: 'Copied to clipboard' }),
       ).not.toBeInTheDocument();
     });
+    expect(trigger).toHaveFocus();
+    trigger.remove();
   });
 
   it('pauses the auto-dismiss timer on a touch pointer-down', async () => {
@@ -838,6 +896,17 @@ describe('Toast', () => {
     expect(getToastByTitle('Deploy recovered')).toHaveAttribute(
       'role',
       'dialog',
+    );
+
+    act(() => {
+      getManager().update(id, () => ({
+        title: 'Deploy failed again',
+        type: 'error',
+      }));
+    });
+    expect(getToastByTitle('Deploy failed again')).toHaveAttribute(
+      'role',
+      'alertdialog',
     );
   });
 });
