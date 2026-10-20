@@ -9,7 +9,7 @@ describe('Spinner', () => {
     const spinner = screen.getByRole('status');
     expect(spinner).toHaveAttribute('data-slot', 'spinner');
     expect(spinner).toHaveAttribute('data-size', 'default');
-    expect(spinner).toHaveClass('animate-spin');
+    expect(spinner).toHaveClass('motion-safe:animate-spin');
   });
 
   it('defaults to the "Loading" accessible label', () => {
@@ -46,7 +46,11 @@ describe('Spinner', () => {
     render(<Spinner className="text-primary" size="sm" />);
 
     const spinner = screen.getByRole('status');
-    expect(spinner).toHaveClass('animate-spin', 'size-4', 'text-primary');
+    expect(spinner).toHaveClass(
+      'motion-safe:animate-spin',
+      'size-4',
+      'text-primary',
+    );
   });
 
   it('forwards arbitrary props to the underlying svg', () => {
@@ -58,6 +62,6 @@ describe('Spinner', () => {
   it('exposes spinnerVariants for external composition', () => {
     expect(spinnerVariants({ size: 'xs' })).toContain('size-3.5');
     expect(spinnerVariants({ size: 'xl' })).toContain('size-8');
-    expect(spinnerVariants()).toContain('animate-spin');
+    expect(spinnerVariants()).toContain('motion-safe:animate-spin');
   });
 });
